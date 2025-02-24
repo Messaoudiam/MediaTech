@@ -83,7 +83,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./backend
-          file: ./docker/backend/Dockerfile
+          file: ./.docker/backend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
@@ -95,7 +95,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./frontend
-          file: ./docker/frontend/Dockerfile
+          file: ./.docker/frontend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest

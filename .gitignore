@@ -1,5 +1,4 @@
 # Docker
-.docker
 docker-compose.override.yml
 
 # Environment
