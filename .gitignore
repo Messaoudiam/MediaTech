@@ -1,0 +1,19 @@
+# Docker
+.docker
+docker-compose.override.yml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build
+dist/
+build/
+.next/
+
+# Node modules
+node_modules/
+
+# Prisma
+prisma/
