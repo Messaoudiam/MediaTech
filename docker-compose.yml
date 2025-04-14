@@ -13,8 +13,6 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     command: node dist/src/main.js
-    networks:
-      - app-network
 
   frontend:
     build:
@@ -29,8 +27,6 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - backend
-    networks:
-      - app-network
 
   db:
     image: postgres:15-alpine
@@ -42,12 +38,6 @@ services:
       - POSTGRES_DB=myapp
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
 
 volumes:
   postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
