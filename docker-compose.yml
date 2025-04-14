@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     build:
@@ -15,19 +13,24 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run start:dev
+    networks:
+      - app-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: ../.docker/frontend/Dockerfile
     ports:
-      - "4001:3000"
+      - "4001:80"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - API_URL=http://backend:3000
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - app-network
 
   db:
     image: postgres:15-alpine
@@ -39,6 +42,12 @@ services:
       - POSTGRES_DB=myapp
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -12,15 +12,15 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine
+FROM nginx:alpine
 
-WORKDIR /usr/src/app
+# Copier la configuration nginx
+# Le fichier doit être dans le répertoire de build (frontend)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /usr/src/app/.next ./.next
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/public ./public
+# Copier les fichiers de build dans le dossier de nginx
+COPY --from=builder /usr/src/app/dist/frontend /usr/share/nginx/html
 
-EXPOSE 3000
+EXPOSE 80
 
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]

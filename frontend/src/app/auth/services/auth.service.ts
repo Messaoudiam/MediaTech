@@ -19,8 +19,8 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  // Configuration de l'API - Assurez-vous que le port est le même que celui du backend
-  private readonly API_URL = 'http://localhost:3000/api';
+  // Configuration de l'API - Port 4000 pour correspondre à l'exposition dans docker-compose
+  private readonly API_URL = 'http://localhost:4000/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

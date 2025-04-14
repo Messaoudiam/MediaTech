@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY prisma ./prisma/
 
+# Installer toutes les dépendances, y compris celles de développement
 RUN npm ci
 
 COPY . .
@@ -21,6 +22,9 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/prisma ./prisma
+
+# Installer explicitement les dépendances qui posent problème
+RUN npm install --production=false @nestjs/swagger cookie-parser passport-local
 
 EXPOSE 3000
 

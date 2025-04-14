@@ -49,6 +49,12 @@ jobs:
           cd backend && npm ci
           cd ../frontend && npm ci
 
+      - name: Verify Backend Dependencies
+        run: |
+          cd backend
+          # Vérifier que les packages critiques sont installés
+          npm ls @nestjs/swagger passport-local cookie-parser || true
+
       - name: Run Backend Tests
         run: |
           cd backend
@@ -60,7 +66,7 @@ jobs:
 
       - name: Run Frontend Tests
         run: |
-            echo "Skipping frontend tests for now"
+          echo "Skipping frontend tests for now"
 
   build:
     needs: test
