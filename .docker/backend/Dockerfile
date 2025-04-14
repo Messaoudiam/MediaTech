@@ -28,4 +28,5 @@ RUN npm install --production=false @nestjs/swagger cookie-parser passport-local
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+# Utiliser le chemin complet vers main.js
+CMD ["node", "dist/src/main.js"]
