@@ -12,7 +12,7 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run start:dev
+    command: node dist/src/main.js
     networks:
       - app-network
 
