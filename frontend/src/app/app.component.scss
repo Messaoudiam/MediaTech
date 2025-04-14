@@ -1,0 +1,274 @@
+// Variables
+$primary-color: #3f51b5;
+$accent-color: #ff4081;
+$text-color: #333;
+$light-bg: #f5f7fa;
+$dark-bg: #263238;
+
+// Global styles
+.main {
+  font-family: "Roboto", sans-serif;
+  color: $text-color;
+}
+
+// Header
+.header {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.navigation {
+  a {
+    margin: 0 5px;
+    font-weight: 400;
+
+    &.active-link {
+      font-weight: 500;
+      opacity: 1;
+    }
+  }
+}
+
+// Hero section
+.hero {
+  background: linear-gradient(
+    135deg,
+    $primary-color,
+    darken($primary-color, 15%)
+  );
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .headline {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  .subheading {
+    font-size: 1.3rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .hero-actions {
+    .cta-button {
+      margin-right: 15px;
+      padding: 8px 24px;
+      font-weight: 500;
+    }
+
+    .secondary-button {
+      padding: 8px 24px;
+    }
+  }
+}
+
+// Features section
+.features-section {
+  padding: 60px 20px;
+  background-color: $light-bg;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 40px;
+  color: $primary-color;
+}
+
+.features-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  width: 320px;
+  padding: 30px 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-icon {
+    font-size: 48px !important;
+    height: 48px !important;
+    width: 48px !important;
+    margin: 0 auto 20px auto !important;
+    display: block !important;
+    color: $primary-color;
+  }
+
+  mat-card-title {
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  p {
+    color: rgba($text-color, 0.8);
+    line-height: 1.6;
+  }
+}
+
+// Testimonials section
+.testimonials-section {
+  padding: 60px 20px;
+}
+
+.testimonials-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  width: 450px;
+  padding: 30px;
+  position: relative;
+
+  .client-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    position: absolute;
+    top: -30px;
+    left: 30px;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .testimonial-text {
+    font-style: italic;
+    margin-top: 20px;
+    line-height: 1.6;
+    color: rgba($text-color, 0.8);
+  }
+
+  .client-name {
+    font-weight: 500;
+    margin-top: 15px;
+    margin-bottom: 0;
+  }
+
+  .company-name {
+    margin-top: 5px;
+    color: rgba($text-color, 0.6);
+  }
+}
+
+// Footer
+.footer {
+  background-color: $dark-bg;
+  color: white;
+  padding: 50px 20px 20px;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 30px;
+}
+
+.footer-section {
+  min-width: 250px;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 400;
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 8px 0;
+    opacity: 0.8;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    a {
+      color: white;
+      opacity: 0.8;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  p {
+    opacity: 0.6;
+    font-size: 0.9rem;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .hero {
+    padding: 60px 20px;
+
+    .headline {
+      font-size: 2rem;
+    }
+
+    .subheading {
+      font-size: 1.1rem;
+    }
+  }
+
+  .feature-card,
+  .testimonial-card {
+    width: 100%;
+  }
+
+  .footer-section {
+    flex-basis: 100%;
+  }
+}

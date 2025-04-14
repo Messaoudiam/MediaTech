@@ -1,0 +1,111 @@
+.admin-dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  color: #3f51b5;
+}
+
+.admin-profile-card {
+  margin-bottom: 20px;
+}
+
+.admin-avatar {
+  background-color: #3f51b5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  min-width: 100px;
+}
+
+.stat-card .mat-icon {
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  color: #3f51b5;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #3f51b5;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.admin-tabs-card {
+  margin-bottom: 20px;
+}
+
+.tab-content {
+  padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-style: italic;
+  color: #666;
+}
+
+::ng-deep .mat-mdc-tab-body-wrapper {
+  padding: 0 !important;
+}
+
+::ng-deep .mat-mdc-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    padding: 10px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-header h1 {
+    margin-bottom: 15px;
+  }
+
+  .admin-stats {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    margin-bottom: 15px;
+  }
+}

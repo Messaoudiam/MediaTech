@@ -1,0 +1,74 @@
+<div class="admin-dashboard-container">
+  <div class="admin-header">
+    <h1>Tableau de bord administrateur</h1>
+    <div class="admin-actions">
+      <button mat-raised-button color="warn" (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        Déconnexion
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-content" *ngIf="!loading && user">
+    <mat-card class="admin-profile-card">
+      <mat-card-header>
+        <div mat-card-avatar class="admin-avatar">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <mat-card-title
+          >{{ user.prenom || "Admin" }} {{ user.nom || "" }}</mat-card-title
+        >
+        <mat-card-subtitle
+          >{{ user.email }} ({{ user.role }})</mat-card-subtitle
+        >
+      </mat-card-header>
+      <mat-card-content>
+        <p>Bienvenue dans votre tableau de bord administrateur.</p>
+        <div class="admin-stats">
+          <div class="stat-card">
+            <mat-icon>people</mat-icon>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+          <div class="stat-card">
+            <mat-icon>insights</mat-icon>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Rapports</div>
+          </div>
+          <div class="stat-card">
+            <mat-icon>notifications</mat-icon>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Alertes</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="admin-tabs-card">
+      <mat-card-content>
+        <mat-tab-group
+          [(selectedIndex)]="activeTab"
+          (selectedIndexChange)="changeTab($event)"
+        >
+          <mat-tab label="Gestion des utilisateurs">
+            <app-user-management></app-user-management>
+          </mat-tab>
+          <mat-tab label="Configuration système">
+            <div class="tab-content">
+              <p>Configuration du système en cours de développement...</p>
+            </div>
+          </mat-tab>
+          <mat-tab label="Rapports et statistiques">
+            <div class="tab-content">
+              <p>Rapports et statistiques en cours de développement...</p>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <p>Chargement des données administrateur...</p>
+  </div>
+</div>

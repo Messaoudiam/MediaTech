@@ -3,9 +3,6 @@ FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
 
-# Ajout des dépendances nécessaires pour bcrypt
-RUN apk add --no-cache python3 make g++
-
 COPY package*.json ./
 COPY prisma ./prisma/
 

@@ -1,23 +1,24 @@
 // nestjs
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 // prisma
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserRole } from '@prisma/client';
 
 // bcrypt
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.UserCreateInput): Promise<Omit<User, 'password'>> {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+  async createUser(
+    data: Prisma.UserCreateInput,
+  ): Promise<Omit<User, 'password'>> {
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
-        password: hashedPassword,
+        password: data.password,
       },
     });
 
@@ -25,14 +26,14 @@ export class UsersService {
     return userWithoutPassword;
   }
 
-  async findAll(): Promise<Omit<User, 'password'>[]> {
+  async findAllUsers(): Promise<Omit<User, 'password'>[]> {
     const users = await this.prisma.user.findMany();
     return users.map(
       ({ password, ...userWithoutPassword }) => userWithoutPassword,
     );
   }
 
-  async findOne(id: string): Promise<Omit<User, 'password'> | null> {
+  async findOneUser(id: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) return null;
 
@@ -40,8 +41,26 @@ export class UsersService {
     return userWithoutPassword;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async updateUserRole(
+    id: string,
+    role: UserRole,
+  ): Promise<Omit<User, 'password'>> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { role },
+    });
+
+    const { password, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
   }
 
   async incrementFailedAttempts(id: string): Promise<void> {
@@ -53,7 +72,7 @@ export class UsersService {
     });
   }
 
-  async lockAccount(id: string): Promise<void> {
+  async lockUserAccount(id: string): Promise<void> {
     await this.prisma.user.update({
       where: { id },
       data: {
@@ -63,7 +82,7 @@ export class UsersService {
     });
   }
 
-  async resetLockout(id: string): Promise<void> {
+  async resetUserLockout(id: string): Promise<void> {
     await this.prisma.user.update({
       where: { id },
       data: {

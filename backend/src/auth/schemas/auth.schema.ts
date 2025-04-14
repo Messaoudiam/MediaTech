@@ -24,6 +24,8 @@ export const registerSchema = z
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),
+    nom: z.string().optional(),
+    prenom: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Les mots de passe ne correspondent pas',
@@ -33,7 +35,7 @@ export const registerSchema = z
 // Schéma pour la connexion
 export const loginSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: z.string().min(1, 'Le mot de passe est requis'),
 });
 
 // Schéma pour la réinitialisation du mot de passe

@@ -19,19 +19,19 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password  String    
-  role          UserRole  @default(USER)
-  lastLogin     DateTime?
-  failedAttempts Int      @default(0)
-  isLocked      Boolean   @default(false)
-  isEmailVerified Boolean   @default(false)
-  emailVerificationToken String?
+  id                       String     @id @default(uuid())
+  email                    String     @unique
+  password                 String    
+  role                     UserRole   @default(USER)
+  lastLogin                DateTime?
+  failedAttempts           Int        @default(0)
+  isLocked                 Boolean    @default(false)
+  isEmailVerified          Boolean    @default(false)
+  emailVerificationToken   String?
   emailVerificationExpires DateTime?
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
 
   sessions   Session[]
   @@index([email])
