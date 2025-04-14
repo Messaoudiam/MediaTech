@@ -5,8 +5,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# Ignorer les avertissements de dépréciation
-RUN npm ci --no-fund --no-deprecation
+RUN npm ci
 
 COPY . .
 
