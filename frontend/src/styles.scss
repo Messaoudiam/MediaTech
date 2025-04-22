@@ -13,3 +13,40 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* Styles pour les notifications Snackbar */
+.success-snackbar {
+  background-color: #4caf50;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+.error-snackbar {
+  background-color: #f44336;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+.info-snackbar {
+  background-color: #2196f3;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+.warning-snackbar {
+  background-color: #ff9800;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}

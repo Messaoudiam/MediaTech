@@ -20,7 +20,7 @@ import {
 })
 export class AuthService {
   // Configuration de l'API - Port 4000 pour correspondre à l'exposition dans docker-compose
-  private readonly API_URL = 'http://localhost:4000/api';
+  private readonly API_URL = 'http://localhost:3000/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -48,6 +48,35 @@ export class AuthService {
   private checkAuthStatus(): void {
     if (this.USE_REAL_API) {
       console.log("Vérification de l'état d'authentification...");
+
+      // Vérifier si l'on est sur la landing page ou la page de détail d'un livre
+      const currentUrl = this.router.url;
+      if (currentUrl === '/landing' || currentUrl.startsWith('/books/')) {
+        console.log('Sur une page publique, pas de redirection forcée');
+        // Essayer quand même de récupérer l'utilisateur sans redirection
+        this.http
+          .get<any>(`${this.API_URL}/auth/check-auth`, {
+            withCredentials: true,
+          })
+          .subscribe({
+            next: (response) => {
+              console.log('Réponse de check-auth:', response);
+              if (response) {
+                this.getUserProfile().subscribe();
+              }
+            },
+            error: (err) => {
+              console.log(
+                "Erreur de vérification d'authentification:",
+                err.status
+              );
+              // Sur une page publique, ne pas rediriger même si non authentifié
+            },
+          });
+        return;
+      }
+
+      // Pour les autres pages, vérifier l'authentification normalement
       this.http
         .get<any>(`${this.API_URL}/auth/check-auth`, {
           withCredentials: true,
@@ -270,14 +299,16 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
+    console.log('Déconnexion en cours...');
+
     if (!this.USE_REAL_API) {
       // Mode démo - simulation de déconnexion
       return of(null).pipe(
         tap(() => {
           console.log('Déconnexion en mode démo...');
           this.currentUserSubject.next(null);
-          console.log('Redirection vers la page de login...');
-          this.router.navigate(['/auth/login']).then(
+          console.log('Redirection vers la landing page...');
+          this.router.navigate(['/landing']).then(
             (success) => console.log('Redirection réussie:', success),
             (error) => console.error('Erreur de redirection:', error)
           );
@@ -291,7 +322,7 @@ export class AuthService {
           `${this.API_URL}/auth/logout`,
           {},
           {
-            withCredentials: true, // Important pour les cookies
+            withCredentials: true, // Important pour la gestion des cookies
           }
         )
         .pipe(
@@ -304,8 +335,8 @@ export class AuthService {
             // Réinitialiser l'état local
             this.currentUserSubject.next(null);
 
-            // Rediriger vers la page de login
-            this.router.navigate(['/auth/login']).then(
+            // Rediriger vers la landing page
+            this.router.navigate(['/landing']).then(
               (success) =>
                 console.log('Redirection après déconnexion réussie:', success),
               (error) =>
@@ -319,8 +350,8 @@ export class AuthService {
             // Réinitialiser l'état local même en cas d'erreur
             this.currentUserSubject.next(null);
 
-            // Rediriger vers la page de login
-            this.router.navigate(['/auth/login']).then(
+            // Rediriger vers la landing page
+            this.router.navigate(['/landing']).then(
               (success) =>
                 console.log('Redirection après erreur réussie:', success),
               (error) =>
@@ -347,19 +378,27 @@ export class AuthService {
       // Mode démo - pas d'appel API
       return of(false);
     } else {
-      // Vérifier avec le serveur
+      // Vérifier avec le serveur en utilisant les cookies
+      console.log("Vérification de l'authentification via cookies...");
       return this.http
         .get<boolean>(`${this.API_URL}/auth/check-auth`, {
           withCredentials: true, // Important pour les cookies
         })
         .pipe(
           tap((isAuth) => {
+            console.log("État d'authentification (cookies):", isAuth);
             if (isAuth) {
               // Si authentifié, récupérer le profil
               this.getUserProfile().subscribe();
             }
           }),
-          catchError(() => of(false))
+          catchError((error) => {
+            console.error(
+              "Erreur lors de la vérification d'authentification:",
+              error
+            );
+            return of(false);
+          })
         );
     }
   }

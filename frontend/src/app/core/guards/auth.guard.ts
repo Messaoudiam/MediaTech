@@ -28,6 +28,12 @@ export class AuthGuard implements CanActivate {
     | UrlTree {
     console.log('AuthGuard: vérification des autorisations pour:', state.url);
 
+    // Autoriser l'accès aux pages publiques sans authentification
+    if (state.url === '/landing' || state.url.startsWith('/books/')) {
+      console.log('Page publique, accès autorisé sans authentification');
+      return true;
+    }
+
     // Vérifier si nous sommes déjà en train de traiter une authentification
     if (this.processingAuth) {
       console.log(

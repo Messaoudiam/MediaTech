@@ -14,8 +14,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -29,6 +31,7 @@ import { AuthService } from '../../services/auth.service';
     MatIconModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     RouterLink,
   ],
   templateUrl: './register.component.html',
@@ -44,7 +47,8 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {
     console.log('Initialisation du composant RegisterComponent');
     this.registerForm = this.fb.group({
@@ -126,6 +130,9 @@ export class RegisterComponent {
         this.registerForm.value.confirmPassword
       ) {
         this.errorMessage = 'Les mots de passe ne correspondent pas';
+        this.notificationService.error(
+          'Les mots de passe ne correspondent pas'
+        );
         this.loading = false;
         return;
       }
@@ -149,6 +156,9 @@ export class RegisterComponent {
       ) {
         this.errorMessage =
           'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial';
+        this.notificationService.error(
+          'Le mot de passe ne respecte pas les critères de sécurité'
+        );
         this.loading = false;
         return;
       }
@@ -166,6 +176,9 @@ export class RegisterComponent {
           );
           // En cas de succès, on pourrait afficher un message de succès
           this.loading = false;
+          this.notificationService.success(
+            'Inscription réussie ! Vous allez être redirigé vers la page de connexion.'
+          );
           // La redirection est gérée par le service d'authentification
         },
         error: (error) => {
@@ -179,37 +192,43 @@ export class RegisterComponent {
             error.error.message
           ) {
             this.errorMessage = error.error.message;
+            this.notificationService.error(error.error.message);
           } else if (typeof error.error === 'string') {
             try {
               const parsedError = JSON.parse(error.error);
               this.errorMessage =
                 parsedError.message || "Erreur lors de l'inscription";
+              this.notificationService.error(this.errorMessage);
             } catch (e) {
               this.errorMessage = error.error;
+              this.notificationService.error(error.error);
             }
           } else if (error.status === 400) {
             this.errorMessage =
               'Données invalides. Vérifiez que le mot de passe respecte les critères de sécurité.';
+            this.notificationService.error('Données invalides');
           } else if (error.status === 409) {
             this.errorMessage = 'Cet email est déjà utilisé.';
+            this.notificationService.error('Cet email est déjà utilisé');
           } else if (error.status === 0) {
             this.errorMessage =
               'Impossible de se connecter au serveur. Vérifiez votre connexion internet.';
+            this.notificationService.error('Connexion au serveur impossible');
           } else {
             this.errorMessage =
               "Erreur lors de l'inscription. Veuillez réessayer.";
+            this.notificationService.error("Erreur lors de l'inscription");
           }
 
-          console.error("Message d'erreur affiché:", this.errorMessage);
-        },
-        complete: () => {
-          console.log("Observable d'inscription complété");
-          this.loading = false;
+          console.log("Message d'erreur affiché:", this.errorMessage);
         },
       });
     } else {
-      console.log('Formulaire invalide, erreurs:', this.registerForm.errors);
+      console.log('Formulaire invalide');
       this.registerForm.markAllAsTouched();
+      this.notificationService.warning(
+        'Veuillez remplir correctement tous les champs'
+      );
     }
   }
 

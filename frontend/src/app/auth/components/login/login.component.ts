@@ -13,8 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -47,7 +48,7 @@ export class LoginComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private notificationService: NotificationService
   ) {
     console.log('Initialisation du composant LoginComponent');
     this.loginForm = this.fb.group({
@@ -75,6 +76,7 @@ export class LoginComponent {
         next: (response) => {
           console.log('Connexion réussie avec réponse:', response);
           this.loginAttempts = 0;
+          this.notificationService.success('Connexion réussie. Bienvenue !');
         },
         error: (error: HttpErrorResponse) => {
           console.error('Erreur lors de la connexion:', error);
@@ -92,17 +94,25 @@ export class LoginComponent {
                 error.error.message.includes('temporairement')
               ) {
                 this.accountLocked = true;
+                this.notificationService.error(
+                  'Compte temporairement verrouillé'
+                );
+              } else {
+                this.notificationService.error(error.error.message);
               }
             } else {
               this.errorMessage = 'Email ou mot de passe incorrect';
+              this.notificationService.error('Email ou mot de passe incorrect');
             }
           } else if (error.status === 0) {
             this.errorMessage =
               'Impossible de se connecter au serveur. Vérifiez votre connexion internet.';
+            this.notificationService.error('Connexion au serveur impossible');
           } else {
             this.errorMessage =
               error?.error?.message ||
               'Erreur de connexion. Veuillez réessayer.';
+            this.notificationService.error(this.errorMessage);
           }
 
           console.log("Message d'erreur affiché:", this.errorMessage);
@@ -116,6 +126,9 @@ export class LoginComponent {
     } else {
       console.log('Formulaire invalide');
       this.loginForm.markAllAsTouched();
+      this.notificationService.warning(
+        'Veuillez remplir correctement tous les champs'
+      );
     }
   }
 
@@ -123,11 +136,7 @@ export class LoginComponent {
     const email = this.loginForm.get('email')?.value;
 
     if (!email) {
-      this.snackBar.open('Veuillez entrer votre adresse email', 'Fermer', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-      });
+      this.notificationService.warning('Veuillez entrer votre adresse email');
       return;
     }
 
@@ -137,26 +146,14 @@ export class LoginComponent {
         console.log('Réinitialisation réussie:', response);
         this.accountLocked = false;
         this.errorMessage = '';
-        this.snackBar.open(
-          'Votre compte a été déverrouillé. Vous pouvez maintenant vous connecter.',
-          'Fermer',
-          {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          }
+        this.notificationService.success(
+          'Votre compte a été déverrouillé. Vous pouvez maintenant vous connecter.'
         );
       },
       error: (error) => {
         console.error('Erreur lors de la réinitialisation:', error);
-        this.snackBar.open(
-          'Impossible de réinitialiser votre compte. Veuillez réessayer plus tard.',
-          'Fermer',
-          {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          }
+        this.notificationService.error(
+          'Impossible de réinitialiser votre compte. Veuillez réessayer plus tard.'
         );
       },
       complete: () => {

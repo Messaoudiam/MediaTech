@@ -64,6 +64,13 @@
         </mat-card-content>
       </mat-card>
     </div>
+
+    <!-- Section des favoris -->
+    <mat-card class="favorites-section">
+      <mat-card-content>
+        <app-favorites-list></app-favorites-list>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <div *ngIf="!loading && !user" class="error-container">

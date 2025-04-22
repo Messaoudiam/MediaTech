@@ -1,0 +1,52 @@
+<mat-toolbar color="primary" class="navbar">
+  <div class="navbar-brand">
+    <a [routerLink]="['/']">
+      <span class="logo">BiblioTech</span>
+    </a>
+  </div>
+
+  <span class="navbar-spacer"></span>
+
+  <div class="navbar-links">
+    <ng-container *ngIf="!isLoggedIn; else loggedInTemplate">
+      <button mat-button (click)="navigateToLogin()" class="nav-button">
+        <mat-icon>login</mat-icon>
+        Connexion
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="navigateToRegister()"
+        class="nav-button"
+      >
+        <mat-icon>person_add</mat-icon>
+        Inscription
+      </button>
+    </ng-container>
+
+    <ng-template #loggedInTemplate>
+      <button mat-button [routerLink]="['/home']" class="nav-button">
+        <mat-icon>dashboard</mat-icon>
+        Tableau de bord
+      </button>
+      <button mat-button [matMenuTriggerFor]="userMenu" class="nav-button">
+        <mat-icon>account_circle</mat-icon>
+        Mon compte
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item [routerLink]="['/profile']">
+          <mat-icon>person</mat-icon>
+          Profil
+        </button>
+        <button mat-menu-item [routerLink]="['/favorites']">
+          <mat-icon>favorite</mat-icon>
+          Favoris
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Déconnexion
+        </button>
+      </mat-menu>
+    </ng-template>
+  </div>
+</mat-toolbar>

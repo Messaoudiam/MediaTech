@@ -1,0 +1,262 @@
+// Variables
+$primary-color: #3f51b5;
+$accent-color: #ff4081;
+$text-light: #ffffff;
+$text-dark: #333333;
+$text-muted: #777777;
+$bg-light: #f5f5f5;
+$border-radius: 8px;
+$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+$transition: all 0.3s ease;
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// Hero Section
+.hero-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: $text-light;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+}
+
+.hero-content {
+  flex: 1;
+  max-width: 600px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+  }
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+
+  button {
+    padding: 0.5rem 1.5rem;
+  }
+}
+
+.hero-image {
+  flex: 1;
+  max-width: 500px;
+
+  img {
+    width: 100%;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+  }
+}
+
+// Features Section
+.features-section {
+  padding: 4rem 2rem;
+  background-color: $bg-light;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  color: $text-dark;
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+    color: $primary-color;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: $text-dark;
+  }
+
+  p {
+    color: $text-muted;
+  }
+}
+
+// Featured Books Section
+.featured-books-section {
+  padding: 4rem 2rem;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.book-card {
+  cursor: pointer;
+  transition: $transition;
+  border-radius: $border-radius;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .book-cover {
+    height: 320px;
+    object-fit: cover;
+  }
+
+  mat-card-content {
+    flex-grow: 1;
+  }
+
+  .book-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .book-author {
+    color: $text-muted;
+    margin-bottom: 0.5rem;
+  }
+
+  .book-description {
+    color: $text-dark;
+    font-size: 0.9rem;
+  }
+}
+
+// Footer
+.footer {
+  background-color: #303030;
+  color: $text-light;
+  padding: 3rem 2rem;
+  margin-top: auto;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+}
+
+.footer-logo {
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.5rem;
+  }
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: $transition;
+
+    &:hover {
+      color: $accent-color;
+    }
+  }
+}

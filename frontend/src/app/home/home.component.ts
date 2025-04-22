@@ -6,11 +6,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../auth/services/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FavoritesListComponent } from './favorites-list/favorites-list.component';
+import { NotificationService } from '../core/services/notification.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    FavoritesListComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -20,7 +28,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   private userSubscription: Subscription | null = null;
   private isRedirecting: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {
     console.log('HomeComponent initialisé');
   }
 
@@ -109,8 +121,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   logout() {
     console.log('Déconnexion...');
     this.authService.logout().subscribe({
-      next: () => console.log('Déconnexion réussie'),
-      error: (err) => console.error('Erreur lors de la déconnexion:', err),
+      next: () => {
+        console.log('Déconnexion réussie');
+        this.notificationService.success('Déconnexion réussie');
+      },
+      error: (err) => {
+        console.error('Erreur lors de la déconnexion:', err);
+        this.notificationService.error('Erreur lors de la déconnexion');
+      },
     });
   }
 

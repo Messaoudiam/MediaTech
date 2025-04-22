@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Constantes de l'application
+// MAX_ACTIVE_BORROWINGS: Nombre maximum d'emprunts simultanés par utilisateur
+// Remarque: Ces constantes ne sont pas stockées en base mais servent de référence pour les validations
+// dans le code applicatif
+
 enum UserRole {
   USER
   ADMIN
@@ -21,7 +20,7 @@ enum UserRole {
 model User {
   id                       String     @id @default(uuid())
   email                    String     @unique
-  password                 String    
+  password                 String
   role                     UserRole   @default(USER)
   lastLogin                DateTime?
   failedAttempts           Int        @default(0)
@@ -29,11 +28,15 @@ model User {
   isEmailVerified          Boolean    @default(false)
   emailVerificationToken   String?
   emailVerificationExpires DateTime?
-  
+  activeBorrowingsCount    Int        @default(0)
+
   createdAt                DateTime   @default(now())
   updatedAt                DateTime   @updatedAt
 
-  sessions   Session[]
+  sessions    Session[]
+  borrowings  Borrowing[]
+  favorites   Favorite[]
+
   @@index([email])
   @@map("users")
 }
@@ -48,4 +51,107 @@ model Session {
 
   @@index([userId])
   @@map("sessions")
+}
+
+enum ResourceType {
+  BOOK
+  COMIC
+  DVD
+  GAME
+  MAGAZINE
+  AUDIOBOOK
+}
+
+model Resource {
+  id          String       @id @default(uuid())
+  title       String
+  type        ResourceType
+  author      String?
+  isbn        String?      @unique
+  publisher   String?
+  publishedAt DateTime?
+  description String
+  genre       String?
+  language    String?
+  
+  copies      Copy[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type])
+}
+
+model Book {
+  id            String   @id @default(uuid())
+  title         String
+  author        String
+  isbn          String?  @unique
+  coverImageUrl String?
+  description   String?
+  publishedYear Int?
+  genre         String?
+  pageCount     Int?
+  publisher     String?
+  language      String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  favorites     Favorite[]
+
+  @@index([author])
+  @@index([genre])
+  @@map("books")
+}
+
+model Favorite {
+  id       String   @id @default(uuid())
+  userId   String
+  bookId   String
+  createdAt DateTime @default(now())
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, bookId])
+  @@map("favorites")
+}
+
+model Copy {
+  id        String   @id @default(uuid())
+  resourceId String
+  available Boolean  @default(true)
+  condition String?
+
+  resource  Resource @relation(fields: [resourceId], references: [id])
+  borrowings Borrowing[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resourceId])
+}
+
+model Borrowing {
+  id         String        @id @default(uuid())
+  userId     String
+  copyId     String
+  borrowedAt DateTime      @default(now())
+  dueDate    DateTime
+  returnedAt DateTime?
+  status     BorrowingStatus @default(ACTIVE)
+
+  user       User          @relation(fields: [userId], references: [id])
+  copy       Copy          @relation(fields: [copyId], references: [id])
+
+  @@index([userId])
+  @@index([copyId])
+  @@index([status])
+}
+
+enum BorrowingStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
 }
