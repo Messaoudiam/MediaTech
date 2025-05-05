@@ -17,6 +17,7 @@ import { switchMap, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { BorrowDialogComponent } from '../../features/borrowing/borrow-dialog/borrow-dialog.component';
 import { BookCopiesComponent } from '../components/book-copies/book-copies.component';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-book-detail',
@@ -52,7 +53,8 @@ export class BookDetailComponent implements OnInit {
     private notificationService: NotificationService,
     private authService: AuthService,
     private dialog: MatDialog,
-    public imageService: ImageService
+    public imageService: ImageService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -131,8 +133,8 @@ export class BookDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    // Toujours rediriger vers la liste des livres
-    this.router.navigate(['/books/all']);
+    // Utiliser l'historique de navigation pour revenir à la page précédente
+    this.location.back();
   }
 
   toggleFavorite(): void {

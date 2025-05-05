@@ -13,6 +13,7 @@ import { BookFormComponent } from './admin/book-form/book-form.component';
 import { BookListComponent as AdminBookListComponent } from './admin/book-list/book-list.component';
 import { BookEditComponent } from './admin/book-edit/book-edit.component';
 import { BookListComponent } from './books/book-list/book-list.component';
+import { AdminBorrowingsComponent } from './admin/components/borrowing-management/admin-borrowings.component';
 
 // guards
 import { AuthGuard } from './core/guards/auth.guard';
@@ -56,13 +57,7 @@ export const routes: Routes = [
       { path: 'books', component: AdminBookListComponent },
       { path: 'edit-book/:id', component: BookEditComponent },
       { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
-      {
-        path: 'borrowings',
-        loadChildren: () =>
-          import('./features/borrowing/borrowing.module').then(
-            (m) => m.BorrowingModule
-          ),
-      },
+      { path: 'borrowings', component: AdminBorrowingsComponent },
     ],
   },
   { path: '**', redirectTo: '/landing' },

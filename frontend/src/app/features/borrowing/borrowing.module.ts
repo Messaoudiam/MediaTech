@@ -25,10 +25,11 @@ import { UserBorrowingsComponent } from './user-borrowings/user-borrowings.compo
 import { BorrowingDetailComponent } from './borrowing-detail/borrowing-detail.component';
 import { BorrowingListComponent } from './borrowing-list/borrowing-list.component';
 import { BorrowDialogComponent } from './borrow-dialog/borrow-dialog.component';
+import { AdminBorrowingsComponent } from '../../admin/components/borrowing-management/admin-borrowings.component';
 
 const routes: Routes = [
   { path: '', component: UserBorrowingsComponent },
-  { path: 'admin', component: BorrowingListComponent },
+  { path: 'admin', component: AdminBorrowingsComponent },
   { path: ':id', component: BorrowingDetailComponent },
 ];
 
@@ -57,6 +58,7 @@ const routes: Routes = [
     BorrowingDetailComponent,
     BorrowingListComponent,
     BorrowDialogComponent,
+    AdminBorrowingsComponent,
   ],
   exports: [],
 })
