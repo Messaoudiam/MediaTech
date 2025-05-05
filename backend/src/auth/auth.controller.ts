@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { Public } from './decorators/public.decorator';
 import {
   ApiTags,
@@ -195,6 +196,59 @@ export class AuthController {
     return response.status(HttpStatus.OK).json({
       message: 'Déconnexion réussie',
     });
+  }
+
+  @ApiOperation({
+    summary: 'Rafraîchir le token',
+    description:
+      "Permet de générer un nouveau token d'accès à partir du refresh token",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Token rafraîchi avec succès',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Refresh token invalide ou expiré',
+    type: ErrorResponseDto,
+  })
+  @ApiCookieAuth('refresh-token')
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh')
+  async refreshToken(
+    @Req() request: any,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      // L'ID de l'utilisateur est extrait du refresh token par la stratégie JwtRefreshStrategy
+      const userId = request.user.id;
+
+      // Récupérer les informations complètes de l'utilisateur
+      const user = await this.usersService.findOneUser(userId);
+
+      if (!user) {
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'Utilisateur non trouvé',
+        });
+      }
+
+      // Générer de nouveaux tokens
+      const tokens = await this.authService.generateTokens(user);
+
+      // Mettre à jour les cookies
+      this.authService.setAccessTokenCookie(response, tokens.accessToken);
+      this.authService.setRefreshTokenCookie(response, tokens.refreshToken);
+
+      return {
+        message: 'Token rafraîchi avec succès',
+      };
+    } catch (error) {
+      this.logger.error('Erreur lors du rafraîchissement du token:', error);
+      return response.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Échec du rafraîchissement du token',
+      });
+    }
   }
 
   @ApiOperation({
