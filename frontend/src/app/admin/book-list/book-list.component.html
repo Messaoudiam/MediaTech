@@ -101,6 +101,48 @@
             </td>
           </ng-container>
 
+          <!-- Total Copies Column -->
+          <ng-container matColumnDef="totalCopies">
+            <th mat-header-cell *matHeaderCellDef>Exemplaires</th>
+            <td mat-cell *matCellDef="let book">
+              <span class="copies-count">
+                {{ getTotalCopies(book) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Available Copies Column -->
+          <ng-container matColumnDef="availableCopies">
+            <th mat-header-cell *matHeaderCellDef>Disponibles</th>
+            <td mat-cell *matCellDef="let book">
+              <span
+                class="copies-count"
+                [ngClass]="{
+                  available: getAvailableCopies(book) > 0,
+                  unavailable: getAvailableCopies(book) === 0
+                }"
+              >
+                {{ getAvailableCopies(book) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Borrowed Copies Column -->
+          <ng-container matColumnDef="borrowedCopies">
+            <th mat-header-cell *matHeaderCellDef>Empruntés</th>
+            <td mat-cell *matCellDef="let book">
+              <span
+                class="copies-count borrowed"
+                *ngIf="getBorrowedCopies(book) > 0"
+              >
+                {{ getBorrowedCopies(book) }}
+              </span>
+              <span class="copies-count" *ngIf="getBorrowedCopies(book) === 0">
+                0
+              </span>
+            </td>
+          </ng-container>
+
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>

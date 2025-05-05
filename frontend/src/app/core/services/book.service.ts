@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, delay, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CopyService, Copy } from './copy.service';
 
@@ -54,10 +54,102 @@ export class BookService {
 
   constructor(private http: HttpClient, private copyService: CopyService) {}
 
-  getAllBooks(): Observable<Resource[]> {
-    // On filtre pour ne récupérer que les ressources de type BOOK
-    const params = new HttpParams().set('type', ResourceType.BOOK);
+  getAllResources(): Observable<Resource[]> {
+    return this.http.get<Resource[]>(this.apiUrl);
+  }
+
+  getResourcesByType(type: ResourceType): Observable<Resource[]> {
+    const params = new HttpParams().set('type', type);
     return this.http.get<Resource[]>(this.apiUrl, { params });
+  }
+
+  getAllBooks(): Observable<Resource[]> {
+    // Récupérer les ressources de type BOOK
+    const params = new HttpParams().set('type', ResourceType.BOOK);
+    return this.http.get<Resource[]>(this.apiUrl, { params }).pipe(
+      switchMap((books) => {
+        console.log('Livres récupérés du backend:', books);
+        if (books.length === 0) {
+          return of([]);
+        }
+
+        // Récupérer les copies pour chaque livre
+        const booksWithCopies$ = books.map((book) =>
+          this.copyService.getCopiesByResourceId(book.id).pipe(
+            map((copies) => {
+              console.log(`Copies récupérées pour ${book.title}:`, copies);
+              return {
+                ...book,
+                copies: copies,
+              };
+            }),
+            catchError((error) => {
+              console.error(
+                `Erreur lors de la récupération des copies pour ${book.title}:`,
+                error
+              );
+              return of({
+                ...book,
+                copies: [],
+              });
+            })
+          )
+        );
+
+        return forkJoin(booksWithCopies$) as Observable<Resource[]>;
+      })
+    );
+  }
+
+  getAllResourcesWithCopies(): Observable<Resource[]> {
+    // Récupérer toutes les ressources
+    console.log('Récupération de toutes les ressources avec leurs exemplaires');
+    return this.http.get<Resource[]>(this.apiUrl).pipe(
+      switchMap((resources) => {
+        console.log(`${resources.length} ressources récupérées du backend`);
+        if (resources.length === 0) {
+          return of([]);
+        }
+
+        // Pour chaque ressource, récupérer ses exemplaires
+        const resourcesWithCopies$ = resources.map((resource) =>
+          this.copyService.getCopiesByResourceId(resource.id).pipe(
+            map((copies) => {
+              const totalCopies = copies.length;
+              const availableCopies = copies.filter((c) => c.available).length;
+              const borrowedCopies = copies.filter((c) => !c.available).length;
+
+              console.log(
+                `Ressource "${resource.title}": ` +
+                  `${totalCopies} exemplaires, ` +
+                  `${availableCopies} disponibles, ` +
+                  `${borrowedCopies} empruntés`
+              );
+
+              // Retourner une ressource enrichie avec ses exemplaires
+              return {
+                ...resource,
+                copies: copies,
+              };
+            }),
+            catchError((error) => {
+              console.error(
+                `Erreur lors de la récupération des copies pour ${resource.title}:`,
+                error
+              );
+              // En cas d'erreur, retourner la ressource avec un tableau vide d'exemplaires
+              return of({
+                ...resource,
+                copies: [],
+              });
+            })
+          )
+        );
+
+        // Combiner tous les observables en un seul qui émet un tableau de ressources avec leurs exemplaires
+        return forkJoin(resourcesWithCopies$) as Observable<Resource[]>;
+      })
+    );
   }
 
   getBookById(id: string): Observable<Resource> {

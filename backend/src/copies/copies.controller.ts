@@ -91,4 +91,14 @@ export class CopiesController {
     this.logger.log(`Suppression de l'exemplaire ${id}`);
     return this.copiesService.remove(id);
   }
+
+  @Get('resource/:resourceId')
+  @ApiOperation({ summary: "Récupérer tous les exemplaires d'une ressource" })
+  @ApiParam({ name: 'resourceId', type: String })
+  async findByResourceId(@Param('resourceId') resourceId: string) {
+    this.logger.log(
+      `Récupération des exemplaires de la ressource ${resourceId}`,
+    );
+    return this.copiesService.findAll(resourceId);
+  }
 }

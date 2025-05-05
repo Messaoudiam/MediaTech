@@ -38,13 +38,45 @@ export class CopyService {
     );
 
     // URL plus explicite qui correspond à l'API backend
+    const url = `${this.apiUrl}/resource/${resourceId}`;
+    console.log('URL appelée:', url);
+
     return this.http
-      .get<Copy[]>(`${this.apiUrl}/resource/${resourceId}`, {
+      .get<Copy[]>(url, {
         withCredentials: true,
       })
       .pipe(
-        tap((copies) => console.log(`${copies.length} exemplaires récupérés`)),
-        catchError(this.handleError.bind(this))
+        tap((copies) => {
+          console.log(
+            `${copies.length} exemplaires récupérés pour ${resourceId}`
+          );
+          if (copies.length > 0) {
+            console.log('Premier exemplaire:', copies[0]);
+            // Afficher le statut de chaque exemplaire pour débogage
+            const disponibles = copies.filter((c) => c.available).length;
+            const empruntes = copies.filter((c) => !c.available).length;
+            console.log(
+              `Statut des exemplaires pour ${resourceId}: ${disponibles} disponibles, ${empruntes} empruntés`
+            );
+            console.log(
+              'Disponibilité des exemplaires:',
+              copies.map((c) => c.available)
+            );
+          }
+        }),
+        catchError((error) => {
+          console.error(
+            `Erreur lors de la récupération des exemplaires pour ${resourceId}:`,
+            error
+          );
+          // Vérifier si c'est une erreur de connexion
+          if (error.status === 0) {
+            console.error('Problème de connexion au serveur');
+          } else if (error.status === 404) {
+            console.error("Endpoint non trouvé, vérifier l'URL:", url);
+          }
+          return this.handleError(error);
+        })
       );
   }
 

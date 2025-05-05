@@ -93,6 +93,13 @@ mat-card-header {
     width: 100px;
     text-align: right;
   }
+
+  .mat-column-totalCopies,
+  .mat-column-availableCopies,
+  .mat-column-borrowedCopies {
+    width: 100px;
+    text-align: center;
+  }
 }
 
 .cover-image {
@@ -194,6 +201,32 @@ mat-card-header {
   color: #00838f;
 }
 
+// Styles pour les compteurs de copies
+.copies-count {
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #f0f0f0;
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+}
+
+.copies-count.available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.copies-count.unavailable {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.copies-count.borrowed {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
 // Ajustements pour les écrans de différentes tailles
 @media (max-width: 1200px) {
   .mat-column-language {
@@ -210,7 +243,14 @@ mat-card-header {
 
 @media (max-width: 768px) {
   .mat-column-type,
-  .mat-column-publishedYear {
+  .mat-column-publishedYear,
+  .mat-column-totalCopies {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .mat-column-borrowedCopies {
     display: none;
   }
 }
