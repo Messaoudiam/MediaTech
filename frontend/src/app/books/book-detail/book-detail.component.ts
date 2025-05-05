@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 import { BookService, Resource } from '../../core/services/book.service';
 import { FavoriteService } from '../../core/services/favorite.service';
@@ -14,6 +15,8 @@ import { AuthService } from '../../auth/services/auth.service';
 import { ImageService } from '../../core/services/image.service';
 import { switchMap, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { BorrowDialogComponent } from '../../features/borrowing/borrow-dialog/borrow-dialog.component';
+import { BookCopiesComponent } from '../components/book-copies/book-copies.component';
 
 @Component({
   selector: 'app-book-detail',
@@ -28,7 +31,9 @@ import { of } from 'rxjs';
     MatIconModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
     NavbarComponent,
+    BookCopiesComponent,
   ],
 })
 export class BookDetailComponent implements OnInit {
@@ -37,6 +42,7 @@ export class BookDetailComponent implements OnInit {
   error = false;
   isFavorite = false;
   isLoggedIn = false;
+  isAdmin = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +51,7 @@ export class BookDetailComponent implements OnInit {
     private favoriteService: FavoriteService,
     private notificationService: NotificationService,
     private authService: AuthService,
+    private dialog: MatDialog,
     public imageService: ImageService
   ) {}
 
@@ -57,17 +64,19 @@ export class BookDetailComponent implements OnInit {
 
   private checkAuthStatus(): void {
     // Vérifier si l'utilisateur est connecté via le service
-    this.authService.currentUser$.pipe(take(1)).subscribe((user) => {
-      this.isLoggedIn = !!user;
+    this.authService.isAuthenticated().subscribe((isAuthenticated) => {
+      this.isLoggedIn = isAuthenticated;
 
-      // Vérification de secours via localStorage
-      if (!this.isLoggedIn) {
-        this.isLoggedIn = !!localStorage.getItem('token');
-      }
+      if (isAuthenticated) {
+        // Si authentifié, récupérer le profil utilisateur complet
+        this.authService.getUserProfile().subscribe((user) => {
+          this.isAdmin = user?.role === 'ADMIN';
 
-      // Si l'utilisateur est connecté, vérifier l'état des favoris
-      if (this.isLoggedIn && this.book) {
-        this.checkFavoriteStatus(this.book.id);
+          // Si l'utilisateur est connecté et que le livre est chargé, vérifier l'état des favoris
+          if (this.book) {
+            this.checkFavoriteStatus(this.book.id);
+          }
+        });
       }
     });
   }
@@ -80,9 +89,10 @@ export class BookDetailComponent implements OnInit {
           if (!id) {
             return of(null);
           }
+          console.log(`Chargement des détails du livre ${id}`);
           return this.bookService.getBookById(id).pipe(
             catchError((error) => {
-              console.error(error);
+              console.error(`Erreur lors du chargement du livre ${id}:`, error);
               this.error = true;
               this.loading = false;
               this.notificationService.error('Livre non trouvé');
@@ -96,6 +106,9 @@ export class BookDetailComponent implements OnInit {
         this.loading = false;
 
         if (book) {
+          console.log('Livre chargé avec succès:', book);
+          console.log('Exemplaires du livre:', book.copies);
+
           // Afficher la notification pour tous les utilisateurs
           this.notificationService.info(`Vous consultez ${book.title}`);
 
@@ -157,9 +170,43 @@ export class BookDetailComponent implements OnInit {
       return;
     }
 
-    this.notificationService.warning(
-      "Fonctionnalité d'emprunt à venir bientôt"
-    );
+    if (!this.book) return;
+
+    // Vérifier si le livre a des exemplaires
+    if (!this.book.copies || this.book.copies.length === 0) {
+      this.notificationService.warning(
+        'Aucun exemplaire disponible pour cette ressource'
+      );
+      return;
+    }
+
+    // Vérifier si au moins un exemplaire est disponible
+    const availableCopies = this.book.copies.filter((copy) => copy.available);
+    if (availableCopies.length === 0) {
+      this.notificationService.warning(
+        'Tous les exemplaires sont actuellement empruntés'
+      );
+      return;
+    }
+
+    // Ouvrir la fenêtre de dialogue d'emprunt
+    const dialogRef = this.dialog.open(BorrowDialogComponent, {
+      width: '400px',
+      data: {
+        resourceId: this.book.id,
+        resourceTitle: this.book.title,
+        copies: this.book.copies,
+      },
+    });
+
+    // Gérer le résultat du dialogue
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Si le dialogue retourne true, c'est que l'emprunt a été effectué avec succès
+        // On peut rediriger vers la liste des emprunts
+        this.router.navigate(['/borrowings']);
+      }
+    });
   }
 
   /**
@@ -176,6 +223,15 @@ export class BookDetailComponent implements OnInit {
     const img = event.target as HTMLImageElement;
     if (img) {
       img.src = this.imageService.getSafeImageUrl('');
+    }
+  }
+
+  debugCopies(): void {
+    if (this.book && this.book.copies) {
+      console.log('Exemplaires du livre:', this.book.copies);
+      console.log("Nombre d'exemplaires:", this.book.copies.length);
+    } else {
+      console.log('Aucun exemplaire trouvé dans le composant BookDetail');
     }
   }
 }

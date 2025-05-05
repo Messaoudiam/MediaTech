@@ -10,6 +10,7 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../auth/models/auth.model';
+import { CopyManagementComponent } from './components/copy-management/copy-management.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -22,6 +23,7 @@ import { User } from '../auth/models/auth.model';
     MatIconModule,
     MatTabsModule,
     UserManagementComponent,
+    CopyManagementComponent,
     MatSnackBarModule,
     MatProgressSpinnerModule,
   ],
@@ -98,19 +100,8 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/auth/login']);
-      },
-      error: (error) => {
-        console.error('Erreur lors de la déconnexion:', error);
-        this.snackBar.open(
-          'Erreur lors de la déconnexion. Veuillez réessayer.',
-          'Fermer',
-          { duration: 3000 }
-        );
-      },
-    });
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 
   changeTab(tabIndex: number): void {

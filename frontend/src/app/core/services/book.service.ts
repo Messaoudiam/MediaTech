@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, forkJoin } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { CopyService, Copy } from './copy.service';
 
 // Mise à jour pour utiliser Resource au lieu de Book
 export interface Resource {
@@ -19,6 +20,7 @@ export interface Resource {
   publisher?: string;
   language?: string;
   publishedAt?: string;
+  copies?: Copy[];
 }
 
 export enum ResourceType {
@@ -50,7 +52,7 @@ export class BookService {
   // Clé pour stocker l'historique dans le localStorage
   private historyStorageKey = 'book_search_history';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private copyService: CopyService) {}
 
   getAllBooks(): Observable<Resource[]> {
     // On filtre pour ne récupérer que les ressources de type BOOK
@@ -59,7 +61,29 @@ export class BookService {
   }
 
   getBookById(id: string): Observable<Resource> {
-    return this.http.get<Resource>(`${this.apiUrl}/${id}`);
+    // D'abord récupérer les informations du livre
+    return this.http.get<Resource>(`${this.apiUrl}/${id}`).pipe(
+      switchMap((book) => {
+        // Ensuite récupérer les exemplaires associés à ce livre
+        return this.copyService.getCopiesByResourceId(id).pipe(
+          map((copies) => {
+            // Intégrer les exemplaires dans l'objet livre
+            return {
+              ...book,
+              copies: copies,
+            };
+          }),
+          catchError((error) => {
+            console.error(
+              `Erreur lors de la récupération des exemplaires pour ${id}:`,
+              error
+            );
+            // En cas d'erreur, retourner le livre sans ses exemplaires
+            return of(book);
+          })
+        );
+      })
+    );
   }
 
   addBook(book: Omit<Resource, 'id'>, coverFile?: File): Observable<Resource> {

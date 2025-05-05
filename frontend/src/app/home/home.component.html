@@ -7,10 +7,21 @@
   <div *ngIf="!loading && user">
     <div class="header">
       <h1>Tableau de bord</h1>
-      <button mat-raised-button color="warn" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        Déconnexion
-      </button>
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          routerLink="/borrowings"
+          class="borrowings-button"
+        >
+          <mat-icon>menu_book</mat-icon>
+          Mes emprunts
+        </button>
+        <button mat-raised-button color="warn" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Déconnexion
+        </button>
+      </div>
     </div>
 
     <div class="dashboard-grid">

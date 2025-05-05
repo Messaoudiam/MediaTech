@@ -20,6 +20,15 @@
         <mat-icon>add</mat-icon>
         Ajouter une ressource
       </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/admin/borrowings']"
+        class="mr-2"
+      >
+        <mat-icon>menu_book</mat-icon>
+        Gérer les emprunts
+      </button>
       <button mat-raised-button color="warn" (click)="logout()">
         <mat-icon>exit_to_app</mat-icon>
         Déconnexion
@@ -70,6 +79,9 @@
         >
           <mat-tab label="Gestion des utilisateurs">
             <app-user-management></app-user-management>
+          </mat-tab>
+          <mat-tab label="Gestion des exemplaires">
+            <app-copy-management></app-copy-management>
           </mat-tab>
           <mat-tab label="Configuration système">
             <div class="tab-content">

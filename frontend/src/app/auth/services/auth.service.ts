@@ -1,11 +1,11 @@
 // angular
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 // rxjs
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
-import { tap, catchError, map, switchMap } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 
 // models
 import {
@@ -46,36 +46,28 @@ export class AuthService {
 
   // Vérifie l'état d'authentification au démarrage
   private checkAuthStatus(): void {
+    // Si l'API est activée, vérifier l'authentification via les cookies
     if (this.USE_REAL_API) {
-      // Vérifier l'authentification avec le backend, quelle que soit la page
+      console.log("Vérification de l'authentification via les cookies...");
       this.http
         .get<{ user: User }>(`${this.API_URL}/auth/check-auth`, {
           withCredentials: true,
         })
         .pipe(
-          tap((response) => {
-            if (response && response.user) {
-              console.log('Session restaurée après démarrage/rafraîchissement');
-              this.currentUserSubject.next(response.user);
-            }
-          }),
           catchError(() => {
-            // En cas d'erreur (non connecté), vérifier si on est sur une page protégée
-            const currentUrl = this.router.url;
-            if (
-              currentUrl !== '/landing' &&
-              !currentUrl.startsWith('/books/') &&
-              currentUrl !== '/' &&
-              !currentUrl.startsWith('/search') &&
-              !currentUrl.startsWith('/auth/')
-            ) {
-              // Rediriger vers login seulement si on est sur une page protégée
-              this.router.navigate(['/auth/login']);
-            }
+            // En cas d'erreur (non connecté), silencieux
             return of(null);
           })
         )
-        .subscribe();
+        .subscribe((response) => {
+          if (response && response.user) {
+            console.log(
+              'Utilisateur authentifié récupéré du serveur:',
+              response.user
+            );
+            this.currentUserSubject.next(response.user);
+          }
+        });
     }
   }
 
@@ -144,8 +136,8 @@ export class AuthService {
         .pipe(
           tap((response) => {
             if (response && response.user) {
+              console.log('Réponse de connexion:', response);
               this.currentUserSubject.next(response.user);
-
               // Redirection basée sur le rôle
               this.redirectBasedOnRole(response.user);
             }
@@ -188,7 +180,6 @@ export class AuthService {
 
     if (!this.USE_REAL_API) {
       // Mode démo - simulation d'inscription
-
       return of({
         user: {
           ...this.mockUser,
@@ -251,6 +242,8 @@ export class AuthService {
             this.router.navigate(['/landing']);
           }),
           catchError((error) => {
+            // Même en cas d'erreur, on nettoie côté client
+            this.currentUserSubject.next(null);
             return throwError(() => error);
           })
         );

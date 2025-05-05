@@ -95,6 +95,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Affichage des exemplaires (pour tous les utilisateurs) -->
+      <div class="book-copies-section">
+        <app-book-copies
+          [bookId]="book.id"
+          [bookTitle]="book.title"
+          [bookCopies]="book.copies"
+        ></app-book-copies>
+
+        <!-- Bouton de débogage pour les exemplaires -->
+        <button
+          *ngIf="book.copies && book.copies.length > 0"
+          mat-button
+          color="accent"
+          (click)="debugCopies()"
+        >
+          Déboguer les exemplaires ({{ book.copies.length }})
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Emprunter "{{ data.resourceTitle }}"</h2>
+
+<mat-dialog-content>
+  <div *ngIf="getAvailableCopies().length === 0" class="no-copies">
+    <p>Aucun exemplaire disponible pour le moment.</p>
+  </div>
+
+  <div *ngIf="getAvailableCopies().length > 0">
+    <p>Veuillez sélectionner un exemplaire à emprunter :</p>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Exemplaire</mat-label>
+      <mat-select [(value)]="selectedCopyId">
+        <mat-option
+          *ngFor="let copy of getAvailableCopies(); let i = index"
+          [value]="copy.id"
+        >
+          Exemplaire {{ i + 1 }}
+          <span *ngIf="copy.condition">({{ copy.condition }})</span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="borrowing-info">
+      <p>
+        <mat-icon color="primary">info</mat-icon>
+        L'emprunt sera disponible pour une durée de 14 jours.
+      </p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()" [disabled]="loading">Annuler</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onConfirm()"
+    [disabled]="!selectedCopyId || loading || getAvailableCopies().length === 0"
+  >
+    <mat-spinner
+      *ngIf="loading"
+      [diameter]="20"
+      class="spinner-button"
+    ></mat-spinner>
+    <span *ngIf="!loading">Emprunter</span>
+  </button>
+</mat-dialog-actions>

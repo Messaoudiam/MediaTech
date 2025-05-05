@@ -12,6 +12,8 @@ import { SupabaseModule } from './common/supabase.module';
 import { StorageModule } from './common/storage.module';
 import { ResourcesModule } from './resources/resources.module';
 import { HealthModule } from './health/health.module';
+import { BorrowingsModule } from './borrowings/borrowings.module';
+import { CopiesModule } from './copies/copies.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -28,6 +30,8 @@ import { AppService } from './app.service';
     SupabaseModule,
     StorageModule,
     ResourcesModule,
+    BorrowingsModule,
+    CopiesModule,
     HealthModule,
   ],
   controllers: [AppController],

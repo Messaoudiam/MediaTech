@@ -1,0 +1,170 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.borrowings-card {
+  margin-bottom: 2rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.no-results {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.borrowings-list {
+  padding: 1rem 0;
+}
+
+.borrowing-item {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.borrowing-image {
+  flex: 0 0 100px;
+  margin-right: 1rem;
+
+  .cover-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.borrowing-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.borrowing-title {
+  margin: 0 0 0.25rem;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.borrowing-author {
+  color: #666;
+  margin: 0 0 0.5rem;
+  font-style: italic;
+}
+
+.borrowing-info {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.borrowing-date,
+.borrowing-due-date {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #555;
+
+  mat-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+.borrowing-due-date.overdue {
+  color: #f44336;
+  font-weight: 500;
+}
+
+.days-remaining {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.borrowing-status {
+  margin-top: 0.5rem;
+}
+
+.status-chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-overdue {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.status-returned {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.borrowing-actions {
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+
+  button {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .borrowing-item {
+    flex-direction: column;
+  }
+
+  .borrowing-image {
+    margin-right: 0;
+    margin-bottom: 1rem;
+
+    .cover-image {
+      height: 120px;
+    }
+  }
+
+  .borrowing-actions {
+    padding-left: 0;
+    margin-top: 1rem;
+    justify-content: flex-start;
+  }
+}

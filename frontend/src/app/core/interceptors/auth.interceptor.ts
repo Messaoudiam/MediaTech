@@ -8,9 +8,10 @@ export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ) => {
-  // Ajouter withCredentials: true à toutes les requêtes pour envoyer les cookies
+  // Simplifier l'intercepteur pour n'utiliser que les cookies
+  // Les cookies seront automatiquement inclus avec withCredentials: true
   const modifiedRequest = request.clone({
-    withCredentials: true,
+    withCredentials: true, // Envoyer les cookies avec chaque requête
   });
 
   return next(modifiedRequest);

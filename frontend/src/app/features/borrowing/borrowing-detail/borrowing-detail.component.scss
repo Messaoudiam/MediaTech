@@ -1,0 +1,178 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.back-nav {
+  margin-bottom: 1rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+
+  p {
+    margin-top: 1rem;
+    color: #666;
+  }
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  color: #f44336;
+
+  .error-icon {
+    font-size: 4rem;
+    height: 4rem;
+    width: 4rem;
+  }
+}
+
+.borrowing-card {
+  margin-bottom: 2rem;
+}
+
+.borrowing-header {
+  display: flex;
+  margin-bottom: 1.5rem;
+
+  .resource-image {
+    flex: 0 0 150px;
+    margin-right: 1.5rem;
+
+    .cover-image {
+      width: 100%;
+      height: 225px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .resource-info {
+    flex: 1;
+
+    .resource-title {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .resource-author {
+      margin: 0 0 1rem;
+      color: #666;
+      font-style: italic;
+    }
+  }
+}
+
+.status-chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.status-active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-overdue {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.status-returned {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.borrowing-details {
+  padding: 1.5rem 0;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    margin-right: 1rem;
+    color: #666;
+  }
+
+  .detail-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .detail-value {
+    font-weight: 500;
+  }
+
+  &.overdue {
+    .detail-value {
+      color: #d32f2f;
+    }
+
+    mat-icon {
+      color: #d32f2f;
+    }
+  }
+}
+
+.days-remaining {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.borrowing-actions {
+  padding-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .borrowing-header {
+    flex-direction: column;
+
+    .resource-image {
+      margin-right: 0;
+      margin-bottom: 1rem;
+
+      .cover-image {
+        height: 200px;
+      }
+    }
+  }
+
+  .borrowing-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

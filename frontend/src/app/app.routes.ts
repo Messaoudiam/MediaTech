@@ -32,6 +32,15 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'borrowings',
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'USER' },
+    loadChildren: () =>
+      import('./features/borrowing/borrowing.module').then(
+        (m) => m.BorrowingModule
+      ),
+  },
+  {
     path: 'home',
     component: HomeComponent,
     canActivate: [AuthGuard],
@@ -47,6 +56,13 @@ export const routes: Routes = [
       { path: 'books', component: AdminBookListComponent },
       { path: 'edit-book/:id', component: BookEditComponent },
       { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
+      {
+        path: 'borrowings',
+        loadChildren: () =>
+          import('./features/borrowing/borrowing.module').then(
+            (m) => m.BorrowingModule
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '/landing' },
