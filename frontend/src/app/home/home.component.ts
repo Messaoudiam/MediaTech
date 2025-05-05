@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../auth/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FavoritesListComponent } from './favorites-list/favorites-list.component';
 import { NotificationService } from '../core/services/notification.service';
@@ -18,6 +18,7 @@ import { NotificationService } from '../core/services/notification.service';
     MatIconModule,
     MatButtonModule,
     FavoritesListComponent,
+    RouterModule,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -32,15 +33,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private notificationService: NotificationService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
-
     // Si on a déjà un utilisateur, vérifier son rôle
     this.user = this.authService.currentUser;
     if (this.user) {
-
       // Vérifier si l'utilisateur est un admin, le rediriger si c'est le cas
       if (this.user.role === 'admin' && !this.isRedirecting) {
         this.isRedirecting = true;
@@ -108,6 +106,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.notificationService.error('Erreur lors de la déconnexion');
       },
     });
+  }
+
+  navigateToBorrowings() {
+    if (!this.isRedirecting) {
+      this.isRedirecting = true;
+      this.router.navigate(['/borrowings']).finally(() => {
+        this.isRedirecting = false;
+      });
+    }
   }
 
   navigateToLogin() {
