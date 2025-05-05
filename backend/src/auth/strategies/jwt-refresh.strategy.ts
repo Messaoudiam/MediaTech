@@ -16,20 +16,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromExtractors([
         // Extraire le token du cookie refreshToken
         (request: Request) => {
-          this.logger.debug(
-            'Cookies disponibles pour refresh:',
-            request.cookies,
-          );
           const refreshToken = request?.cookies?.refreshToken;
           if (!refreshToken) {
-            this.logger.debug(
-              'Aucun token de rafraîchissement trouvé dans les cookies',
-            );
             return null;
           }
-          this.logger.debug(
-            'Token de rafraîchissement trouvé dans les cookies',
-          );
           return refreshToken;
         },
       ]),
@@ -39,7 +29,6 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    this.logger.debug('Payload du token de rafraîchissement JWT:', payload);
     // Le payload a été vérifié, on le retourne
     // Dans le refresh token on a seulement l'ID utilisateur
     return { id: payload.sub };

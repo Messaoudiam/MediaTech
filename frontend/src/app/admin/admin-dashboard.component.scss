@@ -72,11 +72,51 @@
 
 .loading-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 300px;
-  font-style: italic;
   color: #666;
+
+  p {
+    margin-top: 16px;
+    font-style: italic;
+  }
+}
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.error-card {
+  max-width: 400px;
+  padding: 16px;
+
+  mat-card-header {
+    align-items: center;
+    margin-bottom: 16px;
+
+    mat-icon {
+      margin-right: 8px;
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+  }
 }
 
 ::ng-deep .mat-mdc-tab-body-wrapper {
@@ -108,4 +148,8 @@
   .stat-card {
     margin-bottom: 15px;
   }
+}
+
+.mr-2 {
+  margin-right: 16px;
 }

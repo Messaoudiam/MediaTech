@@ -1,0 +1,230 @@
+.search-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  margin-top: 80px;
+  background-color: var(--background-light);
+  min-height: calc(100vh - 80px);
+}
+
+.search-header {
+  margin-bottom: 32px;
+  background-color: var(--secondary-color);
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: var(--text-light);
+  }
+}
+
+.search-form {
+  max-width: 600px;
+
+  .search-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+
+      .mat-mdc-text-field-wrapper {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+      }
+
+      .mdc-text-field--outlined .mdc-notched-outline__leading,
+      .mdc-text-field--outlined .mdc-notched-outline__trailing,
+      .mdc-text-field--outlined .mdc-notched-outline__notch {
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+
+      input.mat-mdc-input-element {
+        color: var(--text-light);
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+
+      .mat-mdc-form-field-icon-prefix,
+      .mat-mdc-form-field-icon-suffix {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 64px 0;
+
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+
+  ::ng-deep
+    .mat-mdc-progress-spinner
+    .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: var(--primary-color);
+  }
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 64px 0;
+  color: #666;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+    color: var(--accent-color);
+  }
+
+  p {
+    font-size: 1.2rem;
+  }
+}
+
+.results-count {
+  margin-bottom: 24px;
+  color: #666;
+  font-size: 1rem;
+  background-color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid var(--primary-color);
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.book-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-color: var(--primary-color);
+    }
+  }
+
+  img {
+    height: 280px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .placeholder-cover {
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 8px 8px 0 0;
+
+    mat-icon {
+      font-size: 64px;
+      height: 64px;
+      width: 64px;
+      color: var(--accent-color);
+    }
+  }
+
+  mat-card-content {
+    flex-grow: 1;
+    padding: 16px;
+  }
+
+  .book-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 8px;
+    color: var(--secondary-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .book-author {
+    color: #666;
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .book-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.8rem;
+
+    .book-year {
+      background-color: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #666;
+    }
+
+    .book-genre {
+      background-color: rgba(142, 163, 176, 0.2);
+      color: var(--secondary-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+  }
+
+  .book-card {
+    img,
+    .placeholder-cover {
+      height: 220px;
+    }
+
+    .book-title {
+      font-size: 1rem;
+    }
+  }
+}

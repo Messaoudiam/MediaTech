@@ -46,7 +46,6 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     // Normaliser l'email en minuscules
     const normalizedEmail = email.toLowerCase();
-    this.logger.log(`Tentative de connexion pour: ${normalizedEmail}`);
 
     const user = await this.usersService.findUserByEmail(normalizedEmail);
 
@@ -69,9 +68,6 @@ export class AuthService {
         );
       } else {
         // Réinitialiser le verrouillage après la durée
-        this.logger.log(
-          `Réinitialisation du verrouillage pour ${normalizedEmail}`,
-        );
         await this.usersService.resetUserLockout(user.id);
       }
     }
@@ -79,19 +75,12 @@ export class AuthService {
     // Vérifier le mot de passe
     try {
       // Logs pour débogage
-      this.logger.debug(
-        `Vérification du mot de passe pour: ${normalizedEmail}`,
-      );
-      this.logger.debug(`Mot de passe fourni (${password.length} caractères)`);
-      this.logger.debug(`Hash stocké: ${user.password.substring(0, 15)}...`);
 
       // Vérification directe sans manipulation
       const isPasswordValid = await this.verifyPassword(
         password,
         user.password,
       );
-
-      this.logger.debug(`Résultat de la vérification: ${isPasswordValid}`);
 
       if (!isPasswordValid) {
         this.logger.warn(
@@ -119,9 +108,6 @@ export class AuthService {
       }
 
       // Réinitialiser le compteur en cas de succès
-      this.logger.log(
-        `Connexion réussie pour ${normalizedEmail} - Réinitialisation du compteur`,
-      );
       await this.usersService.resetUserLockout(user.id);
 
       const { password: _, ...result } = user;
@@ -165,15 +151,8 @@ export class AuthService {
     }
 
     try {
-      // Logs pour débogage
-      this.logger.debug(`Création de compte pour: ${normalizedEmail}`);
-      this.logger.debug(
-        `Mot de passe à hacher (${password.length} caractères)`,
-      );
-
       // Hachage du mot de passe avec notre méthode factoriséee
       const hashedPassword = await this.hashPassword(password);
-      this.logger.debug(`Hash généré: ${hashedPassword.substring(0, 15)}...`);
 
       // Créer l'utilisateur avec email normalisé
       const newUser = await this.usersService.createUser({

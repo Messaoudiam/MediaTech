@@ -12,14 +12,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       usernameField: 'email',
       passwordField: 'password',
     });
-    this.logger.log("Stratégie d'authentification locale initialisée");
+    ("Stratégie d'authentification locale initialisée");
   }
 
   async validate(email: string, password: string): Promise<any> {
-    this.logger.debug(
-      `Tentative de validation dans LocalStrategy pour: ${email}`,
-    );
-
     try {
       const user = await this.authService.validateUser(email, password);
 
@@ -30,7 +26,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Identifiants invalides');
       }
 
-      this.logger.debug(`Validation réussie pour: ${email}`);
       return user;
     } catch (error) {
       this.logger.error(

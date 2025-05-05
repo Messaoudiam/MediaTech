@@ -108,7 +108,7 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:61074'], // Frontend Angular
+    origin: ['http://localhost:4200'], // Frontend Angular
     credentials: true, // Important pour les cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -129,10 +129,6 @@ async function bootstrap() {
   logger.log(
     `Documentation API disponible sur http://localhost:${port}/api/docs`,
   );
-
-  // Instructions pour tester
-  logger.log("Pour tester l'API manuellement:");
-  logger.log('curl -v http://localhost:3000/api/auth/test-cookies');
 }
 
 // Démarrage de l'application

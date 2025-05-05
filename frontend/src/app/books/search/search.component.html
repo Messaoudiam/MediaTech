@@ -1,0 +1,73 @@
+<div class="search-container">
+  <div class="search-header">
+    <h1>Recherche</h1>
+    <div class="search-form">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="searchQuery"
+          name="searchQuery"
+          placeholder="Rechercher un livre..."
+          (keyup.enter)="searchBooks()"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="searchBooks()"
+          aria-label="Rechercher"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Recherche en cours...</p>
+  </div>
+
+  <div *ngIf="!loading && noResults" class="no-results">
+    <mat-icon>sentiment_dissatisfied</mat-icon>
+    <p>Aucun résultat trouvé pour "{{ searchQuery }}"</p>
+  </div>
+
+  <div *ngIf="!loading && books.length > 0" class="results-container">
+    <p class="results-count">
+      {{ books.length }} résultat(s) trouvé(s) pour "{{ searchQuery }}"
+    </p>
+
+    <div class="book-grid">
+      <mat-card
+        *ngFor="let book of books"
+        class="book-card"
+        (click)="viewBookDetails(book.id)"
+      >
+        <img
+          *ngIf="book.coverImageUrl"
+          mat-card-image
+          [src]="book.coverImageUrl"
+          [alt]="book.title"
+        />
+        <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
+          <mat-icon>book</mat-icon>
+        </div>
+
+        <mat-card-content>
+          <h2 class="book-title">{{ book.title }}</h2>
+          <p class="book-author">{{ book.author }}</p>
+
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.genre" class="book-genre">{{ book.genre }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

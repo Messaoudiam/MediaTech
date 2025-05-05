@@ -1,11 +1,167 @@
 <mat-toolbar color="primary" class="navbar">
   <div class="navbar-brand">
     <a [routerLink]="['/']">
-      <span class="logo">BiblioTech</span>
+      <span class="logo">Bibliothèque du Centenaire</span>
     </a>
   </div>
 
   <span class="navbar-spacer"></span>
+
+  <div class="search-container">
+    <form (ngSubmit)="searchBooks()">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="searchQuery"
+          name="searchQuery"
+          placeholder="Rechercher un livre..."
+          autocomplete="off"
+          [matAutocomplete]="auto"
+          (input)="onSearchInput()"
+          (focus)="onSearchFocus()"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="onOptionSelected($event)"
+        >
+          <!-- Indicateur de chargement -->
+          <mat-option *ngIf="isLoading" class="loading-option">
+            <mat-spinner diameter="20"></mat-spinner>
+            <span class="loading-text">Recherche en cours...</span>
+          </mat-option>
+
+          <!-- Titres des sections -->
+          <div
+            *ngIf="
+              !isLoading && searchQuery.length < 2 && searchHistory.length > 0
+            "
+            class="section-title"
+          >
+            Historique de recherche
+          </div>
+
+          <div
+            *ngIf="
+              !isLoading &&
+              searchQuery.length >= 2 &&
+              filteredSuggestions.length > 0
+            "
+            class="section-title"
+          >
+            Résultats de recherche
+          </div>
+
+          <!-- Historique de recherche -->
+          <ng-container *ngIf="!isLoading && searchQuery.length < 2">
+            <mat-option
+              *ngFor="let item of searchHistory"
+              [value]="item.book.title"
+              class="history-option"
+              (click)="navigateToBook(item.book)"
+            >
+              <div class="option-content">
+                <img
+                  *ngIf="item.book.coverImageUrl"
+                  [src]="item.book.coverImageUrl"
+                  class="option-image"
+                  alt="{{ item.book.title }}"
+                  (error)="handleImageError($event)"
+                />
+                <div
+                  *ngIf="!item.book.coverImageUrl"
+                  class="option-image placeholder-image"
+                >
+                  <mat-icon>book</mat-icon>
+                </div>
+                <div class="option-text">
+                  <span class="option-title truncate">{{
+                    item.book.title
+                  }}</span>
+                  <span class="option-author truncate">{{
+                    item.book.author
+                  }}</span>
+                </div>
+                <div class="delete-button-container">
+                  <button
+                    mat-icon-button
+                    class="history-delete-btn"
+                    (click)="removeFromHistory($event, item.id)"
+                    matTooltip="Supprimer de l'historique"
+                    aria-label="Supprimer de l'historique"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-option>
+
+            <!-- Bouton pour effacer tout l'historique -->
+            <mat-option
+              *ngIf="searchHistory.length > 0"
+              class="clear-history-option"
+              (click)="clearAllHistory($event)"
+            >
+              <div class="clear-all-container">
+                <mat-icon>delete_sweep</mat-icon>
+                <span>Effacer tout l'historique</span>
+              </div>
+            </mat-option>
+          </ng-container>
+
+          <!-- Résultats de la recherche -->
+          <ng-container *ngIf="!isLoading && searchQuery.length >= 2">
+            <mat-option
+              *ngFor="let suggestion of filteredSuggestions"
+              [value]="suggestion.title"
+              (click)="navigateToBook(suggestion)"
+            >
+              <div class="option-content">
+                <img
+                  *ngIf="suggestion.coverImageUrl"
+                  [src]="suggestion.coverImageUrl"
+                  class="option-image"
+                  alt="{{ suggestion.title }}"
+                  (error)="handleImageError($event)"
+                />
+                <div
+                  *ngIf="!suggestion.coverImageUrl"
+                  class="option-image placeholder-image"
+                >
+                  <mat-icon>book</mat-icon>
+                </div>
+                <div class="option-text">
+                  <span class="option-title truncate">{{
+                    suggestion.title
+                  }}</span>
+                  <span class="option-author truncate">{{
+                    suggestion.author
+                  }}</span>
+                </div>
+                <div class="status-icon-container">
+                  <mat-icon
+                    class="check-icon"
+                    *ngIf="isInHistory(suggestion.id)"
+                    >check</mat-icon
+                  >
+                </div>
+              </div>
+            </mat-option>
+
+            <!-- Message si aucun résultat -->
+            <mat-option *ngIf="filteredSuggestions.length === 0" disabled>
+              Aucun résultat trouvé
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+
+        <button mat-icon-button matSuffix type="submit" aria-label="Rechercher">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-form-field>
+    </form>
+  </div>
 
   <div class="navbar-links">
     <ng-container *ngIf="!isLoggedIn; else loggedInTemplate">

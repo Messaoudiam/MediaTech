@@ -1,17 +1,78 @@
 /* You can add global styles to this file, and also import other style files */
 
+// Variables de couleurs du thème violet
+:root {
+  --primary-color: #673ab7; // violet primaire
+  --primary-light: #9a67ea; // version plus claire du violet
+  --primary-dark: #4527a0; // version plus foncée du violet
+  --primary-color-rgb: 103, 58, 183; // version RGB pour utiliser avec opacity
+
+  --secondary-color: #3f51b5; // bleu indigo
+  --secondary-light: #757de8; // version plus claire du bleu indigo
+  --secondary-dark: #303f9f; // version plus foncée du bleu indigo
+
+  --accent-color: #ff4081; // rose accent
+  --accent-light: #ff79b0; // version plus claire du rose
+  --accent-dark: #c60055; // version plus foncée du rose
+
+  --text-on-primary: #ffffff; // texte sur fond violet
+  --text-on-secondary: #ffffff; // texte sur fond bleu indigo
+  --text-on-accent: #ffffff; // texte sur fond rose
+
+  --background-light: #f9f9f9;
+  --background-dark: #303030;
+  --text-color: #333333;
+  --text-light: #ffffff;
+  --text-muted: #6c757d;
+}
+
+// Importer le thème de base et les polices
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "https://fonts.googleapis.com/icon?family=Material+Icons";
 @import "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap";
 
 html,
 body {
+  margin: 0;
+  padding: 0;
   height: 100%;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--background-light);
 }
 
 body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  padding-top: 64px;
+  min-height: 100vh;
+}
+
+// Surcharger les styles Angular Material
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--primary-color) !important;
+  color: var(--text-on-primary) !important;
+}
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-outlined-button.mat-primary {
+  color: var(--primary-color) !important;
+}
+
+.mat-primary
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  color: var(--primary-color) !important;
+}
+
+.mat-toolbar.mat-primary {
+  background-color: var(--secondary-color) !important;
+  color: var(--text-on-secondary) !important;
+}
+
+.mat-mdc-raised-button.mat-accent {
+  background-color: var(--accent-color) !important;
+  color: var(--text-on-accent) !important;
+}
+
+.mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+  stroke: var(--primary-color) !important;
 }
 
 /* Styles pour les notifications Snackbar */
@@ -34,11 +95,11 @@ body {
 }
 
 .info-snackbar {
-  background-color: #2196f3;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
 
   .mat-simple-snackbar-action {
-    color: white;
+    color: var(--text-on-primary);
   }
 }
 

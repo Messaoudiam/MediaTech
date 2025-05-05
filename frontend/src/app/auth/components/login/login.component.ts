@@ -58,7 +58,6 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    console.log('Tentative de connexion');
 
     if (this.loginForm.valid) {
       this.loading = true;

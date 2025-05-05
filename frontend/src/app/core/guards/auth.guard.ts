@@ -26,19 +26,18 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    console.log('AuthGuard: vérification des autorisations pour:', state.url);
-
     // Autoriser l'accès aux pages publiques sans authentification
-    if (state.url === '/landing' || state.url.startsWith('/books/')) {
-      console.log('Page publique, accès autorisé sans authentification');
+    if (
+      state.url === '/landing' ||
+      state.url.startsWith('/books/') ||
+      state.url === '/' ||
+      state.url.startsWith('/search')
+    ) {
       return true;
     }
 
     // Vérifier si nous sommes déjà en train de traiter une authentification
     if (this.processingAuth) {
-      console.log(
-        "Traitement d'authentification déjà en cours, accès autorisé"
-      );
       return true;
     }
 
@@ -47,23 +46,15 @@ export class AuthGuard implements CanActivate {
     try {
       // Récupération du rôle requis depuis les données de route
       const requiredRole = route.data['requiredRole'];
-      console.log('Rôle requis:', requiredRole);
 
       // Si aucun rôle n'est requis, vérifier seulement l'authentification
       if (!requiredRole) {
-        console.log(
-          "Aucun rôle requis, vérification de l'authentification uniquement"
-        );
         return this.authService.isAuthenticated().pipe(
           map((isAuthenticated) => {
             this.processingAuth = false;
             if (isAuthenticated) {
-              console.log('Utilisateur authentifié, accès autorisé');
               return true;
             } else {
-              console.log(
-                'Utilisateur non authentifié, redirection vers login'
-              );
               return this.router.createUrlTree(['/auth/login']);
             }
           }),
@@ -78,25 +69,18 @@ export class AuthGuard implements CanActivate {
         );
       }
 
-      // Si un rôle est requis, vérifier l'authentification et le rôle
-      console.log("Vérification du rôle de l'utilisateur");
-
       // Si on connaît déjà l'utilisateur, vérifier son rôle directement
       const currentUser = this.authService.currentUser;
       if (currentUser) {
-        console.log('Utilisateur déjà chargé:', currentUser);
         this.processingAuth = false;
 
         // Vérifier si le rôle de l'utilisateur correspond au rôle requis (ignorer la casse)
         const userRole = currentUser.role?.toLowerCase();
         const requiredRoleLower = requiredRole.toLowerCase();
-        console.log('Comparaison des rôles:', userRole, requiredRoleLower);
 
         if (userRole === requiredRoleLower) {
-          console.log('Utilisateur a le rôle requis, accès autorisé');
           return true;
         } else {
-          console.log("Utilisateur n'a pas le rôle requis, redirection");
           // Vérifier que nous ne sommes pas déjà sur la page de destination pour éviter une boucle
           if (
             (userRole === 'admin' || userRole === 'ADMIN') &&
@@ -110,7 +94,6 @@ export class AuthGuard implements CanActivate {
             return this.router.createUrlTree(['/home']);
           } else {
             // Si nous sommes déjà sur la bonne page pour le rôle, autoriser l'accès
-            console.log('Déjà sur la bonne page pour le rôle, accès autorisé');
             return true;
           }
         }
@@ -120,7 +103,6 @@ export class AuthGuard implements CanActivate {
       return this.authService.getUserProfile().pipe(
         map((user) => {
           this.processingAuth = false;
-          console.log('Profil utilisateur récupéré:', user);
 
           if (!user) {
             return this.router.createUrlTree(['/auth/login']);
@@ -129,13 +111,10 @@ export class AuthGuard implements CanActivate {
           // Vérifier si le rôle de l'utilisateur correspond au rôle requis (ignorer la casse)
           const userRole = user.role?.toLowerCase();
           const requiredRoleLower = requiredRole.toLowerCase();
-          console.log('Comparaison des rôles:', userRole, requiredRoleLower);
 
           if (userRole === requiredRoleLower) {
-            console.log('Utilisateur a le rôle requis, accès autorisé');
             return true;
           } else {
-            console.log("Utilisateur n'a pas le rôle requis, redirection");
             // Vérifier que nous ne sommes pas déjà sur la page de destination pour éviter une boucle
             if (
               (userRole === 'admin' || userRole === 'ADMIN') &&
@@ -149,9 +128,6 @@ export class AuthGuard implements CanActivate {
               return this.router.createUrlTree(['/home']);
             } else {
               // Si nous sommes déjà sur la bonne page pour le rôle, autoriser l'accès
-              console.log(
-                'Déjà sur la bonne page pour le rôle, accès autorisé'
-              );
               return true;
             }
           }

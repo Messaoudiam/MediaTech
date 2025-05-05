@@ -7,10 +7,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
-import { BookService, Book } from '../../core/services/book.service';
+import { BookService, Resource } from '../../core/services/book.service';
 import { FavoriteService } from '../../core/services/favorite.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../auth/services/auth.service';
+import { ImageService } from '../../core/services/image.service';
 import { switchMap, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -31,7 +32,7 @@ import { of } from 'rxjs';
   ],
 })
 export class BookDetailComponent implements OnInit {
-  book: Book | null = null;
+  book: Resource | null = null;
   loading = true;
   error = false;
   isFavorite = false;
@@ -43,7 +44,8 @@ export class BookDetailComponent implements OnInit {
     private bookService: BookService,
     private favoriteService: FavoriteService,
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    public imageService: ImageService
   ) {}
 
   ngOnInit(): void {
@@ -62,8 +64,6 @@ export class BookDetailComponent implements OnInit {
       if (!this.isLoggedIn) {
         this.isLoggedIn = !!localStorage.getItem('token');
       }
-
-      console.log("État d'authentification :", this.isLoggedIn);
 
       // Si l'utilisateur est connecté, vérifier l'état des favoris
       if (this.isLoggedIn && this.book) {
@@ -110,13 +110,16 @@ export class BookDetailComponent implements OnInit {
   private checkFavoriteStatus(bookId: string): void {
     if (!this.isLoggedIn) return;
 
-    this.favoriteService.isBookFavorite(bookId).subscribe((isFavorite) => {
-      this.isFavorite = isFavorite;
-    });
+    this.favoriteService
+      .isResourceFavorite(bookId)
+      .subscribe((isFavorite: boolean) => {
+        this.isFavorite = isFavorite;
+      });
   }
 
   goBack(): void {
-    this.router.navigate(['/landing']);
+    // Toujours rediriger vers la liste des livres
+    this.router.navigate(['/books/all']);
   }
 
   toggleFavorite(): void {
@@ -157,5 +160,22 @@ export class BookDetailComponent implements OnInit {
     this.notificationService.warning(
       "Fonctionnalité d'emprunt à venir bientôt"
     );
+  }
+
+  /**
+   * Obtenir l'URL complète de l'image depuis Supabase
+   */
+  getBookCoverUrl(coverImageUrl: string | undefined): string {
+    return this.imageService.getSafeImageUrl(coverImageUrl || '');
+  }
+
+  /**
+   * Gérer les erreurs de chargement d'image
+   */
+  handleImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = this.imageService.getSafeImageUrl('');
+    }
   }
 }

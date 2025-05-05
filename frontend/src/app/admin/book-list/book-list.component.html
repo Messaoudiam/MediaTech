@@ -1,0 +1,138 @@
+<div class="book-list-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Gestion des ressources de la bibliothèque</mat-card-title>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="addNewBook()">
+          <mat-icon>add</mat-icon>
+          Ajouter une ressource
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="loading-container" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Chargement des ressources...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && books.length === 0">
+        <mat-icon>menu_book</mat-icon>
+        <p>Aucune ressource n'a été ajoutée à la bibliothèque</p>
+        <button mat-stroked-button color="primary" (click)="addNewBook()">
+          Ajouter votre première ressource
+        </button>
+      </div>
+
+      <div class="table-container" *ngIf="!loading && books.length > 0">
+        <table mat-table [dataSource]="books" class="book-table">
+          <!-- Image Column -->
+          <ng-container matColumnDef="coverImage">
+            <th mat-header-cell *matHeaderCellDef>Couverture</th>
+            <td mat-cell *matCellDef="let book">
+              <div class="cover-image">
+                <img
+                  *ngIf="book.coverImageUrl"
+                  [src]="book.coverImageUrl"
+                  [alt]="book.title"
+                />
+                <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
+                  <mat-icon>menu_book</mat-icon>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Titre</th>
+            <td mat-cell *matCellDef="let book" class="title-cell">
+              <div class="title-container">
+                <div class="book-title">{{ book.title }}</div>
+                <div class="book-isbn" *ngIf="book.isbn">
+                  ISBN: {{ book.isbn }}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Author Column -->
+          <ng-container matColumnDef="author">
+            <th mat-header-cell *matHeaderCellDef>Auteur</th>
+            <td mat-cell *matCellDef="let book">{{ book.author || "-" }}</td>
+          </ng-container>
+
+          <!-- Publisher Column -->
+          <ng-container matColumnDef="publisher">
+            <th mat-header-cell *matHeaderCellDef>Éditeur</th>
+            <td mat-cell *matCellDef="let book">{{ book.publisher || "-" }}</td>
+          </ng-container>
+
+          <!-- Published Year Column -->
+          <ng-container matColumnDef="publishedYear">
+            <th mat-header-cell *matHeaderCellDef>Année</th>
+            <td mat-cell *matCellDef="let book">
+              {{ book.publishedYear || "-" }}
+            </td>
+          </ng-container>
+
+          <!-- Genre Column -->
+          <ng-container matColumnDef="genre">
+            <th mat-header-cell *matHeaderCellDef>Genre</th>
+            <td mat-cell *matCellDef="let book">{{ book.genre || "-" }}</td>
+          </ng-container>
+
+          <!-- Language Column -->
+          <ng-container matColumnDef="language">
+            <th mat-header-cell *matHeaderCellDef>Langue</th>
+            <td mat-cell *matCellDef="let book">{{ book.language || "-" }}</td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let book">
+              <span
+                class="resource-type-badge"
+                [ngClass]="'type-' + book.type.toLowerCase()"
+              >
+                {{ book.type }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let book">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="editBook(book.id)"
+                title="Modifier"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteBook(book)"
+                title="Supprimer"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let book; columns: displayedColumns"
+            (click)="viewBookDetails(book.id)"
+            class="book-row"
+          ></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -19,6 +19,8 @@ export const envSchema = z
     }),
     JWT_ACCESS_EXPIRATION: z.string().default('15m'),
     JWT_REFRESH_EXPIRATION: z.string().default('7d'),
+    SUPABASE_URL: z.string().url(),
+    SUPABASE_KEY: z.string(),
   })
   .transform((config) => ({
     ...config,

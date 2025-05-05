@@ -13,6 +13,5 @@ export const authInterceptor: HttpInterceptorFn = (
     withCredentials: true,
   });
 
-  console.log('Requête HTTP interceptée avec withCredentials:', request.url);
   return next(modifiedRequest);
 };

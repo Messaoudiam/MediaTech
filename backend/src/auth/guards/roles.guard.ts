@@ -26,9 +26,6 @@ export class RolesGuard implements CanActivate {
     }
 
     const { user } = context.switchToHttp().getRequest();
-    this.logger.debug(
-      `Vérification des rôles: ${requiredRoles} pour l'utilisateur: ${user?.email}`,
-    );
 
     if (!user) {
       this.logger.warn('Aucun utilisateur trouvé dans la requête');
@@ -46,7 +43,6 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    this.logger.debug(`Accès autorisé pour l'utilisateur ${user.email}`);
     return true;
   }
 }

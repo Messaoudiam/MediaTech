@@ -8,6 +8,10 @@ import { envSchema, CONFIG } from './config/app.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { SupabaseModule } from './common/supabase.module';
+import { StorageModule } from './common/storage.module';
+import { ResourcesModule } from './resources/resources.module';
+import { HealthModule } from './health/health.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -21,6 +25,10 @@ import { AppService } from './app.service';
     PrismaModule,
     AuthModule,
     UsersModule,
+    SupabaseModule,
+    StorageModule,
+    ResourcesModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

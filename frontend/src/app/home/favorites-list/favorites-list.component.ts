@@ -7,7 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FavoriteService } from '../../core/services/favorite.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { Book } from '../../core/services/book.service';
+import { Resource } from '../../core/services/book.service';
+import { ImageService } from '../../core/services/image.service';
 
 @Component({
   selector: 'app-favorites-list',
@@ -32,7 +33,7 @@ import { Book } from '../../core/services/book.service';
       <div *ngIf="!loading && favoriteBooks.length === 0" class="empty-state">
         <mat-icon>favorite_border</mat-icon>
         <p>Vous n'avez pas encore de livres favoris</p>
-        <a mat-raised-button color="primary" routerLink="/landing">
+        <a mat-raised-button color="primary" routerLink="/books/all">
           Découvrir des livres
         </a>
       </div>
@@ -41,7 +42,7 @@ import { Book } from '../../core/services/book.service';
         <mat-card *ngFor="let book of favoriteBooks" class="book-card">
           <img
             mat-card-image
-            [src]="book.coverImageUrl || 'public/images/book-placeholder.jpg'"
+            [src]="imageService.getSafeImageUrl(book.coverImageUrl || '')"
             [alt]="book.title"
             class="book-cover"
           />
@@ -165,12 +166,13 @@ import { Book } from '../../core/services/book.service';
   ],
 })
 export class FavoritesListComponent implements OnInit {
-  favoriteBooks: Book[] = [];
+  favoriteBooks: Resource[] = [];
   loading = true;
 
   constructor(
     private favoriteService: FavoriteService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    public imageService: ImageService
   ) {}
 
   ngOnInit(): void {
@@ -179,7 +181,7 @@ export class FavoritesListComponent implements OnInit {
 
   loadFavorites(): void {
     this.loading = true;
-    this.favoriteService.getFavoriteBooks().subscribe({
+    this.favoriteService.getFavoriteResources().subscribe({
       next: (books) => {
         this.favoriteBooks = books;
         this.loading = false;

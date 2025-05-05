@@ -28,10 +28,15 @@
       <div class="book-layout">
         <div class="book-cover-container">
           <img
-            [src]="book.coverImageUrl || 'public/images/book-placeholder.jpg'"
+            *ngIf="book.coverImageUrl"
+            [src]="getBookCoverUrl(book.coverImageUrl)"
             [alt]="book.title"
             class="book-cover"
+            (error)="handleImageError($event)"
           />
+          <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
+            <mat-icon>menu_book</mat-icon>
+          </div>
 
           <div class="book-actions">
             <button mat-raised-button color="primary" (click)="borrowBook()">

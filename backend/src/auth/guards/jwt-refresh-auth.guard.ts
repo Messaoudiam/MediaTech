@@ -8,15 +8,7 @@ export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh') {
 
   handleRequest(err, user, info, context, status) {
     if (err || !user) {
-      this.logger.debug(
-        'Erreur ou utilisateur non trouvé lors du rafraîchissement JWT:',
-        { err, info },
-      );
     } else {
-      this.logger.debug(
-        'Utilisateur authentifié via token de rafraîchissement:',
-        user,
-      );
     }
 
     // AuthGuard lancera une exception si nécessaire

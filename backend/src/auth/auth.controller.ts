@@ -45,12 +45,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-  ) {
-    this.logger.debug('AuthController initialisé');
-    this.logger.log(
-      'Routes disponibles: [POST] /auth/register, [POST] /auth/login, [POST] /auth/logout, [GET] /auth/profile, [GET] /auth/check-auth, [GET] /auth/test-cookies',
-    );
-  }
+  ) {}
 
   @ApiOperation({
     summary: 'Inscription',
@@ -79,11 +74,6 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      this.logger.log(`Tentative d'inscription pour: ${registerDto.email}`);
-
-      // Logs de débogage simplifiés
-      this.logger.debug(`Traitement de la demande d'inscription`);
-
       const user = await this.authService.register(
         registerDto.email,
         registerDto.password,
@@ -95,7 +85,6 @@ export class AuthController {
       this.authService.setAccessTokenCookie(response, tokens.accessToken);
       this.authService.setRefreshTokenCookie(response, tokens.refreshToken);
 
-      this.logger.log(`Inscription réussie pour: ${registerDto.email}`);
       return {
         message: 'Inscription réussie',
         user: {
@@ -104,11 +93,6 @@ export class AuthController {
         },
       };
     } catch (error) {
-      this.logger.error(
-        `Échec de l'inscription pour ${registerDto.email}: ${error.message}`,
-        error.stack,
-      );
-
       // Gérer les erreurs spécifiques
       if (error.message === 'Cet email est déjà utilisé') {
         return response.status(HttpStatus.CONFLICT).json({
@@ -147,20 +131,11 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      this.logger.log(`Tentative de connexion pour: ${loginDto.email}`);
-
-      // Logs de débogage simplifiés
-      this.logger.debug(
-        `Traitement de la demande de connexion directe (sans Passport)`,
-      );
-
       // Appel direct du service au lieu de passer par le PassportStrategy
       const user = await this.authService.validateUser(
         loginDto.email,
         loginDto.password,
       );
-
-      this.logger.log(`Connexion réussie pour: ${loginDto.email}`);
 
       const tokens = await this.authService.generateTokens(user);
 
@@ -210,7 +185,6 @@ export class AuthController {
   @ApiCookieAuth()
   @Post('logout')
   async logout(@Res() response: Response) {
-    this.logger.debug('Endpoint /auth/logout appelé');
     // Supprimer les cookies
     response.clearCookie('access_token');
     response.clearCookie('refresh_token');
@@ -218,10 +192,57 @@ export class AuthController {
     response.clearCookie('accessToken');
     response.clearCookie('refreshToken');
 
-    this.logger.log('Déconnexion réussie, cookies supprimés');
     return response.status(HttpStatus.OK).json({
       message: 'Déconnexion réussie',
     });
+  }
+
+  @ApiOperation({
+    summary: 'Vérifier authentification',
+    description:
+      "Vérifie si l'utilisateur est authentifié et renvoie ses informations",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Utilisateur authentifié',
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Non authentifié',
+    type: ErrorResponseDto,
+  })
+  @ApiCookieAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('check-auth')
+  async checkAuth(@Req() request: any) {
+    try {
+      // L'ID utilisateur est disponible dans request.user.id grâce au JwtStrategy
+      const userId = request.user.id;
+      const user = await this.usersService.findOneUser(userId);
+
+      if (!user) {
+        return {
+          authenticated: false,
+          message: 'Utilisateur non trouvé',
+        };
+      }
+
+      return {
+        authenticated: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    } catch (error) {
+      this.logger.error(
+        "Erreur lors de la vérification de l'authentification:",
+        error,
+      );
+      throw error;
+    }
   }
 
   @ApiOperation({
@@ -247,12 +268,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Req() request: any, @Res() response: Response) {
-    this.logger.debug('Endpoint /auth/profile appelé');
     try {
       // L'ID utilisateur est maintenant disponible dans request.user.id grâce au JwtStrategy
       const userId = request.user.id;
-
-      this.logger.log('Récupération du profil pour userId:', userId);
 
       const user = await this.usersService.findOneUser(userId);
 
@@ -263,7 +281,6 @@ export class AuthController {
         });
       }
 
-      this.logger.debug('Profil utilisateur récupéré avec succès');
       return response.status(HttpStatus.OK).json(user);
     } catch (error) {
       this.logger.error('Erreur lors de la récupération du profil:', error);
@@ -271,61 +288,5 @@ export class AuthController {
         message: 'Erreur lors de la récupération du profil',
       });
     }
-  }
-
-  @ApiOperation({
-    summary: 'Vérifier authentification',
-    description: "Vérifie si l'utilisateur est authentifié",
-  })
-  @ApiResponse({ status: 200, description: 'Utilisateur authentifié' })
-  @ApiResponse({
-    status: 401,
-    description: 'Non authentifié',
-    type: ErrorResponseDto,
-  })
-  @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard)
-  @Get('check-auth')
-  async checkAuth(@Req() request: any, @Res() response: Response) {
-    this.logger.debug('Endpoint /auth/check-auth appelé');
-    this.logger.debug('Utilisateur authentifié:', request.user);
-    return response.status(HttpStatus.OK).json(true);
-  }
-
-  // Endpoint de test pour vérifier les cookies - SANS GUARD pour le debug
-  @ApiOperation({
-    summary: 'Test des cookies',
-    description: 'Route de test pour vérifier la configuration des cookies',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Test réussi avec mock data',
-    type: UserResponseDto,
-  })
-  @Get('test-cookies')
-  async testCookies(@Req() request, @Res() response: Response) {
-    this.logger.debug('Endpoint /auth/test-cookies appelé');
-    this.logger.log('Headers de la requête:', request.headers);
-    this.logger.log('Cookies de la requête:', request.cookies);
-
-    // Créer un cookie de test
-    response.cookie('test-cookie', 'test-value', {
-      httpOnly: true,
-      maxAge: 60 * 1000, // 1 minute
-    });
-
-    // Retourner un utilisateur de test pour le debug
-    const mockUser = {
-      id: '1234',
-      email: 'test@example.com',
-      nom: 'Utilisateur',
-      prenom: 'Test',
-      role: 'user',
-    };
-
-    this.logger.debug(
-      "Réponse envoyée avec l'utilisateur test et cookie configuré",
-    );
-    return response.status(HttpStatus.OK).json(mockUser);
   }
 }

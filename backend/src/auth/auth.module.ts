@@ -35,7 +35,6 @@ export class AuthModule implements OnModuleInit {
   private readonly logger = new Logger(AuthModule.name);
 
   onModuleInit() {
-    this.logger.log("Module d'authentification initialisé");
-    this.logger.debug("Controller et routes d'authentification disponibles");
+    this.logger.log('AuthModule initialisé');
   }
 }

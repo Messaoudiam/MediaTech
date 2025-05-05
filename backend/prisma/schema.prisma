@@ -63,58 +63,41 @@ enum ResourceType {
 }
 
 model Resource {
-  id          String       @id @default(uuid())
-  title       String
-  type        ResourceType
-  author      String?
-  isbn        String?      @unique
-  publisher   String?
-  publishedAt DateTime?
-  description String
-  genre       String?
-  language    String?
+  id            String       @id @default(uuid())
+  title         String
+  type          ResourceType
+  author        String?
+  isbn          String?      @unique
+  publisher     String?
+  publishedAt   DateTime?
+  description   String
+  genre         String?
+  language      String?
+  coverImageUrl String?
+  pageCount     Int?
+  publishedYear Int?
   
   copies      Copy[]
+  favorites   Favorite[]
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@index([type])
-}
-
-model Book {
-  id            String   @id @default(uuid())
-  title         String
-  author        String
-  isbn          String?  @unique
-  coverImageUrl String?
-  description   String?
-  publishedYear Int?
-  genre         String?
-  pageCount     Int?
-  publisher     String?
-  language      String?
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  favorites     Favorite[]
-
   @@index([author])
   @@index([genre])
-  @@map("books")
 }
 
 model Favorite {
-  id       String   @id @default(uuid())
-  userId   String
-  bookId   String
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  resourceId String
+  createdAt  DateTime @default(now())
   
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   
-  @@unique([userId, bookId])
+  @@unique([userId, resourceId])
   @@map("favorites")
 }
 

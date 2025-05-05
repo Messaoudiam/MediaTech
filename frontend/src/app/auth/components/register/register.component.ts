@@ -50,7 +50,6 @@ export class RegisterComponent {
     private router: Router,
     private notificationService: NotificationService
   ) {
-    console.log('Initialisation du composant RegisterComponent');
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: [
@@ -112,15 +111,8 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-    console.log("Tentative de soumission du formulaire d'inscription");
-    console.log(
-      'État du formulaire:',
-      this.registerForm.valid,
-      this.registerForm.errors
-    );
 
     if (this.registerForm.valid) {
-      console.log('Formulaire valide, données:', this.registerForm.value);
       this.loading = true;
       this.errorMessage = '';
 
@@ -166,14 +158,9 @@ export class RegisterComponent {
       // Utiliser directement les valeurs complètes du formulaire
       const registerData = this.registerForm.value;
 
-      console.log('Données envoyées au service:', registerData);
 
       this.authService.register(registerData).subscribe({
         next: (response) => {
-          console.log(
-            'Inscription réussie, redirection vers le dashboard',
-            response
-          );
           // En cas de succès, on pourrait afficher un message de succès
           this.loading = false;
           this.notificationService.success(
@@ -220,11 +207,9 @@ export class RegisterComponent {
             this.notificationService.error("Erreur lors de l'inscription");
           }
 
-          console.log("Message d'erreur affiché:", this.errorMessage);
         },
       });
     } else {
-      console.log('Formulaire invalide');
       this.registerForm.markAllAsTouched();
       this.notificationService.warning(
         'Veuillez remplir correctement tous les champs'
