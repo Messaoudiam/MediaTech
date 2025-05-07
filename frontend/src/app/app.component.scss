@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $primary-color: #3f51b5;
 $accent-color: #ff4081;
@@ -44,7 +46,7 @@ $dark-bg: #263238;
   background: linear-gradient(
     135deg,
     $primary-color,
-    darken($primary-color, 15%)
+    color.adjust($primary-color, $lightness: -15%)
   );
   color: white;
   padding: 80px 20px;
