@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
+  MatAutocomplete,
 } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../services/notification.service';
@@ -68,12 +76,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private readonly HISTORY_STORAGE_KEY = 'search_history';
   private readonly MAX_HISTORY_ITEMS = 10;
 
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('autoComplete') autoComplete!: MatAutocomplete;
+
   constructor(
     private router: Router,
     private notificationService: NotificationService,
     private authService: AuthService,
     private bookService: BookService,
-    private storageService: LocalStorageService
+    private storageService: LocalStorageService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -317,8 +329,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
       event.stopPropagation(); // Empêcher la navigation
     }
 
+    // Vider l'historique
     this.searchHistory = [];
     this.saveSearchHistory();
+
+    // Fermer l'autocomplete
+    this.searchQuery = '';
+    if (this.searchInput) {
+      this.searchInput.nativeElement.blur();
+    }
+
+    // Forcer la détection de changements
+    this.cdr.detectChanges();
+
     this.notificationService.info('Historique de recherche effacé');
   }
 

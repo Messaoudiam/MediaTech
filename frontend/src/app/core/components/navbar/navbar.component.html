@@ -21,9 +21,11 @@
           [matAutocomplete]="auto"
           (input)="onSearchInput()"
           (focus)="onSearchFocus()"
+          #searchInput
         />
         <mat-autocomplete
           #auto="matAutocomplete"
+          #autoComplete
           (optionSelected)="onOptionSelected($event)"
         >
           <!-- Indicateur de chargement -->
