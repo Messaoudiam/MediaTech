@@ -106,11 +106,10 @@ export class BorrowingsController {
 
   @Post(':id/return')
   @ApiOperation({ summary: 'Retourner un emprunt' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN) // Seuls les admins peuvent retourner un emprunt sans passer par l'update
+  @UseGuards(JwtAuthGuard)
   @ApiParam({ name: 'id', description: "ID de l'emprunt" })
-  async returnBorrowing(@Param('id') id: string) {
-    return this.borrowingsService.returnBorrowing(id);
+  async returnBorrowing(@Param('id') id: string, @Request() req) {
+    return this.borrowingsService.returnBorrowing(id, req.user);
   }
 
   @Post('check-overdue')

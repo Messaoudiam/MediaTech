@@ -89,18 +89,6 @@
           </div>
         </div>
       </div>
-      <div
-        class="borrowing-actions"
-        *ngIf="borrowing.status === BorrowingStatus.ACTIVE"
-      >
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="renewBorrowing(borrowing.id, $event)"
-        >
-          <mat-icon>autorenew</mat-icon> Renouveler
-        </button>
-      </div>
     </div>
   </div>
 </ng-template>

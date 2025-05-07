@@ -114,7 +114,7 @@ export class BorrowingDetailComponent implements OnInit {
   }
 
   returnBorrowing(): void {
-    if (!this.borrowing || !this.isAdmin) return;
+    if (!this.borrowing) return;
 
     this.loading = true;
     this.borrowingService
@@ -132,7 +132,7 @@ export class BorrowingDetailComponent implements OnInit {
       .subscribe((result) => {
         if (result) {
           this.borrowing = result;
-          this.notificationService.success('Emprunt retourné avec succès');
+          this.notificationService.success('Livre retourné avec succès');
         }
       });
   }

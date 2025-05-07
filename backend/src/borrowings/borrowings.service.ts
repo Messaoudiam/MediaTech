@@ -302,7 +302,7 @@ export class BorrowingsService {
 
     // Retour d'un emprunt
     if (updateBorrowingDto.status === BorrowingStatus.RETURNED) {
-      return this.returnBorrowing(id);
+      return this.returnBorrowing(id, currentUser);
     }
 
     // Mise à jour simple (commentaires, etc.)
@@ -326,7 +326,7 @@ export class BorrowingsService {
     });
   }
 
-  async returnBorrowing(id: string) {
+  async returnBorrowing(id: string, currentUser?: User) {
     // Récupérer l'emprunt
     const borrowing = await this.prisma.borrowing.findUnique({
       where: { id },
@@ -340,6 +340,17 @@ export class BorrowingsService {
     // Vérifier si l'emprunt est déjà retourné
     if (borrowing.status === BorrowingStatus.RETURNED) {
       throw new BadRequestException('Cet emprunt a déjà été retourné');
+    }
+
+    // Si un utilisateur est fourni (non-admin), vérifier qu'il est le propriétaire de l'emprunt
+    if (
+      currentUser &&
+      currentUser.role !== 'ADMIN' &&
+      borrowing.userId !== currentUser.id
+    ) {
+      throw new ForbiddenException(
+        "Vous n'êtes pas autorisé à retourner cet emprunt",
+      );
     }
 
     // Mettre à jour l'emprunt et l'exemplaire en transaction

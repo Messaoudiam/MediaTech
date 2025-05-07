@@ -117,7 +117,7 @@ export class BorrowingService {
   }
 
   /**
-   * Retourner un emprunt (admin seulement)
+   * Retourner un emprunt
    */
   returnBorrowing(id: string): Observable<Borrowing> {
     return this.http.post<Borrowing>(`${this.apiUrl}/${id}/return`, {});

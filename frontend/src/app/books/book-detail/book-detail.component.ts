@@ -172,6 +172,14 @@ export class BookDetailComponent implements OnInit {
       return;
     }
 
+    // Vérifier si l'utilisateur est administrateur
+    if (!this.isAdmin) {
+      this.notificationService.warning(
+        'Seuls les administrateurs peuvent attribuer des ressources aux utilisateurs'
+      );
+      return;
+    }
+
     if (!this.book) return;
 
     // Vérifier si le livre a des exemplaires

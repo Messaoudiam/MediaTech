@@ -91,32 +91,6 @@
           </div>
         </div>
       </div>
-
-      <mat-divider></mat-divider>
-
-      <div class="borrowing-actions">
-        <button
-          mat-raised-button
-          color="primary"
-          *ngIf="borrowing.status === BorrowingStatus.ACTIVE"
-          (click)="renewBorrowing()"
-          [disabled]="loading"
-        >
-          <mat-icon>autorenew</mat-icon>
-          Renouveler
-        </button>
-
-        <button
-          mat-raised-button
-          color="accent"
-          *ngIf="isAdmin && borrowing.status !== BorrowingStatus.RETURNED"
-          (click)="returnBorrowing()"
-          [disabled]="loading"
-        >
-          <mat-icon>assignment_returned</mat-icon>
-          Marquer comme retourné
-        </button>
-      </div>
     </mat-card-content>
   </mat-card>
 </div>

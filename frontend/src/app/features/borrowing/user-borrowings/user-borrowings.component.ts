@@ -116,6 +116,35 @@ export class UserBorrowingsComponent implements OnInit {
       });
   }
 
+  returnBorrowing(borrowingId: string, event: Event): void {
+    event.stopPropagation(); // Empêcher la propagation de l'événement
+
+    this.borrowingService
+      .returnBorrowing(borrowingId)
+      .pipe(
+        catchError((error) => {
+          console.error("Erreur lors du retour de l'emprunt:", error);
+          this.notificationService.error('Impossible de retourner cet emprunt');
+          return of(null);
+        })
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.notificationService.success('Livre retourné avec succès');
+          // Recharger les emprunts pour mettre à jour la liste
+          this.loadBorrowings(
+            this.selectedTabIndex === 0
+              ? undefined
+              : this.selectedTabIndex === 1
+              ? BorrowingStatus.ACTIVE
+              : this.selectedTabIndex === 2
+              ? BorrowingStatus.OVERDUE
+              : BorrowingStatus.RETURNED
+          );
+        }
+      });
+  }
+
   getDaysRemaining(dueDate: string): number {
     return this.borrowingService.getDaysRemaining(dueDate);
   }
