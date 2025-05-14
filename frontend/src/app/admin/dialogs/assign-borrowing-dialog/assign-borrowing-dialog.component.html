@@ -1,0 +1,82 @@
+<h2 mat-dialog-title>Attribuer un emprunt à un utilisateur</h2>
+
+<mat-dialog-content>
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- Section de débogage - à commenter en production -->
+  <div *ngIf="!loading" class="debug-section">
+    <h3>Débogage - Copies disponibles ({{ availableCopies.length }})</h3>
+    <ul>
+      <li *ngFor="let copy of availableCopies; let i = index">
+        [{{ i + 1 }}] ID: {{ copy.id }} | ResourceId: {{ copy.resourceId }} |
+        Title: {{ copy.resource?.title || "N/A" }} | Author:
+        {{ copy.resource?.author || "N/A" }}
+      </li>
+    </ul>
+    <hr />
+  </div>
+
+  <form [formGroup]="assignForm" *ngIf="!loading">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Utilisateur</mat-label>
+      <mat-select formControlName="userId" required>
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ getUserDisplayName(user) }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="assignForm.get('userId')?.hasError('required')">
+        Vous devez sélectionner un utilisateur
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Exemplaire</mat-label>
+      <mat-select formControlName="copyId" required>
+        <mat-option *ngFor="let copy of availableCopies" [value]="copy.id">
+          {{ getCopyDisplayName(copy) }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="assignForm.get('copyId')?.hasError('required')">
+        Vous devez sélectionner un exemplaire
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de retour prévue</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="dueDate"
+        placeholder="JJ/MM/AAAA"
+      />
+      <mat-hint
+        >Laissez vide pour utiliser la durée d'emprunt par défaut</mat-hint
+      >
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Commentaires</mat-label>
+      <textarea matInput formControlName="comments" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="submitting">
+    Annuler
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="assignForm.invalid || submitting"
+    [class.spinner]="submitting"
+  >
+    <span>Attribuer l'emprunt</span>
+  </button>
+</mat-dialog-actions>

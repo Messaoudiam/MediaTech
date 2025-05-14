@@ -29,6 +29,15 @@
         <mat-icon>menu_book</mat-icon>
         Gérer les emprunts
       </button>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="openAssignBorrowingDialog()"
+        class="mr-2"
+      >
+        <mat-icon>assignment_turned_in</mat-icon>
+        Attribuer un emprunt
+      </button>
       <button mat-raised-button color="warn" (click)="logout()">
         <mat-icon>exit_to_app</mat-icon>
         Déconnexion

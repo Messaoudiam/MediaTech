@@ -5,12 +5,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../auth/services/auth.service';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../auth/models/auth.model';
 import { CopyManagementComponent } from './components/copy-management/copy-management.component';
+import { AssignBorrowingDialogComponent } from './dialogs/assign-borrowing-dialog/assign-borrowing-dialog.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -22,6 +24,7 @@ import { CopyManagementComponent } from './components/copy-management/copy-manag
     MatButtonModule,
     MatIconModule,
     MatTabsModule,
+    MatDialogModule,
     UserManagementComponent,
     CopyManagementComponent,
     MatSnackBarModule,
@@ -38,7 +41,8 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -106,5 +110,20 @@ export class AdminDashboardComponent implements OnInit {
 
   changeTab(tabIndex: number): void {
     this.activeTab = tabIndex;
+  }
+
+  openAssignBorrowingDialog(): void {
+    const dialogRef = this.dialog.open(AssignBorrowingDialogComponent, {
+      width: '600px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.snackBar.open('Emprunt attribué avec succès', 'Fermer', {
+          duration: 3000,
+        });
+      }
+    });
   }
 }

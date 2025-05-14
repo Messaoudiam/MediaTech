@@ -64,6 +64,19 @@ export class BorrowingService {
   }
 
   /**
+   * Créer un emprunt pour un utilisateur par un administrateur
+   */
+  createBorrowingByAdmin(data: {
+    userId: string;
+    copyId: string;
+    dueDate?: string;
+    comments?: string;
+  }): Observable<Borrowing> {
+    const url = `${this.apiUrl}/admin/create`;
+    return this.http.post<Borrowing>(url, data, { withCredentials: true });
+  }
+
+  /**
    * Récupérer tous les emprunts (admin seulement)
    */
   getAllBorrowings(

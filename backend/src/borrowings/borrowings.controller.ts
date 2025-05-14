@@ -14,6 +14,7 @@ import {
   CreateBorrowingDto,
   UpdateBorrowingDto,
   QueryBorrowingDto,
+  AdminCreateBorrowingDto,
 } from './dto';
 import {
   ApiTags,
@@ -118,5 +119,16 @@ export class BorrowingsController {
   @Roles(UserRole.ADMIN)
   async checkOverdueBorrowings() {
     return this.borrowingsService.checkOverdueBorrowings();
+  }
+
+  @Post('admin/create')
+  @ApiOperation({ summary: 'Créer un emprunt pour un utilisateur (admin)' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBody({ type: AdminCreateBorrowingDto })
+  async createByAdmin(
+    @Body() adminCreateBorrowingDto: AdminCreateBorrowingDto,
+  ) {
+    return this.borrowingsService.createByAdmin(adminCreateBorrowingDto);
   }
 }

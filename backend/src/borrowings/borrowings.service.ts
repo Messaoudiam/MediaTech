@@ -10,6 +10,7 @@ import {
   CreateBorrowingDto,
   UpdateBorrowingDto,
   QueryBorrowingDto,
+  AdminCreateBorrowingDto,
 } from './dto';
 import { addDays } from 'date-fns';
 
@@ -424,5 +425,89 @@ export class BorrowingsService {
   // Cette méthode pourrait être appelée par un cron job
   async processOverdueBorrowings() {
     return this.checkOverdueBorrowings();
+  }
+
+  async createByAdmin(adminCreateBorrowingDto: AdminCreateBorrowingDto) {
+    // Vérifier si l'utilisateur existe
+    const user = await this.prisma.user.findUnique({
+      where: { id: adminCreateBorrowingDto.userId },
+      select: { id: true, activeBorrowingsCount: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        `Utilisateur avec l'ID ${adminCreateBorrowingDto.userId} non trouvé`,
+      );
+    }
+
+    // Vérifier si l'utilisateur a atteint le nombre maximum d'emprunts actifs
+    if (user.activeBorrowingsCount >= this.MAX_ACTIVE_BORROWINGS) {
+      throw new ForbiddenException(
+        `L'utilisateur a atteint le nombre maximum d'emprunts actifs (${this.MAX_ACTIVE_BORROWINGS})`,
+      );
+    }
+
+    // Vérifier si l'exemplaire existe et est disponible
+    const copy = await this.prisma.copy.findUnique({
+      where: { id: adminCreateBorrowingDto.copyId },
+      include: { resource: true },
+    });
+
+    if (!copy) {
+      throw new NotFoundException(
+        `Exemplaire avec l'ID ${adminCreateBorrowingDto.copyId} non trouvé`,
+      );
+    }
+
+    if (!copy.available) {
+      throw new BadRequestException(
+        `L'exemplaire avec l'ID ${adminCreateBorrowingDto.copyId} n'est pas disponible`,
+      );
+    }
+
+    // Définir la date de retour prévue (par défaut : date actuelle + DEFAULT_BORROWING_DAYS)
+    const dueDate = adminCreateBorrowingDto.dueDate
+      ? new Date(adminCreateBorrowingDto.dueDate)
+      : addDays(new Date(), this.DEFAULT_BORROWING_DAYS);
+
+    // Créer l'emprunt et mettre à jour le statut de l'exemplaire en transaction
+    return this.prisma.$transaction(async (tx) => {
+      // Créer l'emprunt
+      const borrowing = await tx.borrowing.create({
+        data: {
+          userId: adminCreateBorrowingDto.userId,
+          copyId: adminCreateBorrowingDto.copyId,
+          dueDate,
+          status: BorrowingStatus.ACTIVE,
+        },
+        include: {
+          copy: {
+            include: {
+              resource: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // Mettre à jour le statut de l'exemplaire
+      await tx.copy.update({
+        where: { id: adminCreateBorrowingDto.copyId },
+        data: { available: false },
+      });
+
+      // Incrémenter le compteur d'emprunts actifs de l'utilisateur
+      await tx.user.update({
+        where: { id: adminCreateBorrowingDto.userId },
+        data: { activeBorrowingsCount: { increment: 1 } },
+      });
+
+      return borrowing;
+    });
   }
 }

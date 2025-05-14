@@ -46,6 +46,16 @@ export class CopiesController {
     return this.copiesService.create(createCopyDto);
   }
 
+  @Get('resource/:resourceId')
+  @ApiOperation({ summary: "Récupérer tous les exemplaires d'une ressource" })
+  @ApiParam({ name: 'resourceId', type: String })
+  async findByResourceId(@Param('resourceId') resourceId: string) {
+    this.logger.log(
+      `Récupération des exemplaires de la ressource ${resourceId}`,
+    );
+    return this.copiesService.findAll(resourceId);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'Récupérer tous les exemplaires ou filtrer par ressource',
@@ -60,7 +70,9 @@ export class CopiesController {
     this.logger.log(
       `Récupération des exemplaires - ResourceId: ${resourceId}, Available: ${available}`,
     );
-    return this.copiesService.findAll(resourceId, available);
+    const copies = await this.copiesService.findAll(resourceId, available);
+    this.logger.log(`Nombre d'exemplaires trouvés: ${copies.length}`);
+    return copies;
   }
 
   @Get(':id')
@@ -90,15 +102,5 @@ export class CopiesController {
   async remove(@Param('id') id: string) {
     this.logger.log(`Suppression de l'exemplaire ${id}`);
     return this.copiesService.remove(id);
-  }
-
-  @Get('resource/:resourceId')
-  @ApiOperation({ summary: "Récupérer tous les exemplaires d'une ressource" })
-  @ApiParam({ name: 'resourceId', type: String })
-  async findByResourceId(@Param('resourceId') resourceId: string) {
-    this.logger.log(
-      `Récupération des exemplaires de la ressource ${resourceId}`,
-    );
-    return this.copiesService.findAll(resourceId);
   }
 }

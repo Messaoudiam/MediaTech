@@ -4,11 +4,17 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, throwError, of, forkJoin } from 'rxjs';
+import { catchError, tap, switchMap, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
+
+export interface Resource {
+  id: string;
+  title: string;
+  author: string;
+}
 
 export interface Copy {
   id: string;
@@ -17,6 +23,7 @@ export interface Copy {
   condition: string;
   createdAt: string;
   updatedAt: string;
+  resource?: Resource;
 }
 
 @Injectable({
@@ -113,6 +120,90 @@ export class CopyService {
         tap(() => console.log(`Exemplaire ${copyId} supprimé avec succès`)),
         catchError(this.handleError.bind(this))
       );
+  }
+
+  // Récupérer tous les exemplaires disponibles
+  getAvailableCopies(): Observable<Copy[]> {
+    console.log('Récupération des exemplaires disponibles');
+    const url = `${this.apiUrl}?available=true`;
+    console.log('URL appelée:', url);
+
+    return this.http.get<Copy[]>(url, { withCredentials: true }).pipe(
+      tap((copies) => {
+        console.log(`${copies.length} exemplaires disponibles récupérés:`);
+        console.log('Exemplaires disponibles:', copies);
+
+        // Vérifier si les ressources sont incluses
+        const withResource = copies.filter(
+          (copy) => copy && copy.resource && copy.resource.title
+        ).length;
+
+        console.log(
+          `Nombre d'exemplaires avec information ressource: ${withResource}/${copies.length}`
+        );
+
+        if (
+          copies.length > 0 &&
+          (!copies[0].resource || !copies[0].resource.title)
+        ) {
+          console.warn(
+            'ATTENTION: Les informations de ressource semblent manquantes dans les copies'
+          );
+        }
+      }),
+      catchError((error) => {
+        console.error(
+          'Erreur lors de la récupération des exemplaires disponibles:',
+          error
+        );
+        return this.handleError(error);
+      })
+    );
+  }
+
+  // Récupérer tous les exemplaires disponibles avec les informations complètes des ressources
+  getAvailableCopiesWithResources(): Observable<Copy[]> {
+    console.log('DEBUG - getAvailableCopiesWithResources - Démarrage');
+    const url = `${this.apiUrl}?available=true`;
+    console.log('DEBUG - URL appelée:', url);
+
+    // Approche directe sans switchMap pour simplifier le débogage
+    return this.http.get<Copy[]>(url, { withCredentials: true }).pipe(
+      tap((copies) => {
+        console.log(
+          `DEBUG - ${copies.length} exemplaires disponibles récupérés du backend`
+        );
+        if (copies.length === 0) {
+          console.warn('DEBUG - ATTENTION: Aucun exemplaire disponible trouvé');
+        } else {
+          console.log('DEBUG - Premier exemplaire:', JSON.stringify(copies[0]));
+        }
+
+        // Vérifier les resources
+        let withResource = 0;
+        copies.forEach((copy, index) => {
+          if (copy.resource && copy.resource.title) {
+            withResource++;
+          } else {
+            console.warn(
+              `DEBUG - Exemplaire #${index + 1} (${
+                copy.id
+              }) sans information de ressource complète`
+            );
+          }
+        });
+        console.log(
+          `DEBUG - ${withResource}/${copies.length} exemplaires ont des informations de ressource complètes`
+        );
+      }),
+      catchError((error) => {
+        console.error(
+          'DEBUG - Erreur lors de la récupération des exemplaires:',
+          error
+        );
+        return throwError(() => error);
+      })
+    );
   }
 
   // Gestionnaire d'erreurs
