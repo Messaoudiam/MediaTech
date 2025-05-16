@@ -3,6 +3,20 @@
     <mat-card-header>
       <mat-card-title>Gestion des ressources de la bibliothèque</mat-card-title>
       <div class="header-actions">
+        <div class="filter-section">
+          <mat-form-field appearance="outline" class="type-filter">
+            <mat-label>Filtrer par type</mat-label>
+            <mat-select
+              [(ngModel)]="selectedType"
+              (selectionChange)="filterByType(selectedType)"
+            >
+              <mat-option [value]="">Tous les types</mat-option>
+              <mat-option *ngFor="let type of resourceTypes" [value]="type">{{
+                type
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
         <button mat-raised-button color="primary" (click)="addNewBook()">
           <mat-icon>add</mat-icon>
           Ajouter une ressource
@@ -16,7 +30,7 @@
         <p>Chargement des ressources...</p>
       </div>
 
-      <div class="empty-state" *ngIf="!loading && books.length === 0">
+      <div class="empty-state" *ngIf="!loading && filteredBooks.length === 0">
         <mat-icon>menu_book</mat-icon>
         <p>Aucune ressource n'a été ajoutée à la bibliothèque</p>
         <button mat-stroked-button color="primary" (click)="addNewBook()">
@@ -24,8 +38,8 @@
         </button>
       </div>
 
-      <div class="table-container" *ngIf="!loading && books.length > 0">
-        <table mat-table [dataSource]="books" class="book-table">
+      <div class="table-container" *ngIf="!loading && filteredBooks.length > 0">
+        <table mat-table [dataSource]="filteredBooks" class="book-table">
           <!-- Image Column -->
           <ng-container matColumnDef="coverImage">
             <th mat-header-cell *matHeaderCellDef>Couverture</th>

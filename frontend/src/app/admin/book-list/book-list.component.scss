@@ -12,7 +12,24 @@ mat-card-header {
 }
 
 .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-left: auto;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+}
+
+.type-filter {
+  width: 180px;
+  margin-right: 8px;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1.25em;
 }
 
 .loading-container {

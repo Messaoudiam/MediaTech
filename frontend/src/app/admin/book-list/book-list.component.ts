@@ -10,6 +10,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 import {
   BookService,
   Resource,
@@ -37,12 +39,15 @@ import { environment } from '../../../environments/environment';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatSelectModule,
+    FormsModule,
   ],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss'],
 })
 export class BookListComponent implements OnInit {
   books: Resource[] = [];
+  filteredBooks: Resource[] = [];
   loading = false;
   debugMode = !environment.production; // Mode débogage activé seulement en développement
   displayedColumns: string[] = [
@@ -59,6 +64,8 @@ export class BookListComponent implements OnInit {
     'borrowedCopies',
     'actions',
   ];
+  resourceTypes = Object.values(ResourceType);
+  selectedType: string = '';
 
   constructor(
     private bookService: BookService,
@@ -80,6 +87,7 @@ export class BookListComponent implements OnInit {
       next: (resources) => {
         // Filtrer uniquement les livres si nécessaire
         this.books = resources;
+        this.filteredBooks = resources;
 
         console.log(
           `${resources.length} ressources chargées dans BookListComponent`
@@ -132,6 +140,21 @@ export class BookListComponent implements OnInit {
         );
       },
     });
+  }
+
+  /**
+   * Filtre les ressources par type
+   * @param type Le type de ressource à filtrer
+   */
+  filterByType(type: string): void {
+    this.selectedType = type;
+    if (!type) {
+      this.filteredBooks = this.books;
+    } else {
+      this.filteredBooks = this.books.filter(
+        (book) => book.type === (type as ResourceType)
+      );
+    }
   }
 
   /**
