@@ -40,4 +40,13 @@ export class UserManagementService {
       }
     );
   }
+
+  /**
+   * Compte le nombre total d'utilisateurs
+   */
+  getUserCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/count`, {
+      withCredentials: true,
+    });
+  }
 }

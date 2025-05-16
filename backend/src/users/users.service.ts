@@ -92,4 +92,12 @@ export class UsersService {
       },
     });
   }
+
+  /**
+   * Compte le nombre total d'utilisateurs dans le système
+   * @returns Le nombre total d'utilisateurs
+   */
+  async countUsers(): Promise<number> {
+    return this.prisma.user.count();
+  }
 }

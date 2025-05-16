@@ -118,4 +118,27 @@ export class UsersController {
   ) {
     return this.usersService.updateUserRole(id, updateRoleDto.role);
   }
+
+  @ApiOperation({
+    summary: "Nombre total d'utilisateurs",
+    description:
+      "Récupère le nombre total d'utilisateurs dans le système (admin uniquement)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Nombre d'utilisateurs récupéré avec succès.",
+    type: Number,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Accès non autorisé.',
+    type: ErrorResponseDto,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('count')
+  async getUserCount(): Promise<number> {
+    return this.usersService.countUsers();
+  }
 }

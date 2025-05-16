@@ -22,6 +22,7 @@ import {
   MatAutocomplete,
 } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import {
@@ -39,6 +40,7 @@ import {
   takeUntil,
 } from 'rxjs/operators';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { AssignBorrowingDialogComponent } from '../../../admin/dialogs/assign-borrowing-dialog/assign-borrowing-dialog.component';
 
 interface SearchHistoryItem {
   id: number;
@@ -64,10 +66,12 @@ interface SearchHistoryItem {
     MatFormFieldModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
   ],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
+  isAdmin = false;
   searchQuery = '';
   isLoading = false;
   filteredSuggestions: Resource[] = [];
@@ -90,7 +94,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private bookService: BookService,
     private storageService: LocalStorageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -101,6 +106,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.currentUser$.subscribe((user) => {
       const wasLoggedIn = this.isLoggedIn;
       this.isLoggedIn = !!user;
+      this.isAdmin = user?.role === 'ADMIN';
     });
 
     // Configuration de l'autocomplétion
@@ -454,5 +460,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
       default:
         return ['/resources', resource.id];
     }
+  }
+
+  openAssignBorrowingDialog(): void {
+    const dialogRef = this.dialog.open(AssignBorrowingDialogComponent, {
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.notificationService.success('Emprunt attribué avec succès');
+      }
+    });
   }
 }

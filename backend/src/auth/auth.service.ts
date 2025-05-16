@@ -74,8 +74,6 @@ export class AuthService {
 
     // Vérifier le mot de passe
     try {
-      // Logs pour débogage
-
       // Vérification directe sans manipulation
       const isPasswordValid = await this.verifyPassword(
         password,

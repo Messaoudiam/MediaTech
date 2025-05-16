@@ -192,23 +192,51 @@
         <mat-icon>account_circle</mat-icon>
         Mon compte
       </button>
+
+      <!-- Menu utilisateur standard -->
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item [routerLink]="['/profile']">
-          <mat-icon>person</mat-icon>
-          Profil
-        </button>
-        <button mat-menu-item [routerLink]="['/favorites']">
-          <mat-icon>favorite</mat-icon>
-          Favoris
-        </button>
-        <button mat-menu-item [routerLink]="['/borrowings']">
-          <mat-icon>menu_book</mat-icon>
-          Mes emprunts
-        </button>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          Déconnexion
-        </button>
+        <ng-container *ngIf="!isAdmin; else adminMenu">
+          <button mat-menu-item [routerLink]="['/profile']">
+            <mat-icon>person</mat-icon>
+            Profil
+          </button>
+          <button mat-menu-item [routerLink]="['/favorites']">
+            <mat-icon>favorite</mat-icon>
+            Favoris
+          </button>
+          <button mat-menu-item [routerLink]="['/borrowings']">
+            <mat-icon>menu_book</mat-icon>
+            Mes emprunts
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Déconnexion
+          </button>
+        </ng-container>
+
+        <!-- Menu administrateur -->
+        <ng-template #adminMenu>
+          <button mat-menu-item [routerLink]="['/admin/books']">
+            <mat-icon>inventory</mat-icon>
+            Gérer la bibliothèque
+          </button>
+          <button mat-menu-item [routerLink]="['/admin/add-book']">
+            <mat-icon>add_circle</mat-icon>
+            Ajouter une ressource
+          </button>
+          <button mat-menu-item [routerLink]="['/admin/borrowings']">
+            <mat-icon>history</mat-icon>
+            Gérer les emprunts
+          </button>
+          <button mat-menu-item (click)="openAssignBorrowingDialog()">
+            <mat-icon>add_task</mat-icon>
+            Attribuer un emprunt
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Déconnexion
+          </button>
+        </ng-template>
       </mat-menu>
     </ng-template>
   </div>

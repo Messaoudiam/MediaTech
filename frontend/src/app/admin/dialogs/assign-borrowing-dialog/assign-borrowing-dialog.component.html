@@ -8,7 +8,6 @@
 
   <!-- Section de débogage - à commenter en production -->
   <div *ngIf="!loading" class="debug-section">
-    <h3>Débogage - Copies disponibles ({{ availableCopies.length }})</h3>
     <ul>
       <li *ngFor="let copy of availableCopies; let i = index">
         [{{ i + 1 }}] ID: {{ copy.id }} | ResourceId: {{ copy.resourceId }} |

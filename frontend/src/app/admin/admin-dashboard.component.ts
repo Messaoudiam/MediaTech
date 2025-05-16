@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../auth/models/auth.model';
 import { CopyManagementComponent } from './components/copy-management/copy-management.component';
 import { AssignBorrowingDialogComponent } from './dialogs/assign-borrowing-dialog/assign-borrowing-dialog.component';
+import { UserManagementService } from './services/user-management.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -37,12 +38,14 @@ export class AdminDashboardComponent implements OnInit {
   user: User | null = null;
   loading = true;
   activeTab = 0;
+  userCount = 0;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userManagementService: UserManagementService
   ) {}
 
   ngOnInit(): void {
@@ -52,10 +55,32 @@ export class AdminDashboardComponent implements OnInit {
     if (this.user) {
       // Si nous avons déjà les données utilisateur, arrêter le chargement
       this.loading = false;
+      this.loadUserCount();
     } else {
       // Sinon, charger les données utilisateur
       this.loadUserProfile();
     }
+  }
+
+  loadUserCount(): void {
+    this.userManagementService.getUserCount().subscribe({
+      next: (count) => {
+        this.userCount = count;
+      },
+      error: (error) => {
+        console.error(
+          "Erreur lors du chargement du nombre d'utilisateurs:",
+          error
+        );
+        this.snackBar.open(
+          "Impossible de charger le nombre d'utilisateurs",
+          'Fermer',
+          {
+            duration: 3000,
+          }
+        );
+      },
+    });
   }
 
   loadUserProfile(): void {

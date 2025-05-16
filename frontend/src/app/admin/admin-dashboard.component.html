@@ -1,48 +1,6 @@
 <div class="admin-dashboard-container">
   <div class="admin-header">
     <h1>Tableau de bord administrateur</h1>
-    <div class="admin-actions">
-      <button
-        mat-raised-button
-        color="primary"
-        [routerLink]="['/admin/books']"
-        class="mr-2"
-      >
-        <mat-icon>menu_book</mat-icon>
-        Gérer la bibliothèque
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        [routerLink]="['/admin/add-book']"
-        class="mr-2"
-      >
-        <mat-icon>add</mat-icon>
-        Ajouter une ressource
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        [routerLink]="['/admin/borrowings']"
-        class="mr-2"
-      >
-        <mat-icon>menu_book</mat-icon>
-        Gérer les emprunts
-      </button>
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="openAssignBorrowingDialog()"
-        class="mr-2"
-      >
-        <mat-icon>assignment_turned_in</mat-icon>
-        Attribuer un emprunt
-      </button>
-      <button mat-raised-button color="warn" (click)="logout()">
-        <mat-icon>exit_to_app</mat-icon>
-        Déconnexion
-      </button>
-    </div>
   </div>
 
   <div class="admin-content" *ngIf="!loading && user">
@@ -63,7 +21,7 @@
         <div class="admin-stats">
           <div class="stat-card">
             <mat-icon>people</mat-icon>
-            <div class="stat-value">0</div>
+            <div class="stat-value">{{ userCount }}</div>
             <div class="stat-label">Utilisateurs</div>
           </div>
           <div class="stat-card">
