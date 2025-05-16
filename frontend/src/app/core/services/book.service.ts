@@ -21,6 +21,20 @@ export interface Resource {
   language?: string;
   publishedAt?: string;
   copies?: Copy[];
+
+  // Propriétés spécifiques aux DVD
+  director?: string;
+  actors?: string;
+  duration?: number;
+
+  // Propriétés spécifiques aux jeux
+  developer?: string;
+  platform?: string;
+  pegiRating?: number;
+
+  // Propriétés spécifiques aux magazines
+  issueNumber?: string;
+  frequency?: string;
 }
 
 export enum ResourceType {

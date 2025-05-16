@@ -26,6 +26,10 @@ export const routes: Routes = [
   { path: 'landing', component: LandingComponent },
   { path: 'books/all', component: BookListComponent },
   { path: 'books/:id', component: BookDetailComponent },
+  { path: 'dvds/:id', component: BookDetailComponent },
+  { path: 'games/:id', component: BookDetailComponent },
+  { path: 'magazines/:id', component: BookDetailComponent },
+  { path: 'resources/:id', component: BookDetailComponent },
   { path: 'search', component: SearchComponent },
   {
     path: 'auth',

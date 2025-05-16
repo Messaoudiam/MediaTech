@@ -4,20 +4,20 @@
   <div class="content-container">
     <div *ngIf="loading" class="loading-container">
       <mat-spinner diameter="50"></mat-spinner>
-      <p>Chargement du livre...</p>
+      <p>Chargement de la ressource...</p>
     </div>
 
     <div *ngIf="error" class="error-container">
       <mat-icon class="error-icon">error</mat-icon>
-      <h2>Livre non trouvé</h2>
-      <p>Le livre que vous recherchez n'existe pas ou a été supprimé.</p>
+      <h2>Ressource non trouvée</h2>
+      <p>La ressource que vous recherchez n'existe pas ou a été supprimée.</p>
       <button mat-raised-button color="primary" (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
         Retour
       </button>
     </div>
 
-    <div *ngIf="!loading && !error && book" class="book-detail">
+    <div *ngIf="!loading && !error && resource" class="book-detail">
       <div class="back-nav">
         <button mat-button (click)="goBack()">
           <mat-icon>arrow_back</mat-icon>
@@ -28,14 +28,14 @@
       <div class="book-layout">
         <div class="book-cover-container">
           <img
-            *ngIf="book.coverImageUrl"
-            [src]="getBookCoverUrl(book.coverImageUrl)"
-            [alt]="book.title"
+            *ngIf="resource.coverImageUrl"
+            [src]="getCoverUrl(resource.coverImageUrl)"
+            [alt]="resource.title"
             class="book-cover"
             (error)="handleImageError($event)"
           />
-          <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
-            <mat-icon>menu_book</mat-icon>
+          <div *ngIf="!resource.coverImageUrl" class="placeholder-cover">
+            <mat-icon>{{ getResourceIcon(resource.type) }}</mat-icon>
           </div>
 
           <div class="book-actions">
@@ -53,40 +53,94 @@
         </div>
 
         <div class="book-info">
-          <h1 class="book-title">{{ book.title }}</h1>
-          <h2 class="book-author">par {{ book.author }}</h2>
+          <!-- Type de ressource -->
+          <div class="resource-type">
+            {{ resource.type }}
+          </div>
+
+          <h1 class="book-title">{{ resource.title }}</h1>
+          <h2 class="book-author" *ngIf="resource.author">
+            par {{ resource.author }}
+          </h2>
 
           <div class="book-metadata">
-            <div *ngIf="book.publishedYear" class="metadata-item">
+            <div *ngIf="resource.publishedYear" class="metadata-item">
               <mat-icon>calendar_today</mat-icon>
-              <span>{{ book.publishedYear }}</span>
+              <span>{{ resource.publishedYear }}</span>
             </div>
 
-            <div *ngIf="book.publisher" class="metadata-item">
+            <div *ngIf="resource.publisher" class="metadata-item">
               <mat-icon>business</mat-icon>
-              <span>{{ book.publisher }}</span>
+              <span>{{ resource.publisher }}</span>
             </div>
 
-            <div *ngIf="book.pageCount" class="metadata-item">
+            <!-- Méta-données spécifiques aux livres -->
+            <div
+              *ngIf="resource.type === resourceType.BOOK && resource.pageCount"
+              class="metadata-item"
+            >
               <mat-icon>menu_book</mat-icon>
-              <span>{{ book.pageCount }} pages</span>
+              <span>{{ resource.pageCount }} pages</span>
             </div>
 
-            <div *ngIf="book.language" class="metadata-item">
+            <!-- Méta-données spécifiques aux DVD -->
+            <div
+              *ngIf="resource.type === resourceType.DVD && resource.director"
+              class="metadata-item"
+            >
+              <mat-icon>movie</mat-icon>
+              <span>Réalisateur: {{ resource.director }}</span>
+            </div>
+
+            <div
+              *ngIf="resource.type === resourceType.DVD && resource.duration"
+              class="metadata-item"
+            >
+              <mat-icon>timer</mat-icon>
+              <span>{{ resource.duration }} minutes</span>
+            </div>
+
+            <!-- Méta-données spécifiques aux jeux -->
+            <div
+              *ngIf="resource.type === resourceType.GAME && resource.developer"
+              class="metadata-item"
+            >
+              <mat-icon>sports_esports</mat-icon>
+              <span>Développeur: {{ resource.developer }}</span>
+            </div>
+
+            <div
+              *ngIf="resource.type === resourceType.GAME && resource.platform"
+              class="metadata-item"
+            >
+              <mat-icon>devices</mat-icon>
+              <span>Plateforme: {{ resource.platform }}</span>
+            </div>
+
+            <div
+              *ngIf="resource.type === resourceType.GAME && resource.pegiRating"
+              class="metadata-item"
+            >
+              <mat-icon>warning</mat-icon>
+              <span>PEGI {{ resource.pegiRating }}</span>
+            </div>
+
+            <!-- Méta-données communes -->
+            <div *ngIf="resource.language" class="metadata-item">
               <mat-icon>language</mat-icon>
-              <span>{{ book.language }}</span>
+              <span>{{ resource.language }}</span>
             </div>
           </div>
 
-          <div *ngIf="book.genre" class="genre-tag">
-            <span>{{ book.genre }}</span>
+          <div *ngIf="resource.genre" class="genre-tag">
+            <span>{{ resource.genre }}</span>
           </div>
 
           <h3 class="section-title">Description</h3>
-          <p class="book-description">{{ book.description }}</p>
+          <p class="book-description">{{ resource.description }}</p>
 
-          <div *ngIf="book.isbn" class="book-isbn">
-            <strong>ISBN:</strong> {{ book.isbn }}
+          <div *ngIf="resource.isbn" class="book-isbn">
+            <strong>ISBN:</strong> {{ resource.isbn }}
           </div>
         </div>
       </div>
@@ -94,19 +148,19 @@
       <!-- Affichage des exemplaires (pour tous les utilisateurs) -->
       <div class="book-copies-section">
         <app-book-copies
-          [bookId]="book.id"
-          [bookTitle]="book.title"
-          [bookCopies]="book.copies"
+          [bookId]="resource.id"
+          [bookTitle]="resource.title"
+          [bookCopies]="resource.copies"
         ></app-book-copies>
 
         <!-- Bouton de débogage pour les exemplaires -->
         <button
-          *ngIf="book.copies && book.copies.length > 0"
+          *ngIf="resource.copies && resource.copies.length > 0"
           mat-button
           color="accent"
           (click)="debugCopies()"
         >
-          Déboguer les exemplaires ({{ book.copies.length }})
+          Déboguer les exemplaires ({{ resource.copies.length }})
         </button>
       </div>
     </div>

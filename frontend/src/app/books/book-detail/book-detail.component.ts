@@ -8,7 +8,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
-import { BookService, Resource } from '../../core/services/book.service';
+import {
+  BookService,
+  Resource,
+  ResourceType,
+} from '../../core/services/book.service';
 import { FavoriteService } from '../../core/services/favorite.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../auth/services/auth.service';
@@ -38,12 +42,13 @@ import { Location } from '@angular/common';
   ],
 })
 export class BookDetailComponent implements OnInit {
-  book: Resource | null = null;
+  resource: Resource | null = null;
   loading = true;
   error = false;
   isFavorite = false;
   isLoggedIn = false;
   isAdmin = false;
+  resourceType = ResourceType;
 
   constructor(
     private route: ActivatedRoute,
@@ -60,8 +65,8 @@ export class BookDetailComponent implements OnInit {
   ngOnInit(): void {
     // Vérifier l'état d'authentification (juste pour mettre à jour l'état, pas pour bloquer l'accès)
     this.checkAuthStatus();
-    // Charger les détails du livre, accessible à tous
-    this.loadBookDetails();
+    // Charger les détails de la ressource, accessible à tous
+    this.loadResourceDetails();
   }
 
   private checkAuthStatus(): void {
@@ -74,16 +79,16 @@ export class BookDetailComponent implements OnInit {
         this.authService.getUserProfile().subscribe((user) => {
           this.isAdmin = user?.role === 'ADMIN';
 
-          // Si l'utilisateur est connecté et que le livre est chargé, vérifier l'état des favoris
-          if (this.book) {
-            this.checkFavoriteStatus(this.book.id);
+          // Si l'utilisateur est connecté et que la ressource est chargée, vérifier l'état des favoris
+          if (this.resource) {
+            this.checkFavoriteStatus(this.resource.id);
           }
         });
       }
     });
   }
 
-  private loadBookDetails(): void {
+  private loadResourceDetails(): void {
     this.loading = true;
     this.error = false;
 
@@ -97,42 +102,45 @@ export class BookDetailComponent implements OnInit {
             this.loading = false;
             return of(null);
           }
-          console.log(`Chargement des détails du livre ${id}`);
+          console.log(`Chargement des détails de la ressource ${id}`);
           return this.bookService.getBookById(id).pipe(
             catchError((error) => {
-              console.error(`Erreur lors du chargement du livre ${id}:`, error);
+              console.error(
+                `Erreur lors du chargement de la ressource ${id}:`,
+                error
+              );
               this.error = true;
               this.loading = false;
-              this.notificationService.error('Livre non trouvé');
+              this.notificationService.error('Ressource non trouvée');
               return of(null);
             })
           );
         })
       )
-      .subscribe((book) => {
-        this.book = book;
+      .subscribe((resource) => {
+        this.resource = resource;
         this.loading = false;
 
-        if (book) {
-          console.log('Livre chargé avec succès:', book);
-          console.log('Exemplaires du livre:', book.copies);
+        if (resource) {
+          console.log('Ressource chargée avec succès:', resource);
+          console.log('Exemplaires de la ressource:', resource.copies);
 
           // Afficher la notification pour tous les utilisateurs
-          this.notificationService.info(`Vous consultez ${book.title}`);
+          this.notificationService.info(`Vous consultez ${resource.title}`);
 
           // Vérifier l'état des favoris seulement si l'utilisateur est connecté
           if (this.isLoggedIn) {
-            this.checkFavoriteStatus(book.id);
+            this.checkFavoriteStatus(resource.id);
           }
         }
       });
   }
 
-  private checkFavoriteStatus(bookId: string): void {
+  private checkFavoriteStatus(resourceId: string): void {
     if (!this.isLoggedIn) return;
 
     this.favoriteService
-      .isResourceFavorite(bookId)
+      .isResourceFavorite(resourceId)
       .subscribe((isFavorite: boolean) => {
         this.isFavorite = isFavorite;
       });
@@ -147,32 +155,32 @@ export class BookDetailComponent implements OnInit {
     // Vérification de l'authentification uniquement pour les fonctionnalités réservées
     if (!this.isLoggedIn) {
       this.notificationService.warning(
-        'Veuillez vous connecter pour ajouter des livres à vos favoris'
+        'Veuillez vous connecter pour ajouter des ressources à vos favoris'
       );
       this.router.navigate(['/auth/login']);
       return;
     }
 
-    if (!this.book) return;
+    if (!this.resource) return;
 
     if (this.isFavorite) {
-      this.favoriteService.removeFavorite(this.book.id).subscribe(() => {
+      this.favoriteService.removeFavorite(this.resource.id).subscribe(() => {
         this.isFavorite = false;
         this.notificationService.info('Retiré des favoris');
       });
     } else {
-      this.favoriteService.addFavorite(this.book.id).subscribe(() => {
+      this.favoriteService.addFavorite(this.resource.id).subscribe(() => {
         this.isFavorite = true;
         this.notificationService.success('Ajouté aux favoris');
       });
     }
   }
 
-  borrowBook(): void {
+  borrowResource(): void {
     // Vérification de l'authentification uniquement pour les fonctionnalités réservées
     if (!this.isLoggedIn) {
       this.notificationService.warning(
-        'Veuillez vous connecter pour emprunter des livres'
+        'Veuillez vous connecter pour emprunter des ressources'
       );
       this.router.navigate(['/auth/login']);
       return;
@@ -186,10 +194,10 @@ export class BookDetailComponent implements OnInit {
       return;
     }
 
-    if (!this.book) return;
+    if (!this.resource) return;
 
-    // Vérifier si le livre a des exemplaires
-    if (!this.book.copies || this.book.copies.length === 0) {
+    // Vérifier si la ressource a des exemplaires
+    if (!this.resource.copies || this.resource.copies.length === 0) {
       this.notificationService.warning(
         'Aucun exemplaire disponible pour cette ressource'
       );
@@ -197,7 +205,9 @@ export class BookDetailComponent implements OnInit {
     }
 
     // Vérifier si au moins un exemplaire est disponible
-    const availableCopies = this.book.copies.filter((copy) => copy.available);
+    const availableCopies = this.resource.copies.filter(
+      (copy) => copy.available
+    );
     if (availableCopies.length === 0) {
       this.notificationService.warning(
         'Tous les exemplaires sont actuellement empruntés'
@@ -209,9 +219,9 @@ export class BookDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(BorrowDialogComponent, {
       width: '400px',
       data: {
-        resourceId: this.book.id,
-        resourceTitle: this.book.title,
-        copies: this.book.copies,
+        resourceId: this.resource.id,
+        resourceTitle: this.resource.title,
+        copies: this.resource.copies,
       },
     });
 
@@ -219,8 +229,8 @@ export class BookDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Si le dialogue retourne true, c'est que l'emprunt a été effectué avec succès
-        // Recharger les données du livre pour mettre à jour les exemplaires disponibles
-        this.loadBookDetails();
+        // Recharger les données de la ressource pour mettre à jour les exemplaires disponibles
+        this.loadResourceDetails();
 
         // On peut rediriger vers la liste des emprunts
         this.router.navigate(['/borrowings']);
@@ -231,7 +241,7 @@ export class BookDetailComponent implements OnInit {
   /**
    * Obtenir l'URL complète de l'image depuis Supabase
    */
-  getBookCoverUrl(coverImageUrl: string | undefined): string {
+  getCoverUrl(coverImageUrl: string | undefined): string {
     return this.imageService.getSafeImageUrl(coverImageUrl || '');
   }
 
@@ -245,12 +255,30 @@ export class BookDetailComponent implements OnInit {
     }
   }
 
+  getResourceIcon(type: ResourceType | undefined): string {
+    if (!type) return 'description';
+
+    switch (type) {
+      case ResourceType.BOOK:
+        return 'book';
+      case ResourceType.COMIC:
+        return 'import_contacts';
+      case ResourceType.DVD:
+        return 'movie';
+      case ResourceType.GAME:
+        return 'sports_esports';
+      case ResourceType.MAGAZINE:
+        return 'newspaper';
+      case ResourceType.AUDIOBOOK:
+        return 'headphones';
+      default:
+        return 'description';
+    }
+  }
+
   debugCopies(): void {
-    if (this.book && this.book.copies) {
-      console.log('Exemplaires du livre:', this.book.copies);
-      console.log("Nombre d'exemplaires:", this.book.copies.length);
-    } else {
-      console.log('Aucun exemplaire trouvé dans le composant BookDetail');
+    if (this.resource && this.resource.copies) {
+      console.log('Exemplaires de la ressource:', this.resource.copies);
     }
   }
 }
