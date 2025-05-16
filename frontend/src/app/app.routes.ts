@@ -17,6 +17,7 @@ import { BookListComponent } from './books/book-list/book-list.component';
 import { AdminBorrowingsComponent } from './admin/components/borrowing-management/admin-borrowings.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { FavoritesComponent } from './features/favorites/favorites.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 // guards
 import { AuthGuard } from './core/guards/auth.guard';
@@ -31,6 +32,11 @@ export const routes: Routes = [
   { path: 'magazines/:id', component: BookDetailComponent },
   { path: 'resources/:id', component: BookDetailComponent },
   { path: 'search', component: SearchComponent },
+  {
+    path: 'contact',
+    component: ContactComponent,
+    title: 'Contact - Médiathèque',
+  },
   {
     path: 'auth',
     children: [

@@ -14,6 +14,7 @@ import { ResourcesModule } from './resources/resources.module';
 import { HealthModule } from './health/health.module';
 import { BorrowingsModule } from './borrowings/borrowings.module';
 import { CopiesModule } from './copies/copies.module';
+import { ContactModule } from './modules/contact/contact.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -33,6 +34,7 @@ import { AppService } from './app.service';
     BorrowingsModule,
     CopiesModule,
     HealthModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],

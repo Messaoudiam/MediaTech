@@ -1,0 +1,131 @@
+<div class="contact-container">
+  <div class="contact-header">
+    <h1>Contactez-nous</h1>
+    <p>
+      Vous avez une question ou une suggestion ? N'hésitez pas à nous contacter
+      à l'aide du formulaire ci-dessous.
+    </p>
+  </div>
+
+  <mat-card class="contact-card">
+    <mat-card-content>
+      <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+        <div class="form-fields">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="name" placeholder="Votre nom" />
+            <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
+              Le nom est obligatoire
+            </mat-error>
+            <mat-error *ngIf="contactForm.get('name')?.hasError('maxlength')">
+              Le nom ne doit pas dépasser 100 caractères
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              placeholder="Votre adresse email"
+              type="email"
+            />
+            <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
+              L'email est obligatoire
+            </mat-error>
+            <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
+              Veuillez entrer une adresse email valide
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Sujet</mat-label>
+            <input
+              matInput
+              formControlName="subject"
+              placeholder="Sujet de votre message"
+            />
+            <mat-error *ngIf="contactForm.get('subject')?.hasError('required')">
+              Le sujet est obligatoire
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Message</mat-label>
+            <textarea
+              matInput
+              formControlName="message"
+              placeholder="Votre message"
+              rows="6"
+            ></textarea>
+            <mat-hint align="end"
+              >{{
+                contactForm.get("message")?.value?.length || 0
+              }}/2000</mat-hint
+            >
+            <mat-error *ngIf="contactForm.get('message')?.hasError('required')">
+              Le message est obligatoire
+            </mat-error>
+            <mat-error
+              *ngIf="contactForm.get('message')?.hasError('minlength')"
+            >
+              Le message doit contenir au moins 10 caractères
+            </mat-error>
+            <mat-error
+              *ngIf="contactForm.get('message')?.hasError('maxlength')"
+            >
+              Le message ne doit pas dépasser 2000 caractères
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="contactForm.invalid || isSubmitting"
+          >
+            <span *ngIf="!isSubmitting">Envoyer</span>
+            <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="contact-info">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Informations de contact</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-item">
+          <mat-icon>location_on</mat-icon>
+          <span>123 Rue de la Médiathèque, 75000 Paris</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>phone</mat-icon>
+          <span>01 23 45 67 89</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>email</mat-icon>
+          <span>
+            <a href="mailto:contact&#64;mediatheque.fr"
+              >contact&#64;mediatheque.fr</a
+            >
+          </span>
+        </div>
+        <div class="info-item">
+          <mat-icon>access_time</mat-icon>
+          <div>
+            <p><strong>Heures d'ouverture :</strong></p>
+            <p>Lundi - Vendredi : 9h - 19h</p>
+            <p>Samedi : 10h - 18h</p>
+            <p>Dimanche : Fermé</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

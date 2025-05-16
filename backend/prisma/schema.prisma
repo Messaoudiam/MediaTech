@@ -36,6 +36,7 @@ model User {
   sessions    Session[]
   borrowings  Borrowing[]
   favorites   Favorite[]
+  contactRequests ContactRequest[]
 
   @@index([email])
   @@map("users")
@@ -147,4 +148,30 @@ enum BorrowingStatus {
   ACTIVE
   RETURNED
   OVERDUE
+}
+
+model ContactRequest {
+  id          String    @id @default(uuid())
+  userId      String?   // Optionnel pour permettre aux visiteurs non-connectés d'envoyer des demandes
+  email       String    // Email obligatoire pour les non-connectés
+  name        String    // Nom obligatoire pour les non-connectés  
+  subject     String
+  message     String
+  status      ContactRequestStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relation optionnelle avec User
+  user        User?     @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@map("contact_requests")
+}
+
+enum ContactRequestStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }
