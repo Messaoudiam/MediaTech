@@ -1,0 +1,58 @@
+<div class="favorites-container">
+  <h1 class="favorites-title">Mes favoris</h1>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement de vos favoris...</p>
+  </div>
+
+  <div *ngIf="!loading" class="favorites-content">
+    <div *ngIf="favorites.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">favorite_border</mat-icon>
+      <h2>Vous n'avez pas encore de favoris</h2>
+      <p>Explorez notre catalogue et ajoutez des livres à vos favoris.</p>
+      <button mat-raised-button color="primary" [routerLink]="['/books/all']">
+        <mat-icon>search</mat-icon>
+        Explorer le catalogue
+      </button>
+    </div>
+
+    <div *ngIf="favorites.length > 0" class="favorites-grid">
+      <mat-card *ngFor="let favorite of favorites" class="favorite-card">
+        <mat-card-header>
+          <mat-card-title>{{ favorite.title }}</mat-card-title>
+          <mat-card-subtitle>{{ favorite.author }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <img
+          *ngIf="favorite.coverImageUrl"
+          mat-card-image
+          [src]="favorite.coverImageUrl"
+          [alt]="favorite.title"
+        />
+
+        <mat-card-content>
+          <p>
+            {{ favorite.description | slice : 0 : 150
+            }}{{ favorite.description.length > 150 ? "..." : "" }}
+          </p>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button
+            mat-button
+            [routerLink]="['/books', favorite.id]"
+            color="primary"
+          >
+            <mat-icon>visibility</mat-icon>
+            Voir le détail
+          </button>
+          <button mat-button (click)="removeFavorite(favorite.id)" color="warn">
+            <mat-icon>favorite</mat-icon>
+            Retirer
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

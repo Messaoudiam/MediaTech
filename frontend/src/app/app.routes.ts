@@ -14,6 +14,8 @@ import { BookListComponent as AdminBookListComponent } from './admin/book-list/b
 import { BookEditComponent } from './admin/book-edit/book-edit.component';
 import { BookListComponent } from './books/book-list/book-list.component';
 import { AdminBorrowingsComponent } from './admin/components/borrowing-management/admin-borrowings.component';
+import { ProfileComponent } from './features/profile/profile.component';
+import { FavoritesComponent } from './features/favorites/favorites.component';
 
 // guards
 import { AuthGuard } from './core/guards/auth.guard';
@@ -40,6 +42,18 @@ export const routes: Routes = [
       import('./features/borrowing/borrowing.module').then(
         (m) => m.BorrowingModule
       ),
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'USER' },
+  },
+  {
+    path: 'favorites',
+    component: FavoritesComponent,
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'USER' },
   },
   {
     path: 'home',

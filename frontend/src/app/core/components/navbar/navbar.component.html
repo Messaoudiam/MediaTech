@@ -200,6 +200,10 @@
           <mat-icon>favorite</mat-icon>
           Favoris
         </button>
+        <button mat-menu-item [routerLink]="['/borrowings']">
+          <mat-icon>menu_book</mat-icon>
+          Mes emprunts
+        </button>
         <button mat-menu-item (click)="logout()">
           <mat-icon>logout</mat-icon>
           Déconnexion
