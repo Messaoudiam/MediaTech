@@ -383,7 +383,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   navigateToBook(book: Resource): void {
     // Ajouter le livre à l'historique
-    this.bookService.addToSearchHistory(book);
+    this.addToHistory(book);
 
     // Vider le champ de recherche
     this.searchQuery = '';
