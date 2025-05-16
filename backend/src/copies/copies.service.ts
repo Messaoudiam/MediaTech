@@ -50,6 +50,12 @@ export class CopiesService {
   // Récupérer tous les exemplaires
   async findAll(resourceId?: string, available?: boolean): Promise<Copy[]> {
     console.log('Service - Récupération des exemplaires');
+    console.log(
+      'Paramètres - ResourceId:',
+      resourceId || 'non spécifié',
+      'Available:',
+      available !== undefined ? available : 'non spécifié',
+    );
 
     const where: Prisma.CopyWhereInput = {};
 
@@ -61,13 +67,44 @@ export class CopiesService {
       where.available = available;
     }
 
-    return this.prisma.copy.findMany({
+    const copies = await this.prisma.copy.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       include: {
         resource: true,
       },
     });
+
+    console.log(`Service - ${copies.length} exemplaires trouvés`);
+
+    // Vérifier si les ressources sont correctement incluses
+    if (copies.length > 0) {
+      const withResource = copies.filter((copy) => copy.resource).length;
+      console.log(
+        `Service - ${withResource}/${copies.length} exemplaires ont leur ressource associée`,
+      );
+
+      // Log d'exemple d'un exemplaire avec sa ressource
+      if (copies[0]) {
+        console.log(
+          'Premier exemplaire:',
+          JSON.stringify({
+            id: copies[0].id,
+            resourceId: copies[0].resourceId,
+            condition: copies[0].condition,
+            available: copies[0].available,
+            resourceInfo: copies[0].resource
+              ? {
+                  id: copies[0].resource.id,
+                  title: copies[0].resource.title,
+                }
+              : 'Aucune ressource associée',
+          }),
+        );
+      }
+    }
+
+    return copies;
   }
 
   // Récupérer un exemplaire par son ID

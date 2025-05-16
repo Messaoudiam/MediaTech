@@ -9,8 +9,6 @@ import {
   UseGuards,
   Query,
   Logger,
-  ParseBoolPipe,
-  Optional,
 } from '@nestjs/common';
 import { CopiesService } from './copies.service';
 import {
@@ -59,19 +57,47 @@ export class CopiesController {
   @Get()
   @ApiOperation({
     summary: 'Récupérer tous les exemplaires ou filtrer par ressource',
+    description:
+      'Permet de récupérer tous les exemplaires avec possibilité de filtrer par ressource ou disponibilité',
   })
-  @ApiQuery({ name: 'resourceId', required: false })
-  @ApiQuery({ name: 'available', required: false, type: Boolean })
+  @ApiQuery({
+    name: 'resourceId',
+    required: false,
+    description: 'ID de la ressource pour filtrer les exemplaires',
+  })
+  @ApiQuery({
+    name: 'available',
+    required: false,
+    type: Boolean,
+    description: 'Filtre pour les exemplaires disponibles/non disponibles',
+  })
   async findAll(
     @Query('resourceId') resourceId?: string,
-    @Query('available', { transform: (value) => value === 'true' })
-    available?: boolean,
+    @Query('available') availableParam?: string,
   ) {
+    // Conversion explicite du paramètre available en boolean
+    let available: boolean | undefined = undefined;
+
+    if (availableParam !== undefined) {
+      // Convertir de façon plus robuste
+      available = availableParam === 'true' || availableParam === '1';
+      this.logger.log(
+        `Paramètre available reçu: "${availableParam}", converti en: ${available}`,
+      );
+    }
+
     this.logger.log(
       `Récupération des exemplaires - ResourceId: ${resourceId}, Available: ${available}`,
     );
+
     const copies = await this.copiesService.findAll(resourceId, available);
     this.logger.log(`Nombre d'exemplaires trouvés: ${copies.length}`);
+
+    // Log détaillé du résultat
+    if (copies.length > 0) {
+      this.logger.debug(`Premier exemplaire: ${JSON.stringify(copies[0])}`);
+    }
+
     return copies;
   }
 

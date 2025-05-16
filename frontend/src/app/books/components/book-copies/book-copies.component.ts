@@ -210,14 +210,14 @@ export class BookCopiesComponent implements OnInit {
       return;
     }
 
-    // Si nous avons déjà des exemplaires passés via @Input, les utiliser
+    // Même si nous avons déjà des exemplaires via @Input, nous les utilisons
+    // temporairement puis faisons quand même un appel pour être sûr d'avoir les données à jour
     if (this.bookCopies && this.bookCopies.length > 0) {
       console.log(
-        'Utilisation des exemplaires passés au composant:',
+        'Utilisation temporaire des exemplaires fournis via @Input:',
         this.bookCopies
       );
-      this.copies = this.bookCopies;
-      return;
+      this.copies = [...this.bookCopies];
     }
 
     this.loading = true;
@@ -328,6 +328,16 @@ export class BookCopiesComponent implements OnInit {
         finalize(() => {
           this.loading = false;
           console.log("Opération d'ajout terminée");
+
+          // Force le rechargement complet depuis l'API plutôt que d'utiliser les données mises en cache
+          this.copyService
+            .getCopiesByResourceId(this.bookId, true)
+            .subscribe((copies) => {
+              this.copies = copies;
+              console.log(
+                `Rechargement forcé: ${copies.length} exemplaires trouvés après ajout`
+              );
+            });
         })
       )
       .subscribe((response) => {
@@ -336,7 +346,12 @@ export class BookCopiesComponent implements OnInit {
           this.snackBar.open('Exemplaire ajouté avec succès', 'Fermer', {
             duration: 3000,
           });
-          this.loadCopies();
+
+          // Ajouter l'exemplaire nouvellement créé à la liste locale
+          if (!this.copies.some((copy) => copy.id === response.id)) {
+            this.copies.unshift(response);
+          }
+
           this.newCopyCondition = 'Neuf';
         } else {
           console.log("Échec de l'ajout d'exemplaire - réponse nulle");

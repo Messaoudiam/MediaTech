@@ -84,11 +84,17 @@ export class BookDetailComponent implements OnInit {
   }
 
   private loadBookDetails(): void {
+    this.loading = true;
+    this.error = false;
+
     this.route.paramMap
       .pipe(
+        take(1), // Prendre seulement la première valeur pour éviter de multiples souscriptions
         switchMap((params) => {
           const id = params.get('id');
           if (!id) {
+            this.error = true;
+            this.loading = false;
             return of(null);
           }
           console.log(`Chargement des détails du livre ${id}`);
@@ -213,6 +219,9 @@ export class BookDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Si le dialogue retourne true, c'est que l'emprunt a été effectué avec succès
+        // Recharger les données du livre pour mettre à jour les exemplaires disponibles
+        this.loadBookDetails();
+
         // On peut rediriger vers la liste des emprunts
         this.router.navigate(['/borrowings']);
       }

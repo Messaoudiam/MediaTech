@@ -60,7 +60,9 @@ export class BorrowingService {
     const payload = { copyId: cleanCopyId };
     console.log('Service - Payload envoyé:', payload);
 
-    return this.http.post<Borrowing>(this.apiUrl, payload);
+    return this.http.post<Borrowing>(this.apiUrl, payload, {
+      withCredentials: true,
+    });
   }
 
   /**
@@ -73,7 +75,9 @@ export class BorrowingService {
     comments?: string;
   }): Observable<Borrowing> {
     const url = `${this.apiUrl}/admin/create`;
-    return this.http.post<Borrowing>(url, data, { withCredentials: true });
+    return this.http.post<Borrowing>(url, data, {
+      withCredentials: true,
+    });
   }
 
   /**
@@ -99,7 +103,10 @@ export class BorrowingService {
       params = params.set('search', search);
     }
 
-    return this.http.get<BorrowingResponse>(this.apiUrl, { params });
+    return this.http.get<BorrowingResponse>(this.apiUrl, {
+      params,
+      withCredentials: true,
+    });
   }
 
   /**
@@ -112,35 +119,54 @@ export class BorrowingService {
       params = params.set('status', status);
     }
 
-    return this.http.get<Borrowing[]>(`${this.apiUrl}/my`, { params });
+    return this.http.get<Borrowing[]>(`${this.apiUrl}/my`, {
+      params,
+      withCredentials: true,
+    });
   }
 
   /**
    * Récupérer un emprunt par son ID
    */
   getBorrowingById(id: string): Observable<Borrowing> {
-    return this.http.get<Borrowing>(`${this.apiUrl}/${id}`);
+    return this.http.get<Borrowing>(`${this.apiUrl}/${id}`, {
+      withCredentials: true,
+    });
   }
 
   /**
    * Mettre à jour un emprunt (renouvellement, commentaires, etc.)
    */
   updateBorrowing(id: string, data: any): Observable<Borrowing> {
-    return this.http.patch<Borrowing>(`${this.apiUrl}/${id}`, data);
+    return this.http.patch<Borrowing>(`${this.apiUrl}/${id}`, data, {
+      withCredentials: true,
+    });
   }
 
   /**
    * Retourner un emprunt
    */
   returnBorrowing(id: string): Observable<Borrowing> {
-    return this.http.post<Borrowing>(`${this.apiUrl}/${id}/return`, {});
+    return this.http.post<Borrowing>(
+      `${this.apiUrl}/${id}/return`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   /**
    * Renouveler un emprunt
    */
   renewBorrowing(id: string): Observable<Borrowing> {
-    return this.http.patch<Borrowing>(`${this.apiUrl}/${id}`, { renew: true });
+    return this.http.patch<Borrowing>(
+      `${this.apiUrl}/${id}`,
+      { renew: true },
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   /**
@@ -149,7 +175,10 @@ export class BorrowingService {
   checkOverdueBorrowings(): Observable<{ updated: number }> {
     return this.http.post<{ updated: number }>(
       `${this.apiUrl}/check-overdue`,
-      {}
+      {},
+      {
+        withCredentials: true,
+      }
     );
   }
 

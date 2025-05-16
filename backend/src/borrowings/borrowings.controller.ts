@@ -48,7 +48,12 @@ export class BorrowingsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async findAll(@Query() queryDto: QueryBorrowingDto) {
-    return this.borrowingsService.findAll(queryDto);
+    const enhancedQuery = {
+      ...queryDto,
+      includeUser: true,
+      includeResource: true,
+    };
+    return this.borrowingsService.findAll(enhancedQuery);
   }
 
   @Get('my')

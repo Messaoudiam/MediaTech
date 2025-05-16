@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 interface Resource {
@@ -261,9 +261,41 @@ export class CopyManagementComponent implements OnInit {
 
   loadCopies(): void {
     this.loading = true;
+    console.log('Démarrage du chargement des exemplaires...');
+
+    // Ne pas spécifier de filtre sur available pour récupérer tous les exemplaires
     this.http
-      .get<Copy[]>(`${environment.apiUrl}/copies?includeResource=true`)
+      .get<Copy[]>(`${environment.apiUrl}/copies`)
       .pipe(
+        tap((copies) => {
+          console.log("Réponse brute de l'API:", copies);
+          console.log("Nombre d'exemplaires reçus:", copies.length);
+
+          // Si aucun exemplaire n'est trouvé, faisons un appel direct à la base de données
+          if (copies.length === 0) {
+            console.warn(
+              'Aucun exemplaire trouvé, vérification directe dans la base de données nécessaire.'
+            );
+          } else if (copies.length > 0) {
+            // Vérifier si les exemplaires ont leurs ressources associées
+            const hasResources = copies.some((copy) => copy.resource);
+            console.log(
+              'Les exemplaires ont-ils leurs ressources associées?',
+              hasResources
+            );
+
+            if (!hasResources) {
+              console.log(
+                'Récupération séparée des informations des ressources nécessaire'
+              );
+              this.processAndEnrichCopies(copies);
+              return;
+            }
+          }
+
+          this.copies = copies;
+          console.log('Exemplaires chargés dans le composant:', this.copies);
+        }),
         catchError((error) => {
           console.error('Erreur lors du chargement des exemplaires', error);
           this.snackBar.open(
@@ -279,8 +311,55 @@ export class CopyManagementComponent implements OnInit {
           this.loading = false;
         })
       )
-      .subscribe((copies) => {
-        this.copies = copies;
+      .subscribe();
+  }
+
+  // Méthode pour enrichir les exemplaires avec les informations des ressources
+  private processAndEnrichCopies(copies: Copy[]): void {
+    console.log('Enrichissement des exemplaires avec leurs ressources');
+
+    // Récupérer tous les IDs de ressources uniques
+    const resourceIds = [...new Set(copies.map((copy) => copy.resourceId))];
+    console.log('IDs de ressources à récupérer:', resourceIds);
+
+    if (resourceIds.length === 0) {
+      this.copies = copies;
+      return;
+    }
+
+    // Récupérer toutes les ressources en une seule requête
+    this.http
+      .get<Resource[]>(`${environment.apiUrl}/resources`)
+      .pipe(
+        catchError((error) => {
+          console.error('Erreur lors de la récupération des ressources', error);
+          return of([]);
+        })
+      )
+      .subscribe((resources) => {
+        console.log('Ressources récupérées:', resources);
+
+        // Créer un mapping des ressources par ID pour un accès rapide
+        const resourceMap = resources.reduce((map, resource) => {
+          map[resource.id] = resource;
+          return map;
+        }, {} as Record<string, Resource>);
+
+        // Enrichir chaque exemplaire avec sa ressource
+        this.copies = copies.map((copy) => {
+          const resource = resourceMap[copy.resourceId];
+          return {
+            ...copy,
+            resource: resource || {
+              id: copy.resourceId,
+              title: 'Titre inconnu',
+              type: 'Type inconnu',
+              author: 'Auteur inconnu',
+            },
+          };
+        });
+
+        console.log('Exemplaires enrichis:', this.copies);
       });
   }
 

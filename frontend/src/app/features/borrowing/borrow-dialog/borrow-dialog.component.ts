@@ -15,11 +15,12 @@ import { BorrowingService } from '../../../core/services/borrowing.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Copy } from '../../../core/services/copy.service';
 
 export interface BorrowDialogData {
   resourceId: string;
   resourceTitle: string;
-  copies: any[];
+  copies: Copy[];
 }
 
 @Component({
@@ -75,8 +76,8 @@ export class BorrowDialogComponent implements OnInit {
     }
   }
 
-  getAvailableCopies(): any[] {
-    return this.data.copies.filter((copy) => copy.available);
+  getAvailableCopies(): Copy[] {
+    return this.data.copies.filter((copy: Copy) => copy.available);
   }
 
   onNoClick(): void {
@@ -104,6 +105,22 @@ export class BorrowDialogComponent implements OnInit {
       .pipe(
         tap((response) => {
           console.log("Réponse du service d'emprunt:", response);
+
+          // Si l'emprunt est réussi, mettre à jour la liste des exemplaires disponibles
+          // dans le data source pour éviter qu'il soit encore visible/sélectionnable
+          if (
+            this.data &&
+            this.data.copies &&
+            Array.isArray(this.data.copies)
+          ) {
+            const index = this.data.copies.findIndex((c) => c.id === copyId);
+            if (index !== -1) {
+              console.log(
+                `Mise à jour du statut de l'exemplaire ${copyId} comme non disponible`
+              );
+              this.data.copies[index].available = false;
+            }
+          }
         }),
         catchError((error) => {
           console.error("Erreur lors de la création de l'emprunt:", error);
