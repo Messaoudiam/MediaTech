@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
   Borrowing,
   BorrowingService,
@@ -16,6 +17,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { AuthService } from '../../../auth/services/auth.service';
 import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { ConfirmDialogComponent } from '../../../admin/dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-borrowing-detail',
@@ -31,6 +33,7 @@ import { of } from 'rxjs';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatChipsModule,
+    MatDialogModule,
   ],
 })
 export class BorrowingDetailComponent implements OnInit {
@@ -45,7 +48,8 @@ export class BorrowingDetailComponent implements OnInit {
     private router: Router,
     private borrowingService: BorrowingService,
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -114,6 +118,27 @@ export class BorrowingDetailComponent implements OnInit {
   }
 
   returnBorrowing(): void {
+    if (!this.borrowing) return;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmation de retour',
+        message:
+          'Êtes-vous sûr de vouloir marquer cet emprunt comme retourné ?',
+        confirmButtonText: 'Confirmer',
+        cancelButtonText: 'Annuler',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.processReturnBorrowing();
+      }
+    });
+  }
+
+  private processReturnBorrowing(): void {
     if (!this.borrowing) return;
 
     this.loading = true;

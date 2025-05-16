@@ -10,6 +10,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { RouterModule } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
   Borrowing,
   BorrowingResponse,
@@ -19,6 +20,7 @@ import {
 import { NotificationService } from '../../../core/services/notification.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-admin-borrowings',
@@ -33,6 +35,7 @@ import { of } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatTabsModule,
+    MatDialogModule,
     MatProgressSpinnerModule,
     MatTableModule,
     MatPaginatorModule,
@@ -62,7 +65,8 @@ export class AdminBorrowingsComponent implements OnInit {
 
   constructor(
     private borrowingService: BorrowingService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -126,6 +130,25 @@ export class AdminBorrowingsComponent implements OnInit {
   returnBorrowing(borrowingId: string, event: Event): void {
     event.stopPropagation(); // Empêcher la navigation
 
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmation de retour',
+        message:
+          'Êtes-vous sûr de vouloir marquer cet emprunt comme retourné ?',
+        confirmButtonText: 'Confirmer',
+        cancelButtonText: 'Annuler',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.processReturnBorrowing(borrowingId);
+      }
+    });
+  }
+
+  private processReturnBorrowing(borrowingId: string): void {
     this.loading = true;
     this.borrowingService
       .returnBorrowing(borrowingId)
