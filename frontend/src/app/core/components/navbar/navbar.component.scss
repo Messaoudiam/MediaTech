@@ -33,7 +33,7 @@
 
 .search-container {
   margin-right: 16px;
-  width: 300px;
+  width: 350px;
 
   form {
     width: 100%;
@@ -85,6 +85,17 @@
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   max-height: 400px !important;
+  width: 350px !important;
+
+  .mat-mdc-option {
+    height: 64px;
+    padding: 0 16px !important;
+    position: relative;
+
+    &.mdc-list-item {
+      padding: 0 16px !important;
+    }
+  }
 
   .section-title {
     padding: 8px 16px;
@@ -112,11 +123,14 @@
   }
 
   .option-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 30px;
+    grid-gap: 12px;
     align-items: center;
-    gap: 12px;
     padding: 4px 0;
     width: 100%;
+    box-sizing: border-box;
+    height: 64px;
   }
 
   .option-image {
@@ -125,6 +139,7 @@
     object-fit: cover;
     border-radius: 4px;
     flex-shrink: 0;
+    grid-column: 1;
   }
 
   .placeholder-image {
@@ -136,6 +151,7 @@
     background-color: #f0f0f0;
     border-radius: 4px;
     flex-shrink: 0;
+    grid-column: 1;
 
     mat-icon,
     .material-icons {
@@ -150,7 +166,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    flex-grow: 1;
+    grid-column: 2;
     min-width: 0;
   }
 
@@ -159,12 +175,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    display: inline-block;
+    display: block;
   }
 
   .option-title {
     font-weight: 500;
     color: var(--secondary-color);
+    max-width: 100%;
   }
 
   .option-author {
@@ -172,35 +189,26 @@
     color: var(--text-muted);
   }
 
-  .delete-button-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-left: auto;
-    width: 40px;
-  }
-
+  .delete-button-container,
   .status-icon-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    margin-left: auto;
-    width: 40px;
-
-    .check-icon {
-      color: var(--primary-color);
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-    }
+    grid-column: 3;
+    justify-self: end;
+    width: 30px;
+    height: 30px;
   }
 
   .history-delete-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 0;
     line-height: 24px;
-    height: 28px;
-    width: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     .mat-icon {
       font-size: 16px;
@@ -211,7 +219,15 @@
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.08);
+      border-radius: 50%;
     }
+  }
+
+  .check-icon {
+    color: var(--primary-color);
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
   }
 
   .clear-history-option {
@@ -233,6 +249,13 @@
 
   .mdc-list-item--selected .option-title {
     color: var(--primary-color);
+  }
+
+  .mdc-list-item__primary-text {
+    width: 100%;
+    display: flex;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
 
