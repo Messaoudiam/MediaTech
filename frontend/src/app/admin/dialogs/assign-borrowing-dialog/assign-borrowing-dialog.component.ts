@@ -336,7 +336,12 @@ export class AssignBorrowingDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.assignForm.valid) {
       this.submitting = true;
-      const formValue = this.assignForm.value;
+      const formValue = { ...this.assignForm.value };
+
+      // Si la date est vide ou null, supprimer le champ dueDate pour que le backend utilise la date par défaut
+      if (!formValue.dueDate) {
+        delete formValue.dueDate;
+      }
 
       this.borrowingService
         .createBorrowingByAdmin(formValue)
