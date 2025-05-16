@@ -15,7 +15,9 @@
               <input
                 matInput
                 formControlName="title"
-                placeholder="Titre du livre"
+                [placeholder]="
+                  getFieldPlaceholder('title', bookForm.get('type')?.value)
+                "
               />
               <mat-error *ngIf="bookForm.get('title')?.hasError('required')">
                 Le titre est requis
@@ -34,39 +36,216 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Auteur</mat-label>
-              <input
-                matInput
-                formControlName="author"
-                placeholder="Auteur du livre"
-              />
-              <mat-error *ngIf="bookForm.get('author')?.hasError('required')">
-                L'auteur est requis
-              </mat-error>
-            </mat-form-field>
+            <!-- Champs communs aux BOOK, COMIC, AUDIOBOOK -->
+            <ng-container
+              *ngIf="shouldShowField('author', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{
+                  getFieldLabel("author", bookForm.get("type")?.value)
+                }}</mat-label>
+                <input
+                  matInput
+                  formControlName="author"
+                  [placeholder]="
+                    getFieldPlaceholder('author', bookForm.get('type')?.value)
+                  "
+                />
+                <mat-error *ngIf="bookForm.get('author')?.hasError('required')">
+                  {{ getFieldLabel("author", bookForm.get("type")?.value) }} est
+                  requis
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>ISBN</mat-label>
-              <input
-                matInput
-                formControlName="isbn"
-                placeholder="ISBN (optionnel)"
-              />
-              <mat-error *ngIf="bookForm.get('isbn')?.hasError('pattern')">
-                Format ISBN invalide
-              </mat-error>
-              <mat-error
-                *ngIf="bookForm.get('isbn')?.hasError('duplicateIsbn')"
-              >
-                Cet ISBN existe déjà dans la bibliothèque
-              </mat-error>
-              <!-- <mat-hint>Laissez vide si la ressource n'a pas d'ISBN</mat-hint> -->
-            </mat-form-field>
+            <!-- Champs ISBN pour livres, BD et livres audio -->
+            <ng-container
+              *ngIf="shouldShowField('isbn', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>ISBN</mat-label>
+                <input
+                  matInput
+                  formControlName="isbn"
+                  placeholder="ISBN (optionnel)"
+                />
+                <mat-error *ngIf="bookForm.get('isbn')?.hasError('pattern')">
+                  Format ISBN invalide
+                </mat-error>
+                <mat-error
+                  *ngIf="bookForm.get('isbn')?.hasError('duplicateIsbn')"
+                >
+                  Cet ISBN existe déjà dans la bibliothèque
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Champs pour DVD -->
+            <ng-container
+              *ngIf="shouldShowField('director', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Réalisateur</mat-label>
+                <input
+                  matInput
+                  formControlName="director"
+                  placeholder="Ex: Christopher Nolan"
+                />
+                <mat-error
+                  *ngIf="bookForm.get('director')?.hasError('required')"
+                >
+                  Le réalisateur est requis
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container
+              *ngIf="shouldShowField('actors', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Acteurs principaux</mat-label>
+                <input
+                  matInput
+                  formControlName="actors"
+                  placeholder="Ex: Leonardo DiCaprio, Tom Hardy"
+                />
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container
+              *ngIf="shouldShowField('duration', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Durée (minutes)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  formControlName="duration"
+                  placeholder="Ex: 120"
+                />
+                <mat-error *ngIf="bookForm.get('duration')?.hasError('min')">
+                  La durée doit être supérieure à 0
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Champs pour jeux vidéo -->
+            <ng-container
+              *ngIf="shouldShowField('developer', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Développeur</mat-label>
+                <input
+                  matInput
+                  formControlName="developer"
+                  placeholder="Ex: Nintendo, Ubisoft"
+                />
+                <mat-error
+                  *ngIf="bookForm.get('developer')?.hasError('required')"
+                >
+                  Le développeur est requis
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container
+              *ngIf="shouldShowField('platform', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Plateforme</mat-label>
+                <input
+                  matInput
+                  formControlName="platform"
+                  placeholder="Ex: PS5, Switch, PC"
+                />
+                <mat-error
+                  *ngIf="bookForm.get('platform')?.hasError('required')"
+                >
+                  La plateforme est requise
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container
+              *ngIf="shouldShowField('pegiRating', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Classification PEGI</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  formControlName="pegiRating"
+                  placeholder="Ex: 3, 7, 12, 16, 18"
+                />
+                <mat-error
+                  *ngIf="
+                    bookForm.get('pegiRating')?.hasError('min') ||
+                    bookForm.get('pegiRating')?.hasError('max')
+                  "
+                >
+                  Classification PEGI invalide (3, 7, 12, 16 ou 18)
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Champs pour magazines -->
+            <ng-container
+              *ngIf="
+                shouldShowField('issueNumber', bookForm.get('type')?.value)
+              "
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Numéro</mat-label>
+                <input
+                  matInput
+                  formControlName="issueNumber"
+                  placeholder="Ex: N°42, Janvier 2023"
+                />
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container
+              *ngIf="shouldShowField('frequency', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Périodicité</mat-label>
+                <input
+                  matInput
+                  formControlName="frequency"
+                  placeholder="Ex: Mensuel, Hebdomadaire"
+                />
+              </mat-form-field>
+            </ng-container>
+
+            <!-- Champs communs pour plusieurs types -->
+            <ng-container
+              *ngIf="shouldShowField('publisher', bookForm.get('type')?.value)"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{
+                  getFieldLabel("publisher", bookForm.get("type")?.value)
+                }}</mat-label>
+                <input
+                  matInput
+                  formControlName="publisher"
+                  placeholder="Ex: Gallimard"
+                />
+                <mat-error
+                  *ngIf="bookForm.get('publisher')?.hasError('required')"
+                >
+                  {{
+                    getFieldLabel("publisher", bookForm.get("type")?.value)
+                  }}
+                  est requis
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Année de publication</mat-label>
+                <mat-label>{{
+                  getFieldLabel("publishedYear", bookForm.get("type")?.value)
+                }}</mat-label>
                 <input
                   matInput
                   type="number"
@@ -83,27 +262,37 @@
                 </mat-error>
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Nombre de pages</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="pageCount"
-                  placeholder="Pages"
-                />
-                <mat-error *ngIf="bookForm.get('pageCount')?.hasError('min')">
-                  Valeur invalide
-                </mat-error>
-              </mat-form-field>
+              <ng-container
+                *ngIf="
+                  shouldShowField('pageCount', bookForm.get('type')?.value)
+                "
+              >
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Nombre de pages</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="pageCount"
+                    placeholder="Pages"
+                  />
+                  <mat-error *ngIf="bookForm.get('pageCount')?.hasError('min')">
+                    Valeur invalide
+                  </mat-error>
+                </mat-form-field>
+              </ng-container>
             </div>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Genre</mat-label>
+                <mat-label>{{
+                  getFieldLabel("genre", bookForm.get("type")?.value)
+                }}</mat-label>
                 <input
                   matInput
                   formControlName="genre"
-                  placeholder="Ex: Science-Fiction"
+                  [placeholder]="
+                    getFieldPlaceholder('genre', bookForm.get('type')?.value)
+                  "
                 />
               </mat-form-field>
 
@@ -116,15 +305,6 @@
                 />
               </mat-form-field>
             </div>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Éditeur</mat-label>
-              <input
-                matInput
-                formControlName="publisher"
-                placeholder="Ex: Gallimard"
-              />
-            </mat-form-field>
           </div>
 
           <mat-divider [vertical]="true"></mat-divider>
@@ -140,7 +320,7 @@
               <textarea
                 matInput
                 formControlName="description"
-                placeholder="Description du livre"
+                placeholder="Description de la ressource"
                 rows="5"
               ></textarea>
               <mat-error

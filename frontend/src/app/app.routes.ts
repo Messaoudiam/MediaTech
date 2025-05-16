@@ -10,6 +10,7 @@ import { LandingComponent } from './landing/landing.component';
 import { BookDetailComponent } from './books/book-detail/book-detail.component';
 import { SearchComponent } from './books/search/search.component';
 import { BookFormComponent } from './admin/book-form/book-form.component';
+import { ResourceFormComponent } from './admin/resource-form/resource-form.component';
 import { BookListComponent as AdminBookListComponent } from './admin/book-list/book-list.component';
 import { BookEditComponent } from './admin/book-edit/book-edit.component';
 import { BookListComponent } from './books/book-list/book-list.component';
@@ -67,7 +68,8 @@ export const routes: Routes = [
     data: { requiredRole: 'ADMIN' },
     children: [
       { path: '', component: AdminDashboardComponent },
-      { path: 'add-book', component: BookFormComponent },
+      { path: 'add-book', component: ResourceFormComponent },
+      { path: 'add-resource', component: ResourceFormComponent },
       { path: 'books', component: AdminBookListComponent },
       { path: 'edit-book/:id', component: BookEditComponent },
       { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
