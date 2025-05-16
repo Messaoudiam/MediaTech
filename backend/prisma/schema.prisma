@@ -76,6 +76,16 @@ model Resource {
   coverImageUrl String?
   pageCount     Int?
   publishedYear Int?
+  developer     String?      // Pour les jeux
+  platform      String?      // Pour les jeux
+  pegiRating    Int?         // Pour les jeux
+     
+  director      String?      // Pour les DVD
+  actors        String?      // Pour les DVD
+  duration      Int?         // Pour les DVD
+     
+  issueNumber   String?      // Pour les magazines
+  frequency     String?      // Pour les magazines
   
   copies      Copy[]
   favorites   Favorite[]

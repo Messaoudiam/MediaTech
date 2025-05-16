@@ -97,6 +97,73 @@ export class UpdateResourceDto extends PartialType(CreateResourceDto) {
   @IsPositive()
   pageCount?: number;
 
+  // Champs spécifiques aux jeux vidéo
+  @ApiPropertyOptional({
+    description: 'Développeur du jeu',
+    example: 'Nintendo',
+  })
+  @IsString()
+  @IsOptional()
+  developer?: string;
+
+  @ApiPropertyOptional({
+    description: 'Plateforme du jeu',
+    example: 'PS5, Switch, PC',
+  })
+  @IsString()
+  @IsOptional()
+  platform?: string;
+
+  @ApiPropertyOptional({
+    description: 'Classification PEGI',
+    example: 16,
+  })
+  @IsOptional()
+  @IsPositive()
+  pegiRating?: number;
+
+  // Champs spécifiques aux DVD
+  @ApiPropertyOptional({
+    description: 'Réalisateur du film',
+    example: 'Christopher Nolan',
+  })
+  @IsString()
+  @IsOptional()
+  director?: string;
+
+  @ApiPropertyOptional({
+    description: 'Acteurs principaux',
+    example: 'Leonardo DiCaprio, Tom Hardy',
+  })
+  @IsString()
+  @IsOptional()
+  actors?: string;
+
+  @ApiPropertyOptional({
+    description: 'Durée en minutes',
+    example: 120,
+  })
+  @IsOptional()
+  @IsPositive()
+  duration?: number;
+
+  // Champs spécifiques aux magazines
+  @ApiPropertyOptional({
+    description: 'Numéro du magazine',
+    example: 'N°42, Janvier 2023',
+  })
+  @IsString()
+  @IsOptional()
+  issueNumber?: string;
+
+  @ApiPropertyOptional({
+    description: 'Périodicité du magazine',
+    example: 'Mensuel',
+  })
+  @IsString()
+  @IsOptional()
+  frequency?: string;
+
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({
