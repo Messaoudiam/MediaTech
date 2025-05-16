@@ -317,22 +317,16 @@ $transition: all 0.3s ease;
 
   .book-details {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 0.5rem;
     font-size: 0.85rem;
     color: $text-muted;
-
-    .book-year {
+    .book-year,
+    .book-genre,
+    .resource-type {
       background-color: rgba($primary-color, 0.1);
       color: $primary-color;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-
-    .book-genre {
-      background-color: rgba($secondary-color, 0.1);
-      color: $secondary-color;
       padding: 2px 8px;
       border-radius: 12px;
       display: -webkit-box;
@@ -417,7 +411,8 @@ $transition: all 0.3s ease;
 
 .pagination-info {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
   color: $text-muted;
   font-size: 0.9rem;
 
@@ -508,5 +503,29 @@ $transition: all 0.3s ease;
 
   mat-icon {
     margin-right: 8px;
+  }
+}
+
+// Section de type de ressource
+.resource-type-section {
+  margin-bottom: 3rem;
+}
+
+.resource-type-title {
+  font-size: 1.75rem;
+  color: $secondary-color;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: $primary-color;
   }
 }

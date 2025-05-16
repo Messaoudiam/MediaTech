@@ -4,8 +4,20 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
-import { BookService, Resource } from '../core/services/book.service';
+import {
+  BookService,
+  Resource,
+  ResourceType,
+} from '../core/services/book.service';
 import { ImageService } from '../core/services/image.service';
+
+interface CarouselData {
+  resources: Resource[];
+  displayedResources: Resource[];
+  currentPage: number;
+  totalPages: number;
+  title: string;
+}
 
 @Component({
   selector: 'app-landing',
@@ -21,15 +33,11 @@ import { ImageService } from '../core/services/image.service';
   ],
 })
 export class LandingComponent implements OnInit {
-  allBooks: Resource[] = [];
-  displayedBooks: Resource[] = [];
+  resourcesByType: Map<ResourceType, CarouselData> = new Map();
+  resourceTypes = Object.values(ResourceType);
   loading = true;
   error = false;
-
-  // Variables pour le carrousel
-  currentPage = 0;
   itemsPerPage = 3;
-  totalPages = 0;
 
   constructor(
     private bookService: BookService,
@@ -37,61 +45,114 @@ export class LandingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadBooks();
+    this.loadResources();
   }
 
-  private loadBooks(): void {
-    this.bookService.getAllBooks().subscribe({
-      next: (books) => {
-        this.allBooks = books;
-        this.totalPages = Math.ceil(this.allBooks.length / this.itemsPerPage);
-        this.updateDisplayedBooks();
+  private loadResources(): void {
+    this.bookService.getAllResourcesWithCopies().subscribe({
+      next: (resources) => {
+        // Initialiser les carrousels
+        this.initializeCarousels(resources);
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des livres:', error);
+        console.error('Erreur lors du chargement des ressources:', error);
         this.error = true;
         this.loading = false;
       },
     });
   }
 
-  // Méthodes pour gérer le carrousel
-  nextPage(): void {
-    if (this.currentPage < this.totalPages - 1) {
-      this.currentPage++;
-      this.updateDisplayedBooks();
+  private initializeCarousels(resources: Resource[]): void {
+    // Regrouper les ressources par type
+    this.resourceTypes.forEach((type) => {
+      const typeResources = resources.filter((r) => r.type === type);
+
+      if (typeResources.length > 0) {
+        const totalPages = Math.ceil(typeResources.length / this.itemsPerPage);
+
+        this.resourcesByType.set(type, {
+          resources: typeResources,
+          displayedResources: typeResources.slice(0, this.itemsPerPage),
+          currentPage: 0,
+          totalPages: totalPages,
+          title: this.getTypeFrenchTitle(type),
+        });
+      }
+    });
+  }
+
+  // Méthode pour obtenir le titre français selon le type de ressource
+  private getTypeFrenchTitle(type: ResourceType): string {
+    switch (type) {
+      case ResourceType.BOOK:
+        return 'Livres';
+      case ResourceType.COMIC:
+        return 'Bandes dessinées';
+      case ResourceType.DVD:
+        return 'Films et DVD';
+      case ResourceType.GAME:
+        return 'Jeux vidéo';
+      case ResourceType.MAGAZINE:
+        return 'Magazines';
+      case ResourceType.AUDIOBOOK:
+        return 'Livres audio';
+      default:
+        return 'Ressources';
     }
   }
 
-  previousPage(): void {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      this.updateDisplayedBooks();
+  // Méthodes pour gérer le carrousel pour un type spécifique
+  nextPage(type: ResourceType): void {
+    const carousel = this.resourcesByType.get(type);
+    if (carousel && carousel.currentPage < carousel.totalPages - 1) {
+      carousel.currentPage++;
+      this.updateDisplayedResources(type);
     }
   }
 
-  updateDisplayedBooks(): void {
-    const startIndex = this.currentPage * this.itemsPerPage;
-    this.displayedBooks = this.allBooks.slice(
-      startIndex,
-      startIndex + this.itemsPerPage
-    );
+  previousPage(type: ResourceType): void {
+    const carousel = this.resourcesByType.get(type);
+    if (carousel && carousel.currentPage > 0) {
+      carousel.currentPage--;
+      this.updateDisplayedResources(type);
+    }
+  }
+
+  updateDisplayedResources(type: ResourceType): void {
+    const carousel = this.resourcesByType.get(type);
+    if (carousel) {
+      const startIndex = carousel.currentPage * this.itemsPerPage;
+      carousel.displayedResources = carousel.resources.slice(
+        startIndex,
+        startIndex + this.itemsPerPage
+      );
+    }
   }
 
   // Vérifier si on peut naviguer aux pages précédente/suivante
-  canGoToPreviousPage(): boolean {
-    return this.currentPage > 0;
+  canGoToPreviousPage(type: ResourceType): boolean {
+    const carousel = this.resourcesByType.get(type);
+    return carousel ? carousel.currentPage > 0 : false;
   }
 
-  canGoToNextPage(): boolean {
-    return this.currentPage < this.totalPages - 1;
+  canGoToNextPage(type: ResourceType): boolean {
+    const carousel = this.resourcesByType.get(type);
+    return carousel ? carousel.currentPage < carousel.totalPages - 1 : false;
+  }
+
+  // Méthode pour vérifier si un type de ressource a des éléments
+  hasResources(type: ResourceType): boolean {
+    return (
+      this.resourcesByType.has(type) &&
+      this.resourcesByType.get(type)!.resources.length > 0
+    );
   }
 
   /**
    * Obtenir l'URL complète de l'image depuis Supabase
    */
-  getBookCoverUrl(coverImageUrl: string | undefined): string {
+  getResourceCoverUrl(coverImageUrl: string | undefined): string {
     return this.imageService.getSafeImageUrl(coverImageUrl || '');
   }
 

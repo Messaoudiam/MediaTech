@@ -38,17 +38,17 @@
       <div class="feature-card">
         <mat-icon>book</mat-icon>
         <h3>Grande collection</h3>
-        <p>Accédez à des milliers de livres de tous genres</p>
+        <p>Accédez à des milliers de ressources de tous genres</p>
       </div>
       <div class="feature-card">
         <mat-icon>search</mat-icon>
         <h3>Recherche facile</h3>
-        <p>Trouvez rapidement les livres qui vous intéressent</p>
+        <p>Trouvez rapidement les ressources qui vous intéressent</p>
       </div>
       <div class="feature-card">
         <mat-icon>favorite</mat-icon>
         <h3>Favoris</h3>
-        <p>Enregistrez vos livres préférés pour plus tard</p>
+        <p>Enregistrez vos ressources préférées pour plus tard</p>
       </div>
       <div class="feature-card">
         <mat-icon>history</mat-icon>
@@ -59,7 +59,7 @@
   </section>
 
   <section class="featured-books-section">
-    <h2 class="section-title">Tous nos livres disponibles</h2>
+    <h2 class="section-title">Découvrez notre collection</h2>
 
     <div class="view-all-button-container">
       <button
@@ -69,80 +69,95 @@
         class="view-all-button"
       >
         <mat-icon>library_books</mat-icon>
-        Voir tous les livres
+        Voir toutes les ressources
       </button>
     </div>
 
     <!-- Indicateur de chargement -->
     <div class="loading-container" *ngIf="loading">
       <mat-icon class="loading-icon">autorenew</mat-icon>
-      <p>Chargement des livres...</p>
+      <p>Chargement des ressources...</p>
     </div>
 
     <!-- Message d'erreur -->
     <div class="error-container" *ngIf="error">
       <mat-icon class="error-icon">error</mat-icon>
-      <p>Impossible de charger les livres. Veuillez réessayer plus tard.</p>
+      <p>Impossible de charger les ressources. Veuillez réessayer plus tard.</p>
     </div>
 
-    <!-- Carrousel de livres -->
-    <div class="carousel-container" *ngIf="!loading && !error">
-      <button
-        class="nav-button prev-button"
-        [disabled]="!canGoToPreviousPage()"
-        (click)="previousPage()"
-        [class.disabled]="!canGoToPreviousPage()"
-      >
-        <mat-icon>chevron_left</mat-icon>
-      </button>
+    <!-- Carrousels pour chaque type de ressource -->
+    <div *ngIf="!loading && !error">
+      <ng-container *ngFor="let type of resourceTypes">
+        <div *ngIf="hasResources(type)" class="resource-type-section">
+          <h3 class="resource-type-title">
+            {{ resourcesByType.get(type)?.title }}
+          </h3>
 
-      <div class="books-carousel">
-        <mat-card
-          class="book-card"
-          *ngFor="let book of displayedBooks"
-          [routerLink]="['/books', book.id]"
-        >
-          <img
-            mat-card-image
-            [src]="getBookCoverUrl(book.coverImageUrl)"
-            [alt]="book.title"
-            class="book-cover"
-            (error)="handleImageError($event)"
-          />
-          <mat-card-content>
-            <h3 class="book-title">{{ book.title }}</h3>
-            <p class="book-author">{{ book.author }}</p>
-            <div class="book-details">
-              <span *ngIf="book.publishedYear" class="book-year">{{
-                book.publishedYear
-              }}</span>
-              <span *ngIf="book.genre" class="book-genre">{{
-                book.genre
-              }}</span>
-            </div>
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-button color="primary">
-              <mat-icon>visibility</mat-icon>
-              Voir détails
+          <div class="carousel-container">
+            <button
+              class="nav-button prev-button"
+              [disabled]="!canGoToPreviousPage(type)"
+              (click)="previousPage(type)"
+              [class.disabled]="!canGoToPreviousPage(type)"
+            >
+              <mat-icon>chevron_left</mat-icon>
             </button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
 
-      <button
-        class="nav-button next-button"
-        [disabled]="!canGoToNextPage()"
-        (click)="nextPage()"
-        [class.disabled]="!canGoToNextPage()"
-      >
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-    </div>
+            <div class="books-carousel">
+              <mat-card
+                class="book-card"
+                *ngFor="
+                  let resource of resourcesByType.get(type)?.displayedResources
+                "
+                [routerLink]="['/books', resource.id]"
+              >
+                <img
+                  mat-card-image
+                  [src]="getResourceCoverUrl(resource.coverImageUrl)"
+                  [alt]="resource.title"
+                  class="book-cover"
+                  (error)="handleImageError($event)"
+                />
+                <mat-card-content>
+                  <h3 class="book-title">{{ resource.title }}</h3>
+                  <p class="book-author">{{ resource.author }}</p>
+                  <div class="book-details">
+                    <span *ngIf="resource.publishedYear" class="book-year">{{
+                      resource.publishedYear
+                    }}</span>
+                    <span *ngIf="resource.genre" class="book-genre">{{
+                      resource.genre
+                    }}</span>
+                  </div>
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-button color="primary">
+                    <mat-icon>visibility</mat-icon>
+                    Voir détails
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
 
-    <!-- Pagination -->
-    <div class="pagination-info" *ngIf="!loading && !error">
-      <span>{{ currentPage + 1 }} / {{ totalPages }}</span>
+            <button
+              class="nav-button next-button"
+              [disabled]="!canGoToNextPage(type)"
+              (click)="nextPage(type)"
+              [class.disabled]="!canGoToNextPage(type)"
+            >
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-info">
+            <span
+              >{{ resourcesByType.get(type)?.currentPage! + 1 }} /
+              {{ resourcesByType.get(type)?.totalPages }}</span
+            >
+          </div>
+        </div>
+      </ng-container>
     </div>
   </section>
 
