@@ -167,6 +167,132 @@ export class BookEditComponent implements OnInit, OnDestroy {
       genre: [''],
       pageCount: [null, [Validators.min(1)]],
       language: ['Français'],
+      // Champs spécifiques aux DVD
+      director: [''],
+      actors: [''],
+      duration: [null],
+      // Champs spécifiques aux jeux vidéo
+      developer: [''],
+      platform: [''],
+      pegiRating: [null],
+      // Champs spécifiques aux magazines
+      issueNumber: [''],
+      frequency: [''],
+    });
+
+    // Surveillance des changements de type de ressource
+    this.bookForm.get('type')?.valueChanges.subscribe((type: ResourceType) => {
+      this.updateFormValidators(type);
+    });
+  }
+
+  private updateFormValidators(resourceType: ResourceType): void {
+    // Réinitialiser tous les validateurs
+    const fields = [
+      'author',
+      'isbn',
+      'publisher',
+      'publishedYear',
+      'genre',
+      'pageCount',
+      'director',
+      'actors',
+      'duration',
+      'developer',
+      'platform',
+      'pegiRating',
+      'issueNumber',
+      'frequency',
+    ];
+
+    fields.forEach((field) => {
+      this.bookForm.get(field)?.clearValidators();
+      this.bookForm.get(field)?.updateValueAndValidity();
+    });
+
+    // Appliquer les validateurs spécifiques au type de ressource
+    switch (resourceType) {
+      case ResourceType.BOOK:
+      case ResourceType.AUDIOBOOK:
+        this.bookForm
+          .get('author')
+          ?.setValidators([
+            Validators.required,
+            Validators.minLength(2),
+            Validators.maxLength(100),
+          ]);
+        this.bookForm
+          .get('isbn')
+          ?.setValidators([
+            Validators.pattern(
+              /^(?:\d[- ]?){9}[\dXx]$|^\d{13}$|^(?:\d[-]?){12}\d$/
+            ),
+          ]);
+        this.bookForm.get('publisher')?.setValidators([]);
+        this.bookForm
+          .get('publishedYear')
+          ?.setValidators([
+            Validators.min(1000),
+            Validators.max(new Date().getFullYear()),
+          ]);
+        this.bookForm.get('pageCount')?.setValidators([Validators.min(1)]);
+        break;
+
+      case ResourceType.COMIC:
+        this.bookForm
+          .get('author')
+          ?.setValidators([
+            Validators.required,
+            Validators.minLength(2),
+            Validators.maxLength(100),
+          ]);
+        this.bookForm.get('publisher')?.setValidators([Validators.required]);
+        this.bookForm.get('pageCount')?.setValidators([Validators.min(1)]);
+        this.bookForm
+          .get('publishedYear')
+          ?.setValidators([
+            Validators.min(1000),
+            Validators.max(new Date().getFullYear()),
+          ]);
+        break;
+
+      case ResourceType.DVD:
+        this.bookForm.get('director')?.setValidators([Validators.required]);
+        this.bookForm.get('actors')?.setValidators([]);
+        this.bookForm.get('duration')?.setValidators([Validators.min(1)]);
+        this.bookForm
+          .get('publishedYear')
+          ?.setValidators([
+            Validators.min(1900),
+            Validators.max(new Date().getFullYear()),
+          ]);
+        break;
+
+      case ResourceType.GAME:
+        this.bookForm.get('developer')?.setValidators([Validators.required]);
+        this.bookForm.get('platform')?.setValidators([Validators.required]);
+        this.bookForm
+          .get('pegiRating')
+          ?.setValidators([Validators.min(3), Validators.max(18)]);
+        this.bookForm
+          .get('publishedYear')
+          ?.setValidators([
+            Validators.min(1970),
+            Validators.max(new Date().getFullYear()),
+          ]);
+        break;
+
+      case ResourceType.MAGAZINE:
+        this.bookForm.get('publisher')?.setValidators([Validators.required]);
+        this.bookForm.get('issueNumber')?.setValidators([]);
+        this.bookForm.get('frequency')?.setValidators([]);
+        this.bookForm.get('pageCount')?.setValidators([Validators.min(1)]);
+        break;
+    }
+
+    // Mettre à jour les validateurs
+    fields.forEach((field) => {
+      this.bookForm.get(field)?.updateValueAndValidity();
     });
   }
 
@@ -182,7 +308,21 @@ export class BookEditComponent implements OnInit, OnDestroy {
       genre: book.genre,
       pageCount: book.pageCount,
       language: book.language,
+      // Champs spécifiques aux DVD
+      director: book.director,
+      actors: book.actors,
+      duration: book.duration,
+      // Champs spécifiques aux jeux vidéo
+      developer: book.developer,
+      platform: book.platform,
+      pegiRating: book.pegiRating,
+      // Champs spécifiques aux magazines
+      issueNumber: book.issueNumber,
+      frequency: book.frequency,
     });
+
+    // Mise à jour des validateurs en fonction du type
+    this.updateFormValidators(book.type);
   }
 
   onFileSelected(event: Event): void {
@@ -249,69 +389,196 @@ export class BookEditComponent implements OnInit, OnDestroy {
     const optionalFields = [
       'isbn',
       'publisher',
-      'genre',
-      'language',
       'publishedYear',
+      'genre',
       'pageCount',
+      'director',
+      'actors',
+      'duration',
+      'developer',
+      'platform',
+      'pegiRating',
+      'issueNumber',
+      'frequency',
     ];
+
     optionalFields.forEach((field) => {
-      if (bookData[field] === '' || bookData[field] === undefined) {
+      if (bookData[field] === '') {
         bookData[field] = null;
       }
     });
 
-    // Si on doit supprimer l'image de couverture, ajouter un champ spécial
+    // Ajouter un indicateur de suppression d'image si nécessaire
     if (this.shouldRemoveCoverImage) {
-      bookData.removeCoverImage = 'true';
+      bookData.removeCoverImage = true;
     }
 
-    // Convertir null en undefined pour respecter le typage
-    const coverFile = this.selectedCoverImage || undefined;
-
-    const bookId = this.bookId as string;
-
-    this.bookService.updateBook(bookId, bookData, coverFile).subscribe({
-      next: (updatedBook) => {
-        this.loading = false;
-        this.shouldRemoveCoverImage = false; // Réinitialiser le flag
-        this.notificationService.success('Ressource mise à jour avec succès');
-        this.router.navigate(['/admin/books']);
-      },
-      error: (error) => {
-        this.loading = false;
-        console.error('Erreur lors de la mise à jour de la ressource:', error);
-
-        // Message d'erreur plus détaillé
-        let errorMessage = 'Erreur lors de la mise à jour de la ressource';
-
-        if (error.status === 400) {
-          errorMessage = 'Erreur de validation des données';
-          if (error.error?.message) {
-            errorMessage = `Erreur: ${error.error.message}`;
-          }
-        } else if (error.status === 404) {
-          errorMessage = 'Ressource non trouvée';
-        } else if (error.status === 409) {
-          errorMessage = 'Cet ISBN existe déjà dans la bibliothèque';
-          // Mettre en évidence le champ ISBN
-          this.bookForm.get('isbn')?.setErrors({ duplicateIsbn: true });
+    this.bookService
+      .updateBook(this.bookId, bookData, this.selectedCoverImage || undefined)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error('Erreur lors de la mise à jour:', error);
+          this.notificationService.error(
+            'Erreur lors de la mise à jour de la ressource. Veuillez réessayer.'
+          );
+          return of(null);
+        }),
+        finalize(() => {
+          this.loading = false;
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          this.notificationService.success('Ressource mise à jour avec succès');
+          this.router.navigate(['/admin/resources']);
         }
-
-        this.notificationService.error(errorMessage);
-      },
-    });
+      });
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
-      if ((control as FormGroup).controls) {
+      if ((control as any).controls) {
         this.markFormGroupTouched(control as FormGroup);
       }
     });
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/books']);
+    this.router.navigate(['/admin/resources']);
+  }
+
+  // Méthodes pour la gestion conditionnelle des champs en fonction du type
+  shouldShowField(fieldName: string, type: ResourceType): boolean {
+    if (!type) return false;
+
+    switch (fieldName) {
+      case 'author':
+        return [
+          ResourceType.BOOK,
+          ResourceType.COMIC,
+          ResourceType.AUDIOBOOK,
+        ].includes(type);
+      case 'isbn':
+        return [
+          ResourceType.BOOK,
+          ResourceType.COMIC,
+          ResourceType.AUDIOBOOK,
+        ].includes(type);
+      case 'pageCount':
+        return [
+          ResourceType.BOOK,
+          ResourceType.COMIC,
+          ResourceType.MAGAZINE,
+        ].includes(type);
+      case 'publisher':
+        return [
+          ResourceType.BOOK,
+          ResourceType.COMIC,
+          ResourceType.MAGAZINE,
+        ].includes(type);
+      case 'director':
+      case 'actors':
+      case 'duration':
+        return type === ResourceType.DVD;
+      case 'developer':
+      case 'platform':
+      case 'pegiRating':
+        return type === ResourceType.GAME;
+      case 'issueNumber':
+      case 'frequency':
+        return type === ResourceType.MAGAZINE;
+      default:
+        return true;
+    }
+  }
+
+  getFieldLabel(fieldName: string, type: ResourceType): string {
+    if (!type) return '';
+
+    switch (fieldName) {
+      case 'author':
+        return type === ResourceType.COMIC ? 'Auteur / Illustrateur' : 'Auteur';
+      case 'publisher':
+        return type === ResourceType.MAGAZINE
+          ? 'Éditeur / Publication'
+          : 'Éditeur';
+      case 'publishedYear':
+        switch (type) {
+          case ResourceType.GAME:
+            return 'Année de sortie';
+          case ResourceType.DVD:
+            return 'Année de sortie';
+          case ResourceType.MAGAZINE:
+            return 'Année de publication';
+          default:
+            return 'Année de publication';
+        }
+      case 'genre':
+        switch (type) {
+          case ResourceType.GAME:
+            return 'Genre / Catégorie';
+          case ResourceType.DVD:
+            return 'Genre / Catégorie';
+          default:
+            return 'Genre';
+        }
+      default:
+        return fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+    }
+  }
+
+  getFieldPlaceholder(fieldName: string, type: ResourceType): string {
+    if (!type) return '';
+
+    switch (fieldName) {
+      case 'title':
+        switch (type) {
+          case ResourceType.BOOK:
+            return 'Titre du livre';
+          case ResourceType.COMIC:
+            return 'Titre de la BD';
+          case ResourceType.DVD:
+            return 'Titre du film/série';
+          case ResourceType.GAME:
+            return 'Titre du jeu';
+          case ResourceType.MAGAZINE:
+            return 'Titre du magazine';
+          case ResourceType.AUDIOBOOK:
+            return 'Titre du livre audio';
+          default:
+            return 'Titre de la ressource';
+        }
+      case 'author':
+        switch (type) {
+          case ResourceType.COMIC:
+            return 'Ex: Alan Moore, Dave Gibbons';
+          case ResourceType.BOOK:
+            return 'Ex: Victor Hugo';
+          case ResourceType.AUDIOBOOK:
+            return 'Ex: Agatha Christie';
+          default:
+            return 'Auteur de la ressource';
+        }
+      case 'genre':
+        switch (type) {
+          case ResourceType.BOOK:
+          case ResourceType.AUDIOBOOK:
+            return 'Ex: Science-Fiction, Policier';
+          case ResourceType.COMIC:
+            return 'Ex: Super-héros, Humour';
+          case ResourceType.DVD:
+            return 'Ex: Action, Comédie, Drame';
+          case ResourceType.GAME:
+            return 'Ex: FPS, RPG, Simulation';
+          case ResourceType.MAGAZINE:
+            return 'Ex: Mode, Cuisine, Actualité';
+          default:
+            return 'Genre de la ressource';
+        }
+      default:
+        return 'Valeur pour ' + fieldName;
+    }
   }
 }

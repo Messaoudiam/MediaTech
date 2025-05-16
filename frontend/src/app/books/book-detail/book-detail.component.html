@@ -202,15 +202,6 @@
           [bookCopies]="resource.copies"
         ></app-book-copies>
 
-        <!-- Bouton de débogage pour les exemplaires -->
-        <button
-          *ngIf="resource.copies && resource.copies.length > 0"
-          mat-button
-          color="accent"
-          (click)="debugCopies()"
-        >
-          Déboguer les exemplaires ({{ resource.copies.length }})
-        </button>
       </div>
     </div>
   </div>
