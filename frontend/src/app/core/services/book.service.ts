@@ -273,9 +273,7 @@ export class BookService {
   }
 
   searchBooks(query: string): Observable<Resource[]> {
-    const params = new HttpParams()
-      .set('search', query)
-      .set('type', ResourceType.BOOK);
+    const params = new HttpParams().set('search', query);
 
     return this.http.get<Resource[]>(this.apiUrl, { params });
   }

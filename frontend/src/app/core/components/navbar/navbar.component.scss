@@ -123,70 +123,58 @@
   }
 
   .option-content {
-    display: grid;
-    grid-template-columns: 40px minmax(0, 1fr) 30px;
-    grid-gap: 12px;
-    align-items: center;
-    padding: 4px 0;
-    width: 100%;
-    box-sizing: border-box;
-    height: 64px;
-  }
-
-  .option-image {
-    width: 40px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 4px;
-    flex-shrink: 0;
-    grid-column: 1;
-  }
-
-  .placeholder-image {
-    width: 40px;
-    height: 56px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    flex-shrink: 0;
-    grid-column: 1;
+    width: 100%;
 
-    mat-icon,
-    .material-icons {
-      color: var(--accent-color);
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+    .option-image {
+      width: 40px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-right: 12px;
+      flex-shrink: 0;
     }
-  }
 
-  .option-text {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    grid-column: 2;
-    min-width: 0;
-  }
+    .placeholder-image {
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-  .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    display: block;
-  }
+      mat-icon {
+        font-size: 20px;
+        color: #777;
+      }
+    }
 
-  .option-title {
-    font-weight: 500;
-    color: var(--secondary-color);
-    max-width: 100%;
-  }
+    .option-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
 
-  .option-author {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+      .option-title {
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .option-author {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 4px;
+      }
+
+      .option-type {
+        display: inline-block;
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background-color: var(--primary-color);
+        color: white;
+        max-width: fit-content;
+      }
+    }
   }
 
   .delete-button-container,

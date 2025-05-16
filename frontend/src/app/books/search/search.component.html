@@ -9,7 +9,7 @@
           type="text"
           [(ngModel)]="searchQuery"
           name="searchQuery"
-          placeholder="Rechercher un livre..."
+          placeholder="Rechercher une ressource..."
           (keyup.enter)="searchBooks()"
         />
         <button
@@ -44,7 +44,7 @@
       <mat-card
         *ngFor="let book of books"
         class="book-card"
-        (click)="viewBookDetails(book.id)"
+        (click)="viewResourceDetails(book)"
       >
         <img
           *ngIf="book.coverImageUrl"
@@ -53,7 +53,7 @@
           [alt]="book.title"
         />
         <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
-          <mat-icon>book</mat-icon>
+          <mat-icon>{{ getResourceIcon(book.type) }}</mat-icon>
         </div>
 
         <mat-card-content>
@@ -61,6 +61,7 @@
           <p class="book-author">{{ book.author }}</p>
 
           <div class="book-details">
+            <span class="book-type">{{ book.type }}</span>
             <span *ngIf="book.publishedYear" class="book-year">{{
               book.publishedYear
             }}</span>

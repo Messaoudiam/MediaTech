@@ -16,7 +16,7 @@
           type="text"
           [(ngModel)]="searchQuery"
           name="searchQuery"
-          placeholder="Rechercher un livre..."
+          placeholder="Rechercher une ressource..."
           autocomplete="off"
           [matAutocomplete]="auto"
           (input)="onSearchInput()"
@@ -131,7 +131,7 @@
                   *ngIf="!suggestion.coverImageUrl"
                   class="option-image placeholder-image"
                 >
-                  <mat-icon>book</mat-icon>
+                  <mat-icon>{{ getResourceIcon(suggestion.type) }}</mat-icon>
                 </div>
                 <div class="option-text">
                   <span class="option-title truncate">{{
@@ -140,6 +140,7 @@
                   <span class="option-author truncate">{{
                     suggestion.author
                   }}</span>
+                  <span class="option-type">{{ suggestion.type }}</span>
                 </div>
                 <div class="status-icon-container">
                   <mat-icon

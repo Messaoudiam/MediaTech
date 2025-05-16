@@ -24,7 +24,11 @@ import {
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { BookService, Resource } from '../../services/book.service';
+import {
+  BookService,
+  Resource,
+  ResourceType,
+} from '../../services/book.service';
 import { Subject, Subscription, Observable, of } from 'rxjs';
 import {
   debounceTime,
@@ -68,6 +72,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isLoading = false;
   filteredSuggestions: Resource[] = [];
   searchHistory: SearchHistoryItem[] = [];
+  resourceType = ResourceType;
 
   private searchInputSubject = new Subject<string>();
   private searchSubscription: Subscription | null = null;
@@ -377,14 +382,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   navigateToBook(book: Resource): void {
-    if (book && book.id) {
-      // Mise à jour de l'historique
-      this.addToHistory(book);
-      // Navigation vers la page du livre
-      this.router.navigate(['/books', book.id]);
-      // Réinitialiser le champ après la sélection
-      this.searchQuery = '';
-    }
+    // Ajouter le livre à l'historique
+    this.bookService.addToSearchHistory(book);
+
+    // Vider le champ de recherche
+    this.searchQuery = '';
+
+    // Naviguer vers la page de détails du livre
+    this.router.navigate(this.getResourceRoute(book));
   }
 
   handleImageError(event: Event): void {
@@ -412,6 +417,42 @@ export class NavbarComponent implements OnInit, OnDestroy {
           parent.insertBefore(placeholderDiv, imgElement);
         }
       }
+    }
+  }
+
+  getResourceIcon(type: ResourceType): string {
+    switch (type) {
+      case ResourceType.BOOK:
+        return 'book';
+      case ResourceType.COMIC:
+        return 'import_contacts';
+      case ResourceType.DVD:
+        return 'movie';
+      case ResourceType.GAME:
+        return 'sports_esports';
+      case ResourceType.MAGAZINE:
+        return 'newspaper';
+      case ResourceType.AUDIOBOOK:
+        return 'headphones';
+      default:
+        return 'description';
+    }
+  }
+
+  getResourceRoute(resource: Resource): string[] {
+    switch (resource.type) {
+      case ResourceType.BOOK:
+      case ResourceType.COMIC:
+      case ResourceType.AUDIOBOOK:
+        return ['/books', resource.id];
+      case ResourceType.DVD:
+        return ['/dvds', resource.id];
+      case ResourceType.GAME:
+        return ['/games', resource.id];
+      case ResourceType.MAGAZINE:
+        return ['/magazines', resource.id];
+      default:
+        return ['/resources', resource.id];
     }
   }
 }
