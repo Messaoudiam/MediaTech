@@ -3,6 +3,43 @@
     <h1>Tableau de bord administrateur</h1>
   </div>
 
+  <!-- Menu d'actions rapides pour mobile -->
+  <div class="mobile-quick-actions" *ngIf="!loading && user">
+    <div class="actions-header">
+      <h2>Actions rapides</h2>
+    </div>
+    <div class="actions-grid">
+      <button mat-raised-button color="primary" [routerLink]="['/admin/books']">
+        <mat-icon>inventory</mat-icon>
+        <span>Bibliothèque</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/admin/add-book']"
+      >
+        <mat-icon>add_circle</mat-icon>
+        <span>Ajouter</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/admin/borrowings']"
+      >
+        <mat-icon>history</mat-icon>
+        <span>Emprunts</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openAssignBorrowingDialog()"
+      >
+        <mat-icon>add_task</mat-icon>
+        <span>Attribuer</span>
+      </button>
+    </div>
+  </div>
+
   <div class="admin-content" *ngIf="!loading && user">
     <mat-card class="admin-profile-card">
       <mat-card-header>

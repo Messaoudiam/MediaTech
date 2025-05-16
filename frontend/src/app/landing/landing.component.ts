@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,13 +38,61 @@ export class LandingComponent implements OnInit {
   loading = true;
   error = false;
   itemsPerPage = 3;
+  currentScreenWidth: number = window.innerWidth;
 
   constructor(
     private bookService: BookService,
     public imageService: ImageService
   ) {}
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    const newScreenWidth = event.target.innerWidth;
+
+    // Ne réinitialiser les carrousels que si la catégorie de taille d'écran change
+    const oldScreenSizeCategory = this.getScreenSizeCategory(
+      this.currentScreenWidth
+    );
+    const newScreenSizeCategory = this.getScreenSizeCategory(newScreenWidth);
+
+    if (oldScreenSizeCategory !== newScreenSizeCategory) {
+      this.currentScreenWidth = newScreenWidth;
+      this.updateItemsPerPage();
+      this.resetCarousels();
+    }
+  }
+
+  private getScreenSizeCategory(width: number): string {
+    if (width < 576) return 'xs';
+    if (width < 992) return 'md';
+    return 'lg';
+  }
+
+  private updateItemsPerPage() {
+    if (this.currentScreenWidth < 576) {
+      this.itemsPerPage = 1;
+    } else if (this.currentScreenWidth < 992) {
+      this.itemsPerPage = 2;
+    } else {
+      this.itemsPerPage = 3;
+    }
+  }
+
+  private resetCarousels() {
+    if (this.resourcesByType.size > 0) {
+      this.bookService.getAllResourcesWithCopies().subscribe({
+        next: (resources) => {
+          this.initializeCarousels(resources);
+        },
+        error: (error) => {
+          console.error('Erreur lors du rechargement des ressources:', error);
+        },
+      });
+    }
+  }
+
   ngOnInit(): void {
+    this.updateItemsPerPage();
     this.loadResources();
   }
 

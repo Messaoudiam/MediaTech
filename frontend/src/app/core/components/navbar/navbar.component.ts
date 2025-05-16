@@ -77,6 +77,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   filteredSuggestions: Resource[] = [];
   searchHistory: SearchHistoryItem[] = [];
   resourceType = ResourceType;
+  suggestions: Resource[] = [];
+  isMobileMenuOpen = false;
+  isSearchOpen = false;
 
   private searchInputSubject = new Subject<string>();
   private searchSubscription: Subscription | null = null;
@@ -472,5 +475,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.notificationService.success('Emprunt attribué avec succès');
       }
     });
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    if (this.isMobileMenuOpen) {
+      this.isSearchOpen = false;
+    }
+  }
+
+  openSearch(): void {
+    this.isSearchOpen = true;
+    this.isMobileMenuOpen = false;
+    setTimeout(() => {
+      this.searchInput.nativeElement.focus();
+    });
+  }
+
+  closeSearch(): void {
+    this.isSearchOpen = false;
   }
 }

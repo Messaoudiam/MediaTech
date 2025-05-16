@@ -6,18 +6,6 @@
     <p>Chargement des données...</p>
   </div>
 
-  <!-- Section de débogage - à commenter en production -->
-  <div *ngIf="!loading" class="debug-section">
-    <ul>
-      <li *ngFor="let copy of availableCopies; let i = index">
-        [{{ i + 1 }}] ID: {{ copy.id }} | ResourceId: {{ copy.resourceId }} |
-        Title: {{ copy.resource?.title || "N/A" }} | Author:
-        {{ copy.resource?.author || "N/A" }}
-      </li>
-    </ul>
-    <hr />
-  </div>
-
   <form [formGroup]="assignForm" *ngIf="!loading">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Utilisateur</mat-label>

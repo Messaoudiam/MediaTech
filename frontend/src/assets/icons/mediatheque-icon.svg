@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fond cercle -->
+  <circle cx="256" cy="256" r="256" fill="#3f51b5"/>
+  
+  <!-- Étagère -->
+  <rect x="96" y="160" width="320" height="20" fill="#ff4081"/>
+  <rect x="96" y="320" width="320" height="20" fill="#ff4081"/>
+  
+  <!-- Livres rangée supérieure -->
+  <rect x="116" y="100" width="30" height="60" fill="#ff79b0"/>
+  <rect x="146" y="110" width="25" height="50" fill="#673ab7"/>
+  <rect x="171" y="95" width="35" height="65" fill="#9a67ea"/>
+  <rect x="206" y="105" width="28" height="55" fill="#c60055"/>
+  
+  <!-- Livres rangée inférieure -->
+  <rect x="280" y="260" width="28" height="60" fill="#757de8"/>
+  <rect x="308" y="250" width="32" height="70" fill="#673ab7"/>
+  <rect x="340" y="265" width="25" height="55" fill="#9a67ea"/>
+  
+  <!-- CD/DVD -->
+  <circle cx="235" cy="270" r="30" fill="#ffffff"/>
+  <circle cx="235" cy="270" r="12" fill="#4527a0"/>
+  <circle cx="235" cy="270" r="3" fill="#ffffff"/>
+  
+  <!-- Lecteur multimédia -->
+  <rect x="116" y="250" width="80" height="70" rx="5" fill="#673ab7"/>
+  <rect x="126" y="260" width="60" height="40" rx="2" fill="#9a67ea"/>
+  <circle cx="146" cy="310" r="5" fill="#ffffff"/>
+  <circle cx="166" cy="310" r="5" fill="#ffffff"/>
+  <rect x="176" cy="310" width="10" height="2" fill="#ffffff"/>
+</svg>

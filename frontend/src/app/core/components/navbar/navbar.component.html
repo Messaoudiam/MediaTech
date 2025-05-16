@@ -1,13 +1,18 @@
 <mat-toolbar color="primary" class="navbar">
   <div class="navbar-brand">
     <a [routerLink]="['/']">
-      <span class="logo">Bibliothèque du Centenaire</span>
+      <img
+        src="assets/icons/mediatheque-icon.svg"
+        alt="Logo Médiathèque"
+        class="navbar-logo"
+      />
+      <span class="logo">Médiathèque du Centenaire</span>
     </a>
   </div>
 
   <span class="navbar-spacer"></span>
 
-  <div class="search-container">
+  <div class="search-container" [class.mobile-search-open]="isSearchOpen">
     <form (ngSubmit)="searchBooks()">
       <mat-form-field appearance="outline" class="search-field">
         <mat-icon matPrefix>search</mat-icon>
@@ -158,7 +163,15 @@
             </mat-option>
           </ng-container>
         </mat-autocomplete>
-
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="closeSearch()"
+          *ngIf="isSearchOpen"
+          type="button"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
         <button mat-icon-button matSuffix type="submit" aria-label="Rechercher">
           <mat-icon>arrow_forward</mat-icon>
         </button>
@@ -166,11 +179,25 @@
     </form>
   </div>
 
-  <div class="navbar-links">
+  <div class="mobile-actions">
+    <button mat-icon-button class="mobile-search-button" (click)="openSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      class="mobile-menu-button"
+      (click)="toggleMobileMenu()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <div class="navbar-links" [class.menu-open]="isMobileMenuOpen">
     <ng-container *ngIf="!isLoggedIn; else loggedInTemplate">
       <button mat-button (click)="navigateToLogin()" class="nav-button">
         <mat-icon>login</mat-icon>
-        Connexion
+        <span>Connexion</span>
       </button>
       <button
         mat-raised-button
@@ -179,18 +206,18 @@
         class="nav-button"
       >
         <mat-icon>person_add</mat-icon>
-        Inscription
+        <span>Inscription</span>
       </button>
     </ng-container>
 
     <ng-template #loggedInTemplate>
       <button mat-button [routerLink]="['/home']" class="nav-button">
         <mat-icon>dashboard</mat-icon>
-        Tableau de bord
+        <span>Tableau de bord</span>
       </button>
       <button mat-button [matMenuTriggerFor]="userMenu" class="nav-button">
         <mat-icon>account_circle</mat-icon>
-        Mon compte
+        <span>Mon compte</span>
       </button>
 
       <!-- Menu utilisateur standard -->

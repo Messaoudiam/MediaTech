@@ -4,6 +4,47 @@
   padding: 20px;
 }
 
+// Styles pour le menu d'actions rapides mobile
+.mobile-quick-actions {
+  display: none; // Par défaut caché, visible seulement en mobile
+  margin-bottom: 20px;
+}
+
+.actions-header {
+  margin-bottom: 15px;
+
+  h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #3f51b5;
+  }
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 5px;
+
+    mat-icon {
+      margin-bottom: 8px;
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+
+    span {
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  }
+}
+
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -147,6 +188,23 @@
 
   .stat-card {
     margin-bottom: 15px;
+  }
+
+  // Affichage du menu d'actions rapides en version mobile
+  .mobile-quick-actions {
+    display: block;
+  }
+
+  // Réduire la taille des tabs pour les adapter à la vue mobile
+  .admin-tabs-card {
+    ::ng-deep .mat-mdc-tab {
+      min-width: auto;
+      padding: 0 12px;
+    }
+
+    ::ng-deep .mat-mdc-tab-label-content {
+      font-size: 0.85rem;
+    }
   }
 }
 

@@ -253,7 +253,6 @@ export class AssignBorrowingDialogComponent implements OnInit {
         })
       )
       .subscribe((allCopies) => {
-        console.log(`${allCopies.length} exemplaires récupérés au total`);
 
         // Filtrer manuellement les exemplaires disponibles
         const availableCopies = allCopies.filter(

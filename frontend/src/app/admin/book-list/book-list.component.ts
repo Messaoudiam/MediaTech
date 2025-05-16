@@ -1,399 +1,219 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
   BookService,
   Resource,
   ResourceType,
 } from '../../core/services/book.service';
-import { NotificationService } from '../../core/services/notification.service';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../dialogs/confirm-dialog/confirm-dialog.component';
-import { environment } from '../../../environments/environment';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-book-list',
+  templateUrl: './book-list.component.html',
+  styleUrls: ['./book-list.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
+    MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule,
+    MatFormFieldModule,
+    MatSelectModule,
     MatProgressSpinnerModule,
+    MatTableModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatSelectModule,
-    FormsModule,
   ],
-  templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.scss'],
 })
 export class BookListComponent implements OnInit {
   books: Resource[] = [];
   filteredBooks: Resource[] = [];
-  loading = false;
-  debugMode = !environment.production; // Mode débogage activé seulement en développement
-
-  // Colonnes par défaut (toutes les colonnes)
-  allColumns: string[] = [
-    'coverImage',
-    'title',
-    'author',
-    'publisher',
-    'publishedYear',
-    'genre',
-    'language',
-    'director',
-    'actors',
-    'duration',
-    'developer',
-    'platform',
-    'pegiRating',
-    'issueNumber',
-    'frequency',
-    'type',
-    'totalCopies',
-    'availableCopies',
-    'borrowedCopies',
-    'actions',
-  ];
-
-  // Colonnes actuellement affichées
-  displayedColumns: string[] = [
-    'coverImage',
-    'title',
-    'author',
-    'publisher',
-    'publishedYear',
-    'genre',
-    'language',
-    'type',
-    'totalCopies',
-    'availableCopies',
-    'borrowedCopies',
-    'actions',
-  ];
-
-  resourceTypes = Object.values(ResourceType);
+  displayedColumns: string[] = [];
+  loading = true;
   selectedType: string = '';
+  resourceTypes: string[] = [];
 
   constructor(
     private bookService: BookService,
     private router: Router,
     private dialog: MatDialog,
-    private notificationService: NotificationService
+    private snackBar: MatSnackBar,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
-    this.loadBooks();
+    this.loadResources();
+    this.loadResourceTypes();
+    this.setupDisplayColumns();
   }
 
-  /**
-   * Charge toutes les ressources avec leurs exemplaires associés
-   */
-  loadBooks(): void {
+  private setupDisplayColumns(): void {
+    // Observer les changements de taille d'écran
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XSmall,
+        Breakpoints.Small,
+        Breakpoints.Medium,
+        Breakpoints.Large,
+        Breakpoints.XLarge,
+      ])
+      .subscribe((result) => {
+        // Colonnes de base pour mobile (xs et small)
+        if (
+          result.matches &&
+          (result.breakpoints[Breakpoints.XSmall] ||
+            result.breakpoints[Breakpoints.Small])
+        ) {
+          this.displayedColumns = [
+            'coverImage',
+            'title',
+            'type',
+            'availableCopies',
+            'actions',
+          ];
+        }
+        // Colonnes pour tablette (medium)
+        else if (result.matches && result.breakpoints[Breakpoints.Medium]) {
+          this.displayedColumns = [
+            'coverImage',
+            'title',
+            'author',
+            'type',
+            'availableCopies',
+            'borrowedCopies',
+            'actions',
+          ];
+        }
+        // Toutes les colonnes pour desktop (large et xl)
+        else {
+          this.displayedColumns = [
+            'coverImage',
+            'title',
+            'author',
+            'publisher',
+            'publishedYear',
+            'genre',
+            'language',
+            'type',
+            'totalCopies',
+            'availableCopies',
+            'borrowedCopies',
+            'actions',
+          ];
+        }
+      });
+  }
+
+  loadResources(): void {
     this.loading = true;
     this.bookService.getAllResourcesWithCopies().subscribe({
       next: (resources) => {
-        // Filtrer uniquement les livres si nécessaire
         this.books = resources;
-        this.filteredBooks = resources;
-
-        console.log(
-          `${resources.length} ressources chargées dans BookListComponent`
-        );
-
-        // Journaliser des statistiques sur les exemplaires
-        let totalCopies = 0;
-        let availableCopies = 0;
-        let borrowedCopies = 0;
-
-        resources.forEach((resource) => {
-          const resourceTotalCopies = this.getTotalCopies(resource);
-          const resourceAvailableCopies = this.getAvailableCopies(resource);
-          const resourceBorrowedCopies = this.getBorrowedCopies(resource);
-
-          totalCopies += resourceTotalCopies;
-          availableCopies += resourceAvailableCopies;
-          borrowedCopies += resourceBorrowedCopies;
-
-          // Journaliser des détails plus précis sur les copies
-          if (resource.copies && resource.copies.length > 0) {
-            console.log(`Copies pour "${resource.title}":`);
-            resource.copies.forEach((copy) => {
-              console.log(
-                `  - ID: ${copy.id.substring(0, 8)}, disponible: ${
-                  copy.available
-                }, condition: ${copy.condition}`
-              );
-            });
-          }
-
-          console.log(
-            `Ressource "${resource.title}": ${resourceTotalCopies} exemplaires, ` +
-              `${resourceAvailableCopies} disponibles, ${resourceBorrowedCopies} empruntés`
-          );
-        });
-
-        console.log(
-          `Total: ${totalCopies} exemplaires, ` +
-            `${availableCopies} disponibles, ${borrowedCopies} empruntés`
-        );
-
+        this.filteredBooks = [...this.books];
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Erreur lors du chargement des ressources:', error);
         this.loading = false;
-        this.notificationService.error(
-          'Erreur lors du chargement des ressources'
+        this.snackBar.open(
+          'Erreur lors du chargement des ressources',
+          'Fermer',
+          { duration: 3000 }
         );
       },
     });
   }
 
-  /**
-   * Filtre les ressources par type et ajuste les colonnes affichées
-   * @param type Le type de ressource à filtrer
-   */
-  filterByType(type: string): void {
-    this.selectedType = type;
+  loadResourceTypes(): void {
+    // Utiliser les types d'énumération directement
+    this.resourceTypes = Object.values(ResourceType);
+  }
 
-    // Filtrer les ressources par type
+  filterByType(type: string): void {
     if (!type) {
-      this.filteredBooks = this.books;
-      // Afficher les colonnes par défaut si aucun filtre n'est appliqué
-      this.setDefaultColumns();
+      this.filteredBooks = [...this.books];
     } else {
       this.filteredBooks = this.books.filter(
-        (book) => book.type === (type as ResourceType)
+        (book) => book.type.toLowerCase() === type.toLowerCase()
       );
-      // Ajuster les colonnes en fonction du type sélectionné
-      this.adjustColumnsForType(type as ResourceType);
     }
   }
 
-  /**
-   * Définit les colonnes à afficher en fonction du type de ressource
-   * @param type Le type de ressource
-   */
-  adjustColumnsForType(type: ResourceType): void {
-    // Colonnes de base présentes pour tous les types
-    const baseColumns = [
-      'coverImage',
-      'title',
-      'type',
-      'totalCopies',
-      'availableCopies',
-      'borrowedCopies',
-      'actions',
-    ];
-
-    let specificColumns: string[] = [];
-
-    switch (type) {
-      case ResourceType.BOOK:
-      case ResourceType.AUDIOBOOK:
-        specificColumns = [
-          'author',
-          'publisher',
-          'publishedYear',
-          'genre',
-          'language',
-        ];
-        break;
-
-      case ResourceType.COMIC:
-        specificColumns = [
-          'author',
-          'publisher',
-          'publishedYear',
-          'genre',
-          'language',
-        ];
-        break;
-
-      case ResourceType.DVD:
-        specificColumns = [
-          'director',
-          'actors',
-          'duration',
-          'genre',
-          'language',
-        ];
-        break;
-
-      case ResourceType.GAME:
-        specificColumns = [
-          'developer',
-          'platform',
-          'pegiRating',
-          'genre',
-          'language',
-        ];
-        break;
-
-      case ResourceType.MAGAZINE:
-        specificColumns = [
-          'issueNumber',
-          'frequency',
-          'publisher',
-          'publishedYear',
-          'language',
-        ];
-        break;
-
-      default:
-        this.setDefaultColumns();
-        return;
-    }
-
-    // Fusion des colonnes de base et spécifiques
-    this.displayedColumns = [
-      ...baseColumns.slice(0, 2),
-      ...specificColumns,
-      ...baseColumns.slice(2),
-    ];
+  addNewBook(): void {
+    this.router.navigate(['/admin/add-book']);
   }
 
-  /**
-   * Réinitialise les colonnes aux valeurs par défaut
-   */
-  setDefaultColumns(): void {
-    this.displayedColumns = [
-      'coverImage',
-      'title',
-      'author',
-      'publisher',
-      'publishedYear',
-      'genre',
-      'language',
-      'type',
-      'totalCopies',
-      'availableCopies',
-      'borrowedCopies',
-      'actions',
-    ];
+  editBook(id: string): void {
+    this.router.navigate(['/admin/edit-book', id]);
   }
 
-  /**
-   * Calcule le nombre total d'exemplaires pour une ressource
-   * @param resource La ressource pour laquelle calculer le nombre d'exemplaires
-   * @returns Le nombre total d'exemplaires
-   */
-  getTotalCopies(resource: Resource): number {
-    if (!resource || !resource.copies || !Array.isArray(resource.copies)) {
-      return 0;
-    }
-    // S'assurer que nous comptons uniquement les objets valides
-    return resource.copies.filter(
-      (copy) => copy && typeof copy === 'object' && 'id' in copy
-    ).length;
-  }
-
-  /**
-   * Calcule le nombre d'exemplaires disponibles pour une ressource
-   * @param resource La ressource pour laquelle calculer le nombre d'exemplaires disponibles
-   * @returns Le nombre d'exemplaires disponibles
-   */
-  getAvailableCopies(resource: Resource): number {
-    if (!resource || !resource.copies || !Array.isArray(resource.copies)) {
-      return 0;
-    }
-    // Ne compter que les exemplaires valides et disponibles
-    return resource.copies.filter(
-      (copy) =>
-        copy &&
-        typeof copy === 'object' &&
-        'available' in copy &&
-        copy.available === true
-    ).length;
-  }
-
-  /**
-   * Calcule le nombre d'exemplaires empruntés pour une ressource
-   * @param resource La ressource pour laquelle calculer le nombre d'exemplaires empruntés
-   * @returns Le nombre d'exemplaires empruntés
-   */
-  getBorrowedCopies(resource: Resource): number {
-    if (!resource || !resource.copies || !Array.isArray(resource.copies)) {
-      return 0;
-    }
-    // Ne compter que les exemplaires valides et non disponibles (empruntés)
-    return resource.copies.filter(
-      (copy) =>
-        copy &&
-        typeof copy === 'object' &&
-        'available' in copy &&
-        copy.available === false
-    ).length;
-  }
-
-  editBook(bookId: string): void {
-    this.router.navigate(['/admin/edit-book', bookId]);
-  }
-
-  viewBookDetails(bookId: string): void {
-    this.router.navigate(['/books', bookId]);
+  viewBookDetails(id: string): void {
+    this.router.navigate(['/books', id]);
   }
 
   deleteBook(book: Resource): void {
-    const dialogData: ConfirmDialogData = {
-      title: 'Supprimer cette ressource ?',
-      message: `Êtes-vous sûr de vouloir supprimer "${book.title}" de la bibliothèque ?`,
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Annuler',
-    };
-
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: dialogData,
-      autoFocus: false,
-      disableClose: true,
+      data: {
+        title: 'Supprimer la ressource',
+        message: `Êtes-vous sûr de vouloir supprimer "${book.title}" ? Cette action est irréversible.`,
+        confirmButtonText: 'Supprimer',
+        cancelButtonText: 'Annuler',
+      } as ConfirmDialogData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loading = true;
         this.bookService.deleteBook(book.id).subscribe({
           next: () => {
-            this.loading = false;
-            this.notificationService.success('Ressource supprimée avec succès');
-            this.loadBooks();
+            this.books = this.books.filter((b) => b.id !== book.id);
+            this.filterByType(this.selectedType);
+            this.snackBar.open('Ressource supprimée avec succès', 'Fermer', {
+              duration: 3000,
+            });
           },
-          error: (error) => {
-            this.loading = false;
-            console.error(
-              'Erreur lors de la suppression de la ressource:',
-              error
-            );
-            this.notificationService.error(
-              'Erreur lors de la suppression de la ressource'
-            );
+          error: (error: any) => {
+            console.error('Erreur lors de la suppression:', error);
+            let errorMessage = 'Erreur lors de la suppression de la ressource';
+
+            if (error.status === 409) {
+              errorMessage =
+                'Impossible de supprimer cette ressource car des exemplaires sont actuellement empruntés';
+            }
+
+            this.snackBar.open(errorMessage, 'Fermer', { duration: 5000 });
           },
         });
       }
     });
   }
 
-  addNewBook(): void {
-    this.router.navigate(['/admin/add-book']);
+  getTotalCopies(book: Resource): number {
+    return book.copies ? book.copies.length : 0;
+  }
+
+  getAvailableCopies(book: Resource): number {
+    return book.copies ? book.copies.filter((c) => c.available).length : 0;
+  }
+
+  getBorrowedCopies(book: Resource): number {
+    return book.copies ? book.copies.filter((c) => !c.available).length : 0;
   }
 }
