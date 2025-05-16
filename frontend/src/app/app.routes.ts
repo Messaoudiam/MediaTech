@@ -18,6 +18,7 @@ import { AdminBorrowingsComponent } from './admin/components/borrowing-managemen
 import { ProfileComponent } from './features/profile/profile.component';
 import { FavoritesComponent } from './features/favorites/favorites.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { ContactTicketsComponent } from './admin/components/contact-tickets/contact-tickets.component';
 
 // guards
 import { AuthGuard } from './core/guards/auth.guard';
@@ -84,6 +85,7 @@ export const routes: Routes = [
       { path: 'edit-book/:id', component: BookEditComponent },
       { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
       { path: 'borrowings', component: AdminBorrowingsComponent },
+      { path: 'contact-tickets', component: ContactTicketsComponent },
     ],
   },
   { path: '**', redirectTo: '/landing' },

@@ -1,0 +1,147 @@
+<div class="contact-tickets-container">
+  <div class="tickets-header">
+    <h1>Gestion des tickets de contact</h1>
+    <p>Gérez les demandes envoyées via le formulaire de contact</p>
+  </div>
+
+  <div class="filters-container">
+    <mat-form-field class="search-filter">
+      <mat-label>Rechercher</mat-label>
+      <input
+        matInput
+        (keyup)="applyFilter($event)"
+        placeholder="Nom, email ou sujet..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-button-toggle-group
+      [(ngModel)]="statusFilter"
+      (change)="filterByStatus(statusFilter)"
+      aria-label="Filtrer par statut"
+    >
+      <mat-button-toggle value="all">Tous</mat-button-toggle>
+      <mat-button-toggle value="pending">En attente</mat-button-toggle>
+      <mat-button-toggle value="resolved">Résolus</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <button
+      mat-mini-fab
+      color="primary"
+      (click)="refreshTickets()"
+      matTooltip="Rafraîchir"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div class="error-container" *ngIf="error">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-button color="primary" (click)="refreshTickets()">
+          Réessayer
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des tickets...</p>
+  </div>
+
+  <div class="tickets-table-container" *ngIf="!loading && !error">
+    <table mat-table [dataSource]="filteredTickets" class="tickets-table">
+      <!-- Numéro du ticket -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>No.</th>
+        <td mat-cell *matCellDef="let ticket">
+          #{{ ticket.id | slice : 0 : 8 }}
+        </td>
+      </ng-container>
+
+      <!-- Nom -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let ticket">{{ ticket.name }}</td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let ticket">{{ ticket.email }}</td>
+      </ng-container>
+
+      <!-- Sujet -->
+      <ng-container matColumnDef="subject">
+        <th mat-header-cell *matHeaderCellDef>Sujet</th>
+        <td mat-cell *matCellDef="let ticket">{{ ticket.subject }}</td>
+      </ng-container>
+
+      <!-- Date de création -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let ticket">
+          {{ ticket.createdAt | date : "dd/MM/yyyy" }}
+        </td>
+      </ng-container>
+
+      <!-- Statut -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let ticket">
+          <span
+            class="status-chip"
+            [ngClass]="ticket.isResolved ? 'resolved' : 'pending'"
+          >
+            {{ ticket.isResolved ? "Résolu" : "En attente" }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let ticket">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="viewTicketDetails(ticket)"
+            matTooltip="Voir les détails"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="replyToTicket(ticket)"
+            matTooltip="Répondre"
+          >
+            <mat-icon>reply</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            [color]="ticket.isResolved ? 'default' : 'warn'"
+            (click)="markAsResolved(ticket)"
+            [disabled]="ticket.isResolved"
+            matTooltip="Marquer comme résolu"
+          >
+            <mat-icon>done</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Message si aucun ticket -->
+    <div class="no-tickets" *ngIf="filteredTickets.length === 0">
+      <mat-icon>support_agent</mat-icon>
+      <p>Aucun ticket de contact ne correspond à vos critères de recherche</p>
+    </div>
+  </div>
+</div>

@@ -259,6 +259,10 @@
             <mat-icon>add_task</mat-icon>
             Attribuer un emprunt
           </button>
+          <button mat-menu-item [routerLink]="['/admin/contact-tickets']">
+            <mat-icon>support_agent</mat-icon>
+            Tickets de contact
+          </button>
           <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             Déconnexion
