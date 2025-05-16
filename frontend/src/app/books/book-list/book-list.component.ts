@@ -6,7 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { BookService, Resource } from '../../core/services/book.service';
+import {
+  BookService,
+  Resource,
+  ResourceType,
+} from '../../core/services/book.service';
 import { ImageService } from '../../core/services/image.service';
 
 @Component({
@@ -29,6 +33,7 @@ export class BookListComponent implements OnInit {
   filteredBooks: Resource[] = [];
   loading = true;
   error = false;
+  resourceType = ResourceType;
 
   // Pagination
   pageSize = 12;

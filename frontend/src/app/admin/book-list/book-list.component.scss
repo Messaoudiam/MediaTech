@@ -271,3 +271,56 @@ mat-card-header {
     display: none;
   }
 }
+
+.pegi-rating-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.pegi-3 {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.pegi-7 {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.pegi-12 {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.pegi-16 {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.pegi-18 {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+// Mise à jour des styles de colonnes pour les nouveaux types
+.mat-column-director,
+.mat-column-developer,
+.mat-column-platform,
+.mat-column-issueNumber,
+.mat-column-frequency {
+  min-width: 120px;
+}
+
+.mat-column-actors {
+  min-width: 140px;
+}
+
+.mat-column-pegiRating,
+.mat-column-duration {
+  width: 100px;
+  text-align: center;
+}

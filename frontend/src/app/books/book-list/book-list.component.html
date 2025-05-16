@@ -41,13 +41,80 @@
       />
       <mat-card-content>
         <h3 class="book-title">{{ book.title }}</h3>
-        <p class="book-author">{{ book.author }}</p>
-        <div class="book-details">
-          <span *ngIf="book.publishedYear" class="book-year">{{
-            book.publishedYear
-          }}</span>
-          <span *ngIf="book.genre" class="book-genre">{{ book.genre }}</span>
-        </div>
+
+        <!-- Livres -->
+        <ng-container *ngIf="book.type === resourceType.BOOK">
+          <p class="book-author" *ngIf="book.author">{{ book.author }}</p>
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.genre" class="book-genre">{{ book.genre }}</span>
+          </div>
+        </ng-container>
+
+        <!-- Films et DVD -->
+        <ng-container *ngIf="book.type === resourceType.DVD">
+          <p class="book-author" *ngIf="book.director">{{ book.director }}</p>
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.duration" class="book-genre"
+              >{{ book.duration }} min</span
+            >
+          </div>
+        </ng-container>
+
+        <!-- Jeux Vidéo -->
+        <ng-container *ngIf="book.type === resourceType.GAME">
+          <p class="book-author" *ngIf="book.developer">{{ book.developer }}</p>
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.platform" class="book-genre">{{
+              book.platform
+            }}</span>
+          </div>
+        </ng-container>
+
+        <!-- Bandes dessinées -->
+        <ng-container *ngIf="book.type === resourceType.COMIC">
+          <p class="book-author" *ngIf="book.author">{{ book.author }}</p>
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.genre" class="book-genre">{{ book.genre }}</span>
+          </div>
+        </ng-container>
+
+        <!-- Magazines -->
+        <ng-container *ngIf="book.type === resourceType.MAGAZINE">
+          <p class="book-author" *ngIf="book.publisher">{{ book.publisher }}</p>
+          <div class="book-details">
+            <span *ngIf="book.issueNumber" class="book-year"
+              >N° {{ book.issueNumber }}</span
+            >
+            <span *ngIf="book.frequency" class="book-genre">{{
+              book.frequency
+            }}</span>
+          </div>
+        </ng-container>
+
+        <!-- Livres Audio -->
+        <ng-container *ngIf="book.type === resourceType.AUDIOBOOK">
+          <p class="book-author" *ngIf="book.author">{{ book.author }}</p>
+          <div class="book-details">
+            <span *ngIf="book.publishedYear" class="book-year">{{
+              book.publishedYear
+            }}</span>
+            <span *ngIf="book.duration" class="book-genre"
+              >{{ book.duration }} min</span
+            >
+          </div>
+        </ng-container>
       </mat-card-content>
       <mat-card-actions>
         <button mat-button color="primary">

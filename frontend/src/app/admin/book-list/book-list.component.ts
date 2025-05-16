@@ -50,6 +50,32 @@ export class BookListComponent implements OnInit {
   filteredBooks: Resource[] = [];
   loading = false;
   debugMode = !environment.production; // Mode débogage activé seulement en développement
+
+  // Colonnes par défaut (toutes les colonnes)
+  allColumns: string[] = [
+    'coverImage',
+    'title',
+    'author',
+    'publisher',
+    'publishedYear',
+    'genre',
+    'language',
+    'director',
+    'actors',
+    'duration',
+    'developer',
+    'platform',
+    'pegiRating',
+    'issueNumber',
+    'frequency',
+    'type',
+    'totalCopies',
+    'availableCopies',
+    'borrowedCopies',
+    'actions',
+  ];
+
+  // Colonnes actuellement affichées
   displayedColumns: string[] = [
     'coverImage',
     'title',
@@ -64,6 +90,7 @@ export class BookListComponent implements OnInit {
     'borrowedCopies',
     'actions',
   ];
+
   resourceTypes = Object.values(ResourceType);
   selectedType: string = '';
 
@@ -143,18 +170,127 @@ export class BookListComponent implements OnInit {
   }
 
   /**
-   * Filtre les ressources par type
+   * Filtre les ressources par type et ajuste les colonnes affichées
    * @param type Le type de ressource à filtrer
    */
   filterByType(type: string): void {
     this.selectedType = type;
+
+    // Filtrer les ressources par type
     if (!type) {
       this.filteredBooks = this.books;
+      // Afficher les colonnes par défaut si aucun filtre n'est appliqué
+      this.setDefaultColumns();
     } else {
       this.filteredBooks = this.books.filter(
         (book) => book.type === (type as ResourceType)
       );
+      // Ajuster les colonnes en fonction du type sélectionné
+      this.adjustColumnsForType(type as ResourceType);
     }
+  }
+
+  /**
+   * Définit les colonnes à afficher en fonction du type de ressource
+   * @param type Le type de ressource
+   */
+  adjustColumnsForType(type: ResourceType): void {
+    // Colonnes de base présentes pour tous les types
+    const baseColumns = [
+      'coverImage',
+      'title',
+      'type',
+      'totalCopies',
+      'availableCopies',
+      'borrowedCopies',
+      'actions',
+    ];
+
+    let specificColumns: string[] = [];
+
+    switch (type) {
+      case ResourceType.BOOK:
+      case ResourceType.AUDIOBOOK:
+        specificColumns = [
+          'author',
+          'publisher',
+          'publishedYear',
+          'genre',
+          'language',
+        ];
+        break;
+
+      case ResourceType.COMIC:
+        specificColumns = [
+          'author',
+          'publisher',
+          'publishedYear',
+          'genre',
+          'language',
+        ];
+        break;
+
+      case ResourceType.DVD:
+        specificColumns = [
+          'director',
+          'actors',
+          'duration',
+          'genre',
+          'language',
+        ];
+        break;
+
+      case ResourceType.GAME:
+        specificColumns = [
+          'developer',
+          'platform',
+          'pegiRating',
+          'genre',
+          'language',
+        ];
+        break;
+
+      case ResourceType.MAGAZINE:
+        specificColumns = [
+          'issueNumber',
+          'frequency',
+          'publisher',
+          'publishedYear',
+          'language',
+        ];
+        break;
+
+      default:
+        this.setDefaultColumns();
+        return;
+    }
+
+    // Fusion des colonnes de base et spécifiques
+    this.displayedColumns = [
+      ...baseColumns.slice(0, 2),
+      ...specificColumns,
+      ...baseColumns.slice(2),
+    ];
+  }
+
+  /**
+   * Réinitialise les colonnes aux valeurs par défaut
+   */
+  setDefaultColumns(): void {
+    this.displayedColumns = [
+      'coverImage',
+      'title',
+      'author',
+      'publisher',
+      'publishedYear',
+      'genre',
+      'language',
+      'type',
+      'totalCopies',
+      'availableCopies',
+      'borrowedCopies',
+      'actions',
+    ];
   }
 
   /**

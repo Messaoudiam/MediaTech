@@ -100,6 +100,14 @@
               <span>{{ resource.duration }} minutes</span>
             </div>
 
+            <div
+              *ngIf="resource.type === resourceType.DVD && resource.actors"
+              class="metadata-item"
+            >
+              <mat-icon>people</mat-icon>
+              <span>Acteurs: {{ resource.actors }}</span>
+            </div>
+
             <!-- Méta-données spécifiques aux jeux -->
             <div
               *ngIf="resource.type === resourceType.GAME && resource.developer"
@@ -123,6 +131,47 @@
             >
               <mat-icon>warning</mat-icon>
               <span>PEGI {{ resource.pegiRating }}</span>
+            </div>
+
+            <!-- Méta-données spécifiques aux magazines -->
+            <div
+              *ngIf="
+                resource.type === resourceType.MAGAZINE && resource.issueNumber
+              "
+              class="metadata-item"
+            >
+              <mat-icon>newspaper</mat-icon>
+              <span>Numéro: {{ resource.issueNumber }}</span>
+            </div>
+
+            <div
+              *ngIf="
+                resource.type === resourceType.MAGAZINE && resource.frequency
+              "
+              class="metadata-item"
+            >
+              <mat-icon>schedule</mat-icon>
+              <span>Fréquence: {{ resource.frequency }}</span>
+            </div>
+
+            <!-- Méta-données spécifiques aux bandes dessinées -->
+            <div
+              *ngIf="resource.type === resourceType.COMIC && resource.pageCount"
+              class="metadata-item"
+            >
+              <mat-icon>menu_book</mat-icon>
+              <span>{{ resource.pageCount }} pages</span>
+            </div>
+
+            <!-- Méta-données spécifiques aux livres audio -->
+            <div
+              *ngIf="
+                resource.type === resourceType.AUDIOBOOK && resource.duration
+              "
+              class="metadata-item"
+            >
+              <mat-icon>timer</mat-icon>
+              <span>{{ resource.duration }} minutes</span>
             </div>
 
             <!-- Méta-données communes -->
