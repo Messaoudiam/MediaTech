@@ -14,5 +14,4 @@ build/
 # Node modules
 node_modules/
 
-# Knowledge
-knowledge.txt
+TODO.txt
