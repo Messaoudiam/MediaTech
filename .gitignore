@@ -13,3 +13,6 @@ build/
 
 # Node modules
 node_modules/
+
+# TODO
+TODO.txt
