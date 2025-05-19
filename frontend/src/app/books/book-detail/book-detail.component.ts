@@ -21,6 +21,7 @@ import { switchMap, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { BorrowDialogComponent } from '../../features/borrowing/borrow-dialog/borrow-dialog.component';
 import { BookCopiesComponent } from '../components/book-copies/book-copies.component';
+import { BookReviewsComponent } from '../components/book-reviews/book-reviews.component';
 import { Location } from '@angular/common';
 
 @Component({
@@ -39,6 +40,7 @@ import { Location } from '@angular/common';
     MatDialogModule,
     NavbarComponent,
     BookCopiesComponent,
+    BookReviewsComponent,
   ],
 })
 export class BookDetailComponent implements OnInit {

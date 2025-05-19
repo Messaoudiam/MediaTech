@@ -1,0 +1,159 @@
+.reviews-container {
+  margin-top: 2rem;
+  padding: 1rem;
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+
+  .loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+
+    span {
+      margin-left: 1rem;
+      color: #666;
+    }
+  }
+
+  .review-form-container {
+    margin-bottom: 2rem;
+
+    mat-card {
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .rating-field {
+      margin: 1rem 0;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+      }
+
+      .star-rating {
+        display: flex;
+
+        button {
+          padding: 0;
+          width: 40px;
+          height: 40px;
+
+          mat-icon {
+            color: #ffc107;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1rem;
+
+      button {
+        margin-left: 1rem;
+      }
+    }
+  }
+
+  .user-review {
+    margin-bottom: 2rem;
+
+    mat-card {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3f51b5;
+
+      mat-card-header {
+        display: flex;
+        justify-content: space-between;
+
+        .review-actions {
+          display: flex;
+        }
+      }
+    }
+  }
+
+  .login-prompt {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    text-align: center;
+
+    a {
+      color: #3f51b5;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .other-reviews {
+    h4 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+
+    .no-reviews {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .review-item {
+      margin-bottom: 1rem;
+
+      mat-card {
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .review-rating {
+    margin: 0.5rem 0;
+
+    .star-icon {
+      color: #ffc107;
+    }
+
+    .star-icon-empty {
+      color: #ddd;
+    }
+  }
+
+  .review-content {
+    margin: 1rem 0;
+    white-space: pre-line;
+  }
+
+  .review-date {
+    color: #777;
+    font-size: 0.85rem;
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+}

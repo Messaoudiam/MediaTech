@@ -15,6 +15,7 @@ import { HealthModule } from './health/health.module';
 import { BorrowingsModule } from './borrowings/borrowings.module';
 import { CopiesModule } from './copies/copies.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -35,6 +36,7 @@ import { AppService } from './app.service';
     CopiesModule,
     HealthModule,
     ContactModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

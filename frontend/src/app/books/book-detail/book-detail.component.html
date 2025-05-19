@@ -201,7 +201,14 @@
           [bookTitle]="resource.title"
           [bookCopies]="resource.copies"
         ></app-book-copies>
+      </div>
 
+      <!-- Section des avis -->
+      <div class="book-reviews-section">
+        <app-book-reviews
+          [resourceId]="resource.id"
+          [resourceTitle]="resource.title"
+        ></app-book-reviews>
       </div>
     </div>
   </div>
