@@ -1,11 +1,18 @@
 // angular
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 // rxjs
-import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import {
+  Observable,
+  BehaviorSubject,
+  of,
+  throwError,
+  interval,
+  timer,
+} from 'rxjs';
+import { tap, catchError, map, switchMap, takeWhile } from 'rxjs/operators';
 
 // models
 import {
@@ -21,7 +28,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   // Configuration de l'API depuis l'environnement
   private readonly API_URL = environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
@@ -29,6 +36,10 @@ export class AuthService {
 
   // Flag pour activer le mode API réelle (à true) ou démo (à false)
   private readonly USE_REAL_API = true;
+
+  // Système de refresh automatique
+  private refreshInterval: any;
+  private readonly REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
   // Mock user pour le mode démo
   private mockUser: User = {
@@ -42,30 +53,101 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {
     // Au démarrage, vérifier si l'utilisateur est connecté
     this.checkAuthStatus();
+
+    // Ne PAS démarrer automatiquement le refresh - il sera démarré seulement si l'utilisateur est connecté
+  }
+
+  // Démarre le système de refresh automatique
+  private startAutoRefresh(): void {
+    if (!this.USE_REAL_API) return;
+
+    // Ne démarrer le refresh automatique que si un utilisateur est connecté
+    if (!this.currentUserSubject.value) {
+      console.log("Pas d'utilisateur connecté, pas de refresh automatique");
+      return;
+    }
+
+    // Nettoyer l'ancien interval s'il existe
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+
+    console.log(
+      'Démarrage du système de refresh automatique (toutes les 10 minutes)'
+    );
+
+    // Créer un nouvel interval qui vérifie périodiquement
+    this.refreshInterval = setInterval(() => {
+      // Double vérification : l'utilisateur est-il toujours connecté ?
+      if (this.currentUserSubject.value) {
+        console.log('Refresh automatique en cours...');
+        this.silentRefresh().subscribe({
+          next: () => console.log('Refresh automatique réussi'),
+          error: (error) => {
+            console.warn('Refresh automatique échoué:', error);
+            // Si le refresh échoue, arrêter le refresh automatique
+            this.stopAutoRefresh();
+          },
+        });
+      } else {
+        // Si plus d'utilisateur connecté, arrêter le refresh automatique
+        console.log(
+          "Plus d'utilisateur connecté, arrêt du refresh automatique"
+        );
+        this.stopAutoRefresh();
+      }
+    }, this.REFRESH_INTERVAL_MS);
+  }
+
+  // Arrête le système de refresh automatique
+  private stopAutoRefresh(): void {
+    if (this.refreshInterval) {
+      console.log('Arrêt du système de refresh automatique');
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+  // Refresh silencieux (sans redirection en cas d'erreur)
+  private silentRefresh(): Observable<any> {
+    return this.http
+      .post(`${this.API_URL}/auth/refresh`, {}, { withCredentials: true })
+      .pipe(
+        catchError((error) => {
+          // Si le refresh silencieux échoue, on ne fait rien de drastique
+          return throwError(() => error);
+        })
+      );
   }
 
   // Vérifie l'état d'authentification au démarrage
   private checkAuthStatus(): void {
     // Si l'API est activée, vérifier l'authentification via les cookies
     if (this.USE_REAL_API) {
-      console.log("Vérification de l'authentification via les cookies...");
+      console.log("Vérification silencieuse de l'authentification...");
       this.http
         .get<{ user: User }>(`${this.API_URL}/auth/check-auth`, {
           withCredentials: true,
         })
         .pipe(
           catchError(() => {
-            // En cas d'erreur (non connecté), silencieux
+            // En cas d'erreur (non connecté), silencieux - c'est normal
             return of(null);
           })
         )
         .subscribe((response) => {
           if (response && response.user) {
             console.log(
-              'Utilisateur authentifié récupéré du serveur:',
+              'Utilisateur authentifié trouvé, démarrage du refresh automatique:',
               response.user
             );
             this.currentUserSubject.next(response.user);
+            // Démarrer le système de refresh automatique seulement si l'utilisateur est connecté
+            this.startAutoRefresh();
+          } else {
+            console.log('Aucun utilisateur connecté trouvé');
+            // S'assurer que le refresh automatique est arrêté
+            this.stopAutoRefresh();
           }
         });
     }
@@ -138,6 +220,8 @@ export class AuthService {
             if (response && response.user) {
               console.log('Réponse de connexion:', response);
               this.currentUserSubject.next(response.user);
+              // Démarrer le système de refresh automatique
+              this.startAutoRefresh();
               // Redirection basée sur le rôle
               this.redirectBasedOnRole(response.user);
             }
@@ -207,6 +291,8 @@ export class AuthService {
           tap((response) => {
             if (response && response.user) {
               this.currentUserSubject.next(response.user);
+              // Démarrer le système de refresh automatique
+              this.startAutoRefresh();
               this.redirectBasedOnRole(response.user);
             }
           }),
@@ -218,6 +304,9 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
+    // Arrêter le système de refresh automatique
+    this.stopAutoRefresh();
+
     if (!this.USE_REAL_API) {
       // Mode démo - simulation de déconnexion
       return of(null).pipe(
@@ -337,5 +426,39 @@ export class AuthService {
   // Méthode pour débloquer un compte verrouillé après trop de tentatives
   resetAccountLock(email: string): Observable<any> {
     return this.http.post(`${this.API_URL}/auth/reset-lock`, { email });
+  }
+
+  // Méthode pour rafraîchir le token manuellement
+  refreshToken(): Observable<any> {
+    if (!this.USE_REAL_API) {
+      // Mode démo - simulation de refresh
+      return of({ message: 'Token rafraîchi (mode démo)' });
+    } else {
+      return this.http
+        .post(
+          `${this.API_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .pipe(
+          tap((response) => {
+            console.log('Token rafraîchi avec succès');
+          }),
+          catchError((error) => {
+            console.error('Échec du rafraîchissement du token:', error);
+            // En cas d'échec du refresh, déconnecter l'utilisateur
+            this.currentUserSubject.next(null);
+            this.router.navigate(['/auth/login']);
+            return throwError(() => error);
+          })
+        );
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Arrêter le système de refresh automatique
+    this.stopAutoRefresh();
   }
 }

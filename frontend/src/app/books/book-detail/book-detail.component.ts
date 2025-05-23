@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -17,8 +17,8 @@ import { FavoriteService } from '../../core/services/favorite.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ImageService } from '../../core/services/image.service';
-import { switchMap, catchError, take } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { switchMap, catchError, takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
 import { BorrowDialogComponent } from '../../features/borrowing/borrow-dialog/borrow-dialog.component';
 import { BookCopiesComponent } from '../components/book-copies/book-copies.component';
 import { BookReviewsComponent } from '../components/book-reviews/book-reviews.component';
@@ -43,7 +43,7 @@ import { Location } from '@angular/common';
     BookReviewsComponent,
   ],
 })
-export class BookDetailComponent implements OnInit {
+export class BookDetailComponent implements OnInit, OnDestroy {
   resource: Resource | null = null;
   loading = true;
   error = false;
@@ -51,6 +51,8 @@ export class BookDetailComponent implements OnInit {
   isLoggedIn = false;
   isAdmin = false;
   resourceType = ResourceType;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -73,31 +75,39 @@ export class BookDetailComponent implements OnInit {
 
   private checkAuthStatus(): void {
     // Vérifier si l'utilisateur est connecté via le service
-    this.authService.isAuthenticated().subscribe((isAuthenticated) => {
-      this.isLoggedIn = isAuthenticated;
+    this.authService
+      .isAuthenticated()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isAuthenticated) => {
+        this.isLoggedIn = isAuthenticated;
 
-      if (isAuthenticated) {
-        // Si authentifié, récupérer le profil utilisateur complet
-        this.authService.getUserProfile().subscribe((user) => {
-          this.isAdmin = user?.role === 'ADMIN';
+        if (isAuthenticated) {
+          // Si authentifié, récupérer le profil utilisateur complet
+          this.authService
+            .getUserProfile()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((user) => {
+              this.isAdmin = user?.role === 'ADMIN';
 
-          // Si l'utilisateur est connecté et que la ressource est chargée, vérifier l'état des favoris
-          if (this.resource) {
-            this.checkFavoriteStatus(this.resource.id);
-          }
-        });
-      }
-    });
+              // Si l'utilisateur est connecté et que la ressource est chargée, vérifier l'état des favoris
+              if (this.resource) {
+                this.checkFavoriteStatus(this.resource.id);
+              }
+            });
+        }
+      });
   }
 
   private loadResourceDetails(): void {
-    this.loading = true;
-    this.error = false;
-
     this.route.paramMap
       .pipe(
-        take(1), // Prendre seulement la première valeur pour éviter de multiples souscriptions
+        takeUntil(this.destroy$),
         switchMap((params) => {
+          // Réinitialiser l'état de chargement à chaque changement de paramètre
+          this.loading = true;
+          this.error = false;
+          this.resource = null;
+
           const id = params.get('id');
           if (!id) {
             this.error = true;
@@ -144,6 +154,7 @@ export class BookDetailComponent implements OnInit {
     // Utiliser directement l'observable pour suivre les changements
     this.favoriteService
       .observeFavoriteStatus(resourceId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((isFavorite) => {
         if (this.isFavorite !== isFavorite) {
           this.isFavorite = isFavorite;
@@ -157,26 +168,29 @@ export class BookDetailComponent implements OnInit {
       });
 
     // Également vérifier via isResourceFavorite pour initialiser si nécessaire
-    this.favoriteService.isResourceFavorite(resourceId).subscribe({
-      next: (isFavorite: boolean) => {
-        if (this.isFavorite !== isFavorite) {
-          this.isFavorite = isFavorite;
-          console.log(
-            'État de favori initialisé pour la ressource',
-            resourceId,
-            ':',
-            isFavorite
+    this.favoriteService
+      .isResourceFavorite(resourceId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (isFavorite: boolean) => {
+          if (this.isFavorite !== isFavorite) {
+            this.isFavorite = isFavorite;
+            console.log(
+              'État de favori initialisé pour la ressource',
+              resourceId,
+              ':',
+              isFavorite
+            );
+          }
+        },
+        error: (error) => {
+          console.error(
+            'Erreur lors de la vérification du statut de favori:',
+            error
           );
-        }
-      },
-      error: (error) => {
-        console.error(
-          'Erreur lors de la vérification du statut de favori:',
-          error
-        );
-        // En cas d'erreur, on garde l'état actuel
-      },
-    });
+          // En cas d'erreur, on garde l'état actuel
+        },
+      });
   }
 
   goBack(): void {
@@ -202,30 +216,40 @@ export class BookDetailComponent implements OnInit {
 
     if (!previousState) {
       // Ajouter aux favoris
-      this.favoriteService.addFavorite(this.resource.id).subscribe({
-        next: () => {
-          this.notificationService.success('Ajouté aux favoris');
-        },
-        error: (error) => {
-          console.error("Erreur lors de l'ajout aux favoris:", error);
-          this.notificationService.error("Erreur lors de l'ajout aux favoris");
-          // Restaurer l'état précédent en cas d'erreur
-          this.isFavorite = previousState;
-        },
-      });
+      this.favoriteService
+        .addFavorite(this.resource.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.notificationService.success('Ajouté aux favoris');
+          },
+          error: (error) => {
+            console.error("Erreur lors de l'ajout aux favoris:", error);
+            this.notificationService.error(
+              "Erreur lors de l'ajout aux favoris"
+            );
+            // Restaurer l'état précédent en cas d'erreur
+            this.isFavorite = previousState;
+          },
+        });
     } else {
       // Retirer des favoris
-      this.favoriteService.removeFavorite(this.resource.id).subscribe({
-        next: () => {
-          this.notificationService.info('Retiré des favoris');
-        },
-        error: (error) => {
-          console.error('Erreur lors du retrait des favoris:', error);
-          this.notificationService.error('Erreur lors du retrait des favoris');
-          // Restaurer l'état précédent en cas d'erreur
-          this.isFavorite = previousState;
-        },
-      });
+      this.favoriteService
+        .removeFavorite(this.resource.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.notificationService.info('Retiré des favoris');
+          },
+          error: (error) => {
+            console.error('Erreur lors du retrait des favoris:', error);
+            this.notificationService.error(
+              'Erreur lors du retrait des favoris'
+            );
+            // Restaurer l'état précédent en cas d'erreur
+            this.isFavorite = previousState;
+          },
+        });
     }
   }
 
@@ -279,16 +303,19 @@ export class BookDetailComponent implements OnInit {
     });
 
     // Gérer le résultat du dialogue
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Si le dialogue retourne true, c'est que l'emprunt a été effectué avec succès
-        // Recharger les données de la ressource pour mettre à jour les exemplaires disponibles
-        this.loadResourceDetails();
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          // Si le dialogue retourne true, c'est que l'emprunt a été effectué avec succès
+          // Recharger les données de la ressource pour mettre à jour les exemplaires disponibles
+          this.loadResourceDetails();
 
-        // On peut rediriger vers la liste des emprunts
-        this.router.navigate(['/borrowings']);
-      }
-    });
+          // On peut rediriger vers la liste des emprunts
+          this.router.navigate(['/borrowings']);
+        }
+      });
   }
 
   /**
@@ -333,5 +360,10 @@ export class BookDetailComponent implements OnInit {
     if (this.resource && this.resource.copies) {
       console.log('Exemplaires de la ressource:', this.resource.copies);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
