@@ -68,7 +68,8 @@ jobs:
 
       - name: Run Frontend Tests
         run: |
-          echo "Skipping frontend tests for now"
+          cd frontend
+          npm run test:ci
 
   build:
     needs: test
