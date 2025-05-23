@@ -1,4 +1,4 @@
-# 🧪 Guide de Tests - BiblioTech
+# 🧪 Guide de Tests - MediaTech
 
 > Documentation complète de la stratégie de tests et de la couverture du projet
 
@@ -100,7 +100,7 @@ describe('AuthService', () => {
 ```typescript
 describe('AppComponent', () => {
   ✅ should create the app
-  ✅ should have 'bibliotech' title
+  ✅ should have 'MediaTech' title
   ✅ should render app structure
 });
 ```
