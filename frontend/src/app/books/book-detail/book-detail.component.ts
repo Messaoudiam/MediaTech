@@ -141,11 +141,42 @@ export class BookDetailComponent implements OnInit {
   private checkFavoriteStatus(resourceId: string): void {
     if (!this.isLoggedIn) return;
 
+    // Utiliser directement l'observable pour suivre les changements
     this.favoriteService
-      .isResourceFavorite(resourceId)
-      .subscribe((isFavorite: boolean) => {
-        this.isFavorite = isFavorite;
+      .observeFavoriteStatus(resourceId)
+      .subscribe((isFavorite) => {
+        if (this.isFavorite !== isFavorite) {
+          this.isFavorite = isFavorite;
+          console.log(
+            'État de favori mis à jour pour la ressource',
+            resourceId,
+            ':',
+            isFavorite
+          );
+        }
       });
+
+    // Également vérifier via isResourceFavorite pour initialiser si nécessaire
+    this.favoriteService.isResourceFavorite(resourceId).subscribe({
+      next: (isFavorite: boolean) => {
+        if (this.isFavorite !== isFavorite) {
+          this.isFavorite = isFavorite;
+          console.log(
+            'État de favori initialisé pour la ressource',
+            resourceId,
+            ':',
+            isFavorite
+          );
+        }
+      },
+      error: (error) => {
+        console.error(
+          'Erreur lors de la vérification du statut de favori:',
+          error
+        );
+        // En cas d'erreur, on garde l'état actuel
+      },
+    });
   }
 
   goBack(): void {
@@ -165,15 +196,35 @@ export class BookDetailComponent implements OnInit {
 
     if (!this.resource) return;
 
-    if (this.isFavorite) {
-      this.favoriteService.removeFavorite(this.resource.id).subscribe(() => {
-        this.isFavorite = false;
-        this.notificationService.info('Retiré des favoris');
+    // Mettre à jour l'UI immédiatement pour une meilleure réactivité
+    const previousState = this.isFavorite;
+    this.isFavorite = !this.isFavorite;
+
+    if (!previousState) {
+      // Ajouter aux favoris
+      this.favoriteService.addFavorite(this.resource.id).subscribe({
+        next: () => {
+          this.notificationService.success('Ajouté aux favoris');
+        },
+        error: (error) => {
+          console.error("Erreur lors de l'ajout aux favoris:", error);
+          this.notificationService.error("Erreur lors de l'ajout aux favoris");
+          // Restaurer l'état précédent en cas d'erreur
+          this.isFavorite = previousState;
+        },
       });
     } else {
-      this.favoriteService.addFavorite(this.resource.id).subscribe(() => {
-        this.isFavorite = true;
-        this.notificationService.success('Ajouté aux favoris');
+      // Retirer des favoris
+      this.favoriteService.removeFavorite(this.resource.id).subscribe({
+        next: () => {
+          this.notificationService.info('Retiré des favoris');
+        },
+        error: (error) => {
+          console.error('Erreur lors du retrait des favoris:', error);
+          this.notificationService.error('Erreur lors du retrait des favoris');
+          // Restaurer l'état précédent en cas d'erreur
+          this.isFavorite = previousState;
+        },
       });
     }
   }
