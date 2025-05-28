@@ -1,0 +1,237 @@
+-- Insertion de 30 jeux vidéo dans la base de données
+-- Respecte exactement le schéma Prisma et le DTO CreateResourceDto
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d480', 'The Legend of Zelda: Breath of the Wild', 'GAME', 'Link se réveille après un sommeil de cent ans dans un royaume d''Hyrule dévasté. Armé de mystérieuses capacités, il doit explorer un monde ouvert immense pour sauver la princesse Zelda et défaire Ganon...', 'Action/Aventure', 'Français', 'Nintendo', '2017-03-03', 2017, 'Nintendo EPD', 'Nintendo Switch, Wii U', 12, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776917-zelda-breath-wild', '2025-05-16 22:00:00.000', '2025-05-17 11:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('550e8400-e29b-41d4-a716-446655440002', 'The Witcher 3: Wild Hunt', 'GAME', 'Geralt de Riv, sorceleur professionnel et chasseur de monstres, part à la recherche de Ciri, son enfant adoptive. Dans un monde ouvert épique, vos choix façonnent l''histoire dans cette conclusion de la saga du Sorceleur...', 'RPG/Action', 'Français', 'CD Projekt', '2015-05-19', 2015, 'CD Projekt RED', 'PC, PS4, Xbox One, Nintendo Switch', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776918-witcher-3', '2025-05-16 22:15:00.000', '2025-05-17 11:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b810-9dad-11d1-80b4-00c04fd430e3', 'Red Dead Redemption 2', 'GAME', 'En 1899, Arthur Morgan et la bande de Dutch van der Linde sont contraints de fuir après un braquage qui tourne mal. Poursuivis par les agents fédéraux et les chasseurs de primes, ils luttent pour survivre dans l''Amérique impitoyable...', 'Action/Aventure', 'Français', 'Rockstar Games', '2018-10-26', 2018, 'Rockstar Studios', 'PC, PS4, Xbox One', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776919-red-dead-2', '2025-05-16 22:30:00.000', '2025-05-17 11:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b811-9dad-11d1-80b4-00c04fd430e4', 'God of War (2018)', 'GAME', 'Kratos vit désormais paisiblement avec son fils Atreus en Midgard. Ensemble, ils entreprennent un voyage épique à travers les royaumes nordiques pour accomplir les dernières volontés de la mère d''Atreus tout en découvrant des secrets familiaux...', 'Action/Aventure', 'Français', 'Sony Interactive Entertainment', '2018-04-20', 2018, 'SIE Santa Monica Studio', 'PC, PS4, PS5', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776920-god-of-war', '2025-05-16 22:45:00.000', '2025-05-17 11:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b812-9dad-11d1-80b4-00c04fd430e5', 'The Last of Us Part II', 'GAME', 'Quatre ans après les événements du premier jeu, Ellie et Dina explorent les États-Unis post-apocalyptiques infestés de créatures infectées. Un voyage de vengeance qui questionne les cycles de violence et les conséquences de nos actes...', 'Action/Survie', 'Français', 'Sony Interactive Entertainment', '2020-06-19', 2020, 'Naughty Dog', 'PS4, PS5', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776921-last-of-us-2', '2025-05-16 23:00:00.000', '2025-05-17 12:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b813-9dad-11d1-80b4-00c04fd430e6', 'Cyberpunk 2077', 'GAME', 'Dans Night City, mégapole obsédée par le pouvoir, le glamour et les modifications corporelles, vous incarnez V, un mercenaire qui recherche un implant unique, clé de l''immortalité. Personnalisez votre cyber-guerrier et façonnez votre légende...', 'RPG/Action', 'Français', 'CD Projekt', '2020-12-10', 2020, 'CD Projekt RED', 'PC, PS4, PS5, Xbox One, Xbox Series', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776922-cyberpunk-2077', '2025-05-16 23:15:00.000', '2025-05-17 12:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b814-9dad-11d1-80b4-00c04fd430e7', 'Elden Ring', 'GAME', 'L''Anneau Elden a été brisé. Dans les Terres du Milieu, les descendants de la Reine Marika se disputent les Grands Runes. Guidé par la grâce, affrontez ce monde sombre et découvrez les mystères de l''Anneau Elden...', 'Action/RPG', 'Français', 'Bandai Namco Entertainment', '2022-02-25', 2022, 'FromSoftware', 'PC, PS4, PS5, Xbox One, Xbox Series', 16, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776923-elden-ring', '2025-05-16 23:30:00.000', '2025-05-17 12:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b815-9dad-11d1-80b4-00c04fd430e8', 'Grand Theft Auto V', 'GAME', 'Trois criminels très différents risquent tout dans une série de braquages audacieux et dangereux qui pourraient leur assurer la liberté financière. Explorez Los Santos et Blaine County dans cette satire de l''Amérique moderne...', 'Action/Aventure', 'Français', 'Rockstar Games', '2013-09-17', 2013, 'Rockstar North', 'PC, PS3, PS4, PS5, Xbox 360, Xbox One, Xbox Series', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776924-gta-5', '2025-05-16 23:45:00.000', '2025-05-17 12:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b816-9dad-11d1-80b4-00c04fd430e9', 'Super Mario Odyssey', 'GAME', 'Mario embarque pour un voyage à travers le monde avec Cappy, un habitant mystérieux du Royaume des Chapeaux. Ensemble, ils tentent de sauver la princesse Peach de son mariage forcé avec Bowser dans cette aventure colorée et inventive...', 'Plateforme/Aventure', 'Français', 'Nintendo', '2017-10-27', 2017, 'Nintendo EPD', 'Nintendo Switch', 7, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776925-mario-odyssey', '2025-05-17 00:00:00.000', '2025-05-17 13:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b817-9dad-11d1-80b4-00c04fd430ea', 'Minecraft', 'GAME', 'Explorez des mondes générés aléatoirement et construisez tout ce que vous pouvez imaginer, des maisons les plus simples aux châteaux les plus grandioses. Jouez en mode créatif avec des ressources illimitées ou en mode survie...', 'Sandbox/Survie', 'Français', 'Mojang Studios', '2011-11-18', 2011, 'Mojang Studios', 'PC, Mobile, Consoles (toutes)', 7, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776926-minecraft', '2025-05-17 00:15:00.000', '2025-05-17 13:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b818-9dad-11d1-80b4-00c04fd430eb', 'Dark Souls III', 'GAME', 'Les feux s''éteignent et seules les cendres subsistent. Incarnez un Cendré et partez en quête des Seigneurs des Cendres pour rallumer le Premier Feu. Préparez-vous à mourir dans ce RPG d''action impitoyable et gratifiant...', 'Action/RPG', 'Français', 'Bandai Namco Entertainment', '2016-04-12', 2016, 'FromSoftware', 'PC, PS4, Xbox One', 16, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776927-dark-souls-3', '2025-05-17 00:30:00.000', '2025-05-17 13:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b819-9dad-11d1-80b4-00c04fd430ec', 'Horizon Zero Dawn', 'GAME', 'Dans un monde post-apocalyptique dominé par des machines, suivez Aloy, une jeune chasseresse, dans sa quête pour découvrir son passé et sauver le monde. Explorez un monde ouvert époustouflant rempli de mystères technologiques...', 'Action/RPG', 'Français', 'Sony Interactive Entertainment', '2017-02-28', 2017, 'Guerrilla Games', 'PC, PS4, PS5', 16, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776928-horizon-zero-dawn', '2025-05-17 00:45:00.000', '2025-05-17 13:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81a-9dad-11d1-80b4-00c04fd430ed', 'Spider-Man (2018)', 'GAME', 'Incarnez un Peter Parker expérimenté dans cette aventure inédite de Spider-Man. Maîtrisez des mouvements acrobatiques spectaculaires et des gadgets improvisés pour combattre le crime dans un New York ouvert et détaillé...', 'Action/Aventure', 'Français', 'Sony Interactive Entertainment', '2018-09-07', 2018, 'Insomniac Games', 'PC, PS4, PS5', 16, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776929-spider-man', '2025-05-17 01:00:00.000', '2025-05-17 14:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81b-9dad-11d1-80b4-00c04fd430ee', 'Sekiro: Shadows Die Twice', 'GAME', 'Dans le Japon de l''ère Sengoku, incarnez un guerrier défiguré et déshonoré dont le jeune maître a été kidnappé. Venez à bout de vos ennemis avec créativité et brutalité dans ce jeu d''action à la troisième personne de FromSoftware...', 'Action/Aventure', 'Français', 'Activision', '2019-03-22', 2019, 'FromSoftware', 'PC, PS4, Xbox One', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776930-sekiro', '2025-05-17 01:15:00.000', '2025-05-17 14:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81c-9dad-11d1-80b4-00c04fd430ef', 'Ghost of Tsushima', 'GAME', 'En 1274, les forces mongoles dévastent l''île de Tsushima. En tant que l''un des derniers samouraïs survivants, vous devez vous élever au-delà de vos traditions pour forger un nouveau style de combat, la voie du Fantôme...', 'Action/Aventure', 'Français', 'Sony Interactive Entertainment', '2020-07-17', 2020, 'Sucker Punch Productions', 'PC, PS4, PS5', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776931-ghost-tsushima', '2025-05-17 01:30:00.000', '2025-05-17 14:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81d-9dad-11d1-80b4-00c04fd430f0', 'Assassin''s Creed Odyssey', 'GAME', 'De guerrier rejeté à légende spartiate, embarquez pour une odyssée afin de découvrir les secrets de votre passé et changer le destin de la Grèce antique. Explorez un monde vivant et en constante évolution dans cette épopée de 2400 ans...', 'Action/RPG', 'Français', 'Ubisoft', '2018-10-05', 2018, 'Ubisoft Quebec', 'PC, PS4, Xbox One, Nintendo Switch', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776932-ac-odyssey', '2025-05-17 01:45:00.000', '2025-05-17 14:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81e-9dad-11d1-80b4-00c04fd430f1', 'Doom Eternal', 'GAME', 'Les armées de l''Enfer ont envahi la Terre. Devenez le Slayer dans cette campagne épique d''un seul joueur pour vaincre les démons à travers des dimensions et empêcher la destruction finale de l''humanité...', 'FPS/Action', 'Français', 'Bethesda Softworks', '2020-03-20', 2020, 'id Software', 'PC, PS4, PS5, Xbox One, Xbox Series, Nintendo Switch', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776933-doom-eternal', '2025-05-17 02:00:00.000', '2025-05-17 15:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81f-9dad-11d1-80b4-00c04fd430f2', 'Animal Crossing: New Horizons', 'GAME', 'Échappez-vous vers votre propre île déserte et créez votre paradis personnalisé en découvrant, créant et personnalisant dans Animal Crossing: New Horizons. Votre île, vos règles dans cette simulation de vie relaxante...', 'Simulation/Vie', 'Français', 'Nintendo', '2020-03-20', 2020, 'Nintendo EPD', 'Nintendo Switch', 3, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776934-animal-crossing', '2025-05-17 02:15:00.000', '2025-05-17 15:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b820-9dad-11d1-80b4-00c04fd430f3', 'Fall Guys: Ultimate Knockout', 'GAME', 'Fall Guys est un party game multijoueur massif avec jusqu''à 60 joueurs en ligne dans une course folle à travers de multiples tours d''obstacles. Battez-vous, chutez et trébuchez vers la victoire finale !', 'Party/Multijoueur', 'Français', 'Devolver Digital', '2020-08-04', 2020, 'Mediatonic', 'PC, PS4, PS5, Xbox One, Xbox Series, Nintendo Switch, Mobile', 3, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776935-fall-guys', '2025-05-17 02:30:00.000', '2025-05-17 15:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b821-9dad-11d1-80b4-00c04fd430f4', 'Among Us', 'GAME', 'Jouez en ligne ou via WiFi local avec 4-15 joueurs alors que vous tentez de préparer votre vaisseau spatial au décollage. Mais attention... car parmi l''équipage se cache un imposteur déterminé à tuer tout le monde !', 'Party/Déduction', 'Français', 'InnerSloth', '2018-06-15', 2018, 'InnerSloth', 'PC, Mobile, Consoles (toutes)', 7, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776936-among-us', '2025-05-17 02:45:00.000', '2025-05-17 15:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b822-9dad-11d1-80b4-00c04fd430f5', 'Valorant', 'GAME', 'VALORANT est un FPS tactique 5v5 avec des agents aux capacités uniques. Fusionnant habilement tir précis et capacités tactiques, chaque carte est un terrain de jeu où votre créativité peut s''exprimer dans des stratégies épiques...', 'FPS/Tactique', 'Français', 'Riot Games', '2020-06-02', 2020, 'Riot Games', 'PC', 16, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776937-valorant', '2025-05-17 03:00:00.000', '2025-05-17 16:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b823-9dad-11d1-80b4-00c04fd430f6', 'Hades', 'GAME', 'Défiez le dieu des morts en tentant de vous échapper des Enfers dans ce rogue-like dungeon crawler des créateurs de Bastion et Transistor. Combattez pour sortir de l''empire toujours changeant d''Hadès, renforcé par les pouvoirs de l''Olympe...', 'Rogue-like/Action', 'Français', 'Supergiant Games', '2020-09-17', 2020, 'Supergiant Games', 'PC, PS4, PS5, Xbox One, Xbox Series, Nintendo Switch', 12, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776938-hades', '2025-05-17 03:15:00.000', '2025-05-17 16:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b824-9dad-11d1-80b4-00c04fd430f7', 'Fortnite', 'GAME', 'Fortnite est le jeu de survie et de construction le plus populaire au monde. Rassemblez des ressources, construisez des forts et battez-vous pour être le dernier joueur debout dans Battle Royale et sauvez le monde en mode Sauver le monde...', 'Battle Royale/Construction', 'Français', 'Epic Games', '2017-07-25', 2017, 'Epic Games', 'PC, Mobile, Consoles (toutes)', 12, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776939-fortnite', '2025-05-17 03:30:00.000', '2025-05-17 16:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b825-9dad-11d1-80b4-00c04fd430f8', 'League of Legends', 'GAME', 'League of Legends est un MOBA (arène de bataille en ligne multijoueur) compétitif qui mélange la vitesse et l''intensité d''un RTS avec des éléments de RPG. Deux équipes de cinq Champions puissants s''affrontent pour détruire la base adverse...', 'MOBA/Stratégie', 'Français', 'Riot Games', '2009-10-27', 2009, 'Riot Games', 'PC', 12, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776940-league-legends', '2025-05-17 03:45:00.000', '2025-05-17 16:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b826-9dad-11d1-80b4-00c04fd430f9', 'Overwatch', 'GAME', 'Overwatch est un jeu de tir à la première personne en équipe qui prend place dans un futur proche sur Terre. Chaque match met en scène deux équipes de six joueurs qui s''affrontent dans des combats 6v6 épiques sur diverses cartes...', 'FPS/Héros', 'Français', 'Blizzard Entertainment', '2016-05-24', 2016, 'Blizzard Entertainment', 'PC, PS4, Xbox One, Nintendo Switch', 12, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776941-overwatch', '2025-05-17 04:00:00.000', '2025-05-17 17:00:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b827-9dad-11d1-80b4-00c04fd430fa', 'Call of Duty: Warzone', 'GAME', 'Expérience Battle Royale free-to-play de Call of Duty. Parachutez-vous dans Verdansk, récupérez de l''équipement et faites face à d''autres joueurs pour devenir la dernière équipe debout dans cette bataille massive à 150 joueurs...', 'Battle Royale/FPS', 'Français', 'Activision', '2020-03-10', 2020, 'Infinity Ward', 'PC, PS4, PS5, Xbox One, Xbox Series', 18, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776942-cod-warzone', '2025-05-17 04:15:00.000', '2025-05-17 17:15:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b828-9dad-11d1-80b4-00c04fd430fb', 'Rocket League', 'GAME', 'Rocket League est un jeu de sport véhiculaire qui combine football associatif et conduite. Équipés de boosters, sautez et volez pour marquer des buts spectaculaires dans cette version futuriste du plus beau sport du monde...', 'Sport/Véhicule', 'Français', 'Psyonix', '2015-07-07', 2015, 'Psyonix', 'PC, PS4, PS5, Xbox One, Xbox Series, Nintendo Switch', 3, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776943-rocket-league', '2025-05-17 04:30:00.000', '2025-05-17 17:30:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b829-9dad-11d1-80b4-00c04fd430fc', 'FIFA 24', 'GAME', 'Découvrez Le Jeu de Tous avec EA SPORTS FC 24 et ressentez l''émotion du football le plus authentique grâce à la technologie HyperMotionV, aux modes de jeu Ultimate Team, Manager et VOLTA FOOTBALL...', 'Sport/Football', 'Français', 'Electronic Arts', '2023-09-29', 2023, 'EA Sports', 'PC, PS4, PS5, Xbox One, Xbox Series, Nintendo Switch', 3, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776944-fifa-24', '2025-05-17 04:45:00.000', '2025-05-17 17:45:00.000');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", developer, platform, "pegiRating", "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b82a-9dad-11d1-80b4-00c04fd430fd', 'Mario Kart 8 Deluxe', 'GAME', 'Participez au grand prix de karting ultime ! Courses avec jusqu''à 12 amis en local ou en ligne dans le Mario Kart le plus complet de tous les temps. Maîtrisez tous les circuits, personnages et véhicules pour la victoire !', 'Course/Party', 'Français', 'Nintendo', '2017-04-28', 2017, 'Nintendo EPD', 'Nintendo Switch', 3, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/game/1747385776945-mario-kart-8', '2025-05-17 05:00:00.000', '2025-05-17 18:00:00.000');
+
+	-- Insertion de 30 films DVD dans la base de données
+-- Respecte exactement le schéma Prisma et le DTO CreateResourceDto
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'Le Parrain', 'DVD', 'L''histoire d''une famille de la mafia sicilienne installée en Amérique. Don Vito Corleone, le patriarche, marie sa fille. C''est l''occasion pour Michael, son plus jeune fils, récemment rentré de la guerre, de renouer avec sa famille. Jusqu''au jour où la guerre des clans éclate...', 'Crime/Drame', 'Français', 'Paramount Pictures', '1972-03-24', 1972, 'Francis Ford Coppola', 'Marlon Brando, Al Pacino, James Caan', 175, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776888-le-parrain', '2025-05-16 09:15:23.421', '2025-05-16 12:30:45.678');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('550e8400-e29b-41d4-a716-446655440001', 'Pulp Fiction', 'DVD', 'L''odyssée sanglante et burlesque de petits malfrats dans la jungle de Hollywood à travers trois histoires qui s''entremêlent. Dans un restaurant, un couple de jeunes braqueurs, Pumpkin et Honey Bunny, discutent des risques que comporte leur activité...', 'Crime/Thriller', 'Français', 'Miramax Films', '1994-10-14', 1994, 'Quentin Tarantino', 'John Travolta, Samuel L. Jackson, Uma Thurman', 154, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776889-pulp-fiction', '2025-05-16 09:45:12.532', '2025-05-16 13:20:15.789');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b810-9dad-11d1-80b4-00c04fd430c8', 'Goodfellas', 'DVD', 'Depuis sa plus tendre enfance, Henry Hill rêve d''être gangster. À treize ans, il tombe sous la coupe de Paul Cicero, un parrain de la mafia. Il gravit un à un les échelons de la pègre new-yorkaise et devient l''un des hommes de confiance de Jimmy Conway...', 'Crime/Biographie', 'Français', 'Warner Bros', '1990-09-19', 1990, 'Martin Scorsese', 'Ray Liotta, Robert De Niro, Joe Pesci', 146, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776890-goodfellas', '2025-05-16 10:12:34.643', '2025-05-16 14:45:22.890');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b811-9dad-11d1-80b4-00c04fd430c9', 'Taxi Driver', 'DVD', 'Travis Bickle, chauffeur de taxi solitaire, erre la nuit dans New York. Insomniaque, il observe la décadence de la ville et nourrit des pensées de plus en plus violentes. Obsédé par Betsy, une jeune femme qui travaille pour un candidat à la présidentielle...', 'Drame/Thriller', 'Français', 'Columbia Pictures', '1976-02-08', 1976, 'Martin Scorsese', 'Robert De Niro, Jodie Foster, Cybill Shepherd', 114, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776891-taxi-driver', '2025-05-16 10:35:45.754', '2025-05-16 15:12:33.901');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b812-9dad-11d1-80b4-00c04fd430ca', 'Casino', 'DVD', 'Sam "Ace" Rothstein, un professionnel du pari, se voit confier la direction d''un casino à Las Vegas par des parrains de la mafia de Chicago. Tout se complique quand son ami d''enfance Nicky Santoro, psychopathe notoire, débarque en ville...', 'Crime/Drame', 'Français', 'Universal Pictures', '1995-11-22', 1995, 'Martin Scorsese', 'Robert De Niro, Sharon Stone, Joe Pesci', 178, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776892-casino', '2025-05-16 11:20:56.865', '2025-05-16 16:35:44.012');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b813-9dad-11d1-80b4-00c04fd430cb', 'Heat', 'DVD', 'Vincent Hanna, flic obsessionnel de Los Angeles, traque Neil McCauley, braqueur professionnel au sang-froid. Leurs chemins vont se croiser dans un jeu du chat et de la souris impitoyable. Deux hommes que tout oppose mais qui se ressemblent plus qu''ils ne le pensent...', 'Action/Crime', 'Français', 'Warner Bros', '1995-12-15', 1995, 'Michael Mann', 'Al Pacino, Robert De Niro, Val Kilmer', 170, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776893-heat', '2025-05-16 11:45:07.976', '2025-05-16 17:20:55.123');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b814-9dad-11d1-80b4-00c04fd430cc', 'Seven', 'DVD', 'Dans une grande ville américaine, un serial killer sème la terreur en commettant des meurtres selon les sept péchés capitaux. L''inspecteur Somerset, proche de la retraite, et son jeune partenaire Mills tentent de l''arrêter dans une course contre la montre...', 'Thriller/Crime', 'Français', 'New Line Cinema', '1995-09-22', 1995, 'David Fincher', 'Morgan Freeman, Brad Pitt, Gwyneth Paltrow', 127, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776894-seven', '2025-05-16 12:10:18.087', '2025-05-16 18:05:06.234');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b815-9dad-11d1-80b4-00c04fd430cd', 'Fight Club', 'DVD', 'Un employé de bureau dépressif souffrant d''insomnie rencontre Tyler Durden, un vendeur de savon charismatique. Ensemble, ils fondent un club de combat clandestin qui devient rapidement un phénomène underground aux ramifications imprévisibles...', 'Drame/Thriller', 'Français', '20th Century Fox', '1999-10-15', 1999, 'David Fincher', 'Brad Pitt, Edward Norton, Helena Bonham Carter', 139, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776895-fight-club', '2025-05-16 12:35:29.198', '2025-05-16 18:50:17.345');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b816-9dad-11d1-80b4-00c04fd430ce', 'The Matrix', 'DVD', 'Neo, jeune hacker, découvre que la réalité qu''il connaît n''est qu''une simulation informatique contrôlée par les machines. Morpheus et Trinity l''initient à la véritable réalité et lui révèle qu''il pourrait être l''Élu capable de libérer l''humanité...', 'Science-Fiction/Action', 'Français', 'Warner Bros', '1999-03-31', 1999, 'Les Wachowski', 'Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss', 136, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776896-the-matrix', '2025-05-16 13:00:40.309', '2025-05-16 19:35:28.456');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b817-9dad-11d1-80b4-00c04fd430cf', 'Shutter Island', 'DVD', 'En 1954, le marshal Teddy Daniels enquête sur la disparition d''une patiente de l''hôpital psychiatrique d''Ashecliffe, situé sur Shutter Island. Plus il avance dans son enquête, plus les mystères s''accumulent et plus sa propre santé mentale semble vaciller...', 'Thriller/Mystère', 'Français', 'Paramount Pictures', '2010-02-19', 2010, 'Martin Scorsese', 'Leonardo DiCaprio, Mark Ruffalo, Ben Kingsley', 138, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776897-shutter-island', '2025-05-16 13:25:51.420', '2025-05-16 20:20:39.567');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b818-9dad-11d1-80b4-00c04fd430d0', 'Inception', 'DVD', 'Dom Cobb est un voleur expérimenté dans l''art d''extraire les secrets du subconscient. Son don rare fait de lui un atout précieux dans le monde de l''espionnage industriel. Mais une dernière mission pourrait lui rendre sa vie d''avant...', 'Science-Fiction/Thriller', 'Français', 'Warner Bros', '2010-07-16', 2010, 'Christopher Nolan', 'Leonardo DiCaprio, Marion Cotillard, Tom Hardy', 148, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776898-inception', '2025-05-16 13:50:02.531', '2025-05-16 21:05:50.678');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b819-9dad-11d1-80b4-00c04fd430d1', 'The Dark Knight', 'DVD', 'Batman doit faire face au Joker, un criminel psychopathe qui sème le chaos dans Gotham City. Avec l''aide du lieutenant Gordon et du procureur Harvey Dent, le Chevalier Noir va devoir faire des choix difficiles pour sauver la ville...', 'Action/Crime', 'Français', 'Warner Bros', '2008-07-18', 2008, 'Christopher Nolan', 'Christian Bale, Heath Ledger, Aaron Eckhart', 152, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776899-the-dark-knight', '2025-05-16 14:15:13.642', '2025-05-16 21:50:01.789');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81a-9dad-11d1-80b4-00c04fd430d2', 'Interstellar', 'DVD', 'Dans un futur proche, la Terre se meurt. L''ex-pilote de la NASA Cooper accepte de mener une mission spatiale secrète à travers un trou de ver pour trouver une nouvelle planète habitable. Un voyage qui le mènera aux confins de l''univers...', 'Science-Fiction/Drame', 'Français', 'Paramount Pictures', '2014-11-07', 2014, 'Christopher Nolan', 'Matthew McConaughey, Anne Hathaway, Jessica Chastain', 169, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776900-interstellar', '2025-05-16 14:40:24.753', '2025-05-16 22:35:12.890');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81b-9dad-11d1-80b4-00c04fd430d3', 'Gladiator', 'DVD', 'Maximus, général romain victorieux, est réduit en esclavage après avoir refusé de prêter allégeance au nouveau empereur Commode. Devenu gladiateur, il va gravir les échelons jusqu''à l''arène du Colisée pour venger la mort de sa famille...', 'Action/Drame', 'Français', 'Universal Pictures', '2000-05-05', 2000, 'Ridley Scott', 'Russell Crowe, Joaquin Phoenix, Connie Nielsen', 155, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776901-gladiator', '2025-05-16 15:05:35.864', '2025-05-16 23:20:23.901');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81c-9dad-11d1-80b4-00c04fd430d4', 'Blade Runner', 'DVD', 'En 2019, dans un Los Angeles futuriste et sombre, Rick Deckard, ancien flic devenu chasseur de primes, est chargé de traquer quatre répliquants en fuite. Ces androïdes, devenus trop humains, remettent en question la frontière entre l''homme et la machine...', 'Science-Fiction/Thriller', 'Français', 'Warner Bros', '1982-06-25', 1982, 'Ridley Scott', 'Harrison Ford, Rutger Hauer, Sean Young', 117, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776902-blade-runner', '2025-05-16 15:30:46.975', '2025-05-17 00:05:34.012');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81d-9dad-11d1-80b4-00c04fd430d5', 'Alien', 'DVD', 'L''équipage du vaisseau spatial Nostromo répond à un signal de détresse sur une planète inconnue. Ils découvrent une forme de vie hostile qui va les traquer un par un dans l''espace confiné de leur vaisseau. La terreur absolue dans l''immensité de l''espace...', 'Science-Fiction/Horreur', 'Français', '20th Century Fox', '1979-05-25', 1979, 'Ridley Scott', 'Sigourney Weaver, Tom Skerritt, John Hurt', 117, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776903-alien', '2025-05-16 15:55:57.086', '2025-05-17 00:50:45.123');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81e-9dad-11d1-80b4-00c04fd430d6', 'Terminator 2', 'DVD', 'En 2029, les machines ont pris le contrôle de la Terre. Elles envoient un Terminator dans le passé pour éliminer John Connor, futur leader de la résistance. Mais les humains ripostent en envoyant un autre Terminator pour le protéger...', 'Science-Fiction/Action', 'Français', 'TriStar Pictures', '1991-07-03', 1991, 'James Cameron', 'Arnold Schwarzenegger, Linda Hamilton, Edward Furlong', 137, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776904-terminator-2', '2025-05-16 16:20:08.197', '2025-05-17 01:35:56.234');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b81f-9dad-11d1-80b4-00c04fd430d7', 'Titanic', 'DVD', 'En avril 1912, le paquebot Titanic, réputé insubmersible, appareille pour son voyage inaugural. À bord, Jack, un artiste bohème, rencontre Rose, une jeune aristocrate. Leur histoire d''amour va être bouleversée par le naufrage du navire...', 'Romance/Drame', 'Français', 'Paramount Pictures', '1997-12-19', 1997, 'James Cameron', 'Leonardo DiCaprio, Kate Winslet, Billy Zane', 194, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776905-titanic', '2025-05-16 16:45:19.308', '2025-05-17 02:20:07.345');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b820-9dad-11d1-80b4-00c04fd430d8', 'Forrest Gump', 'DVD', 'Assis sur un banc, Forrest Gump raconte sa vie extraordinaire à des inconnus. Malgré un QI limité, il a traversé les grands événements de l''histoire américaine des années 60 aux années 80, rencontrant des personnages célèbres et vivant des aventures incroyables...', 'Comédie/Drame', 'Français', 'Paramount Pictures', '1994-07-06', 1994, 'Robert Zemeckis', 'Tom Hanks, Robin Wright, Gary Sinise', 142, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776906-forrest-gump', '2025-05-16 17:10:30.419', '2025-05-17 03:05:18.456');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b821-9dad-11d1-80b4-00c04fd430d9', 'The Shawshank Redemption', 'DVD', 'Andy Dufresne, banquier condamné à vie pour le meurtre de sa femme, est incarcéré à Shawshank. Il se lie d''amitié avec Red, un détenu de longue date. Ensemble, ils vont découvrir la rédemption à travers des actes de décence commune et de compassion...', 'Drame', 'Français', 'Columbia Pictures', '1994-09-23', 1994, 'Frank Darabont', 'Tim Robbins, Morgan Freeman, Bob Gunton', 142, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776907-shawshank-redemption', '2025-05-16 17:35:41.530', '2025-05-17 03:50:29.567');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b822-9dad-11d1-80b4-00c04fd430da', 'The Godfather Part II', 'DVD', 'Suite de la saga des Corleone, le film raconte en parallèle l''ascension du jeune Vito Corleone dans l''Amérique du début du XXe siècle et la chute morale de son fils Michael, devenu le nouveau parrain de la famille...', 'Crime/Drame', 'Français', 'Paramount Pictures', '1974-12-20', 1974, 'Francis Ford Coppola', 'Al Pacino, Robert De Niro, Robert Duvall', 202, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776908-godfather-2', '2025-05-16 18:00:42.641', '2025-05-17 04:35:40.678');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b823-9dad-11d1-80b4-00c04fd430db', 'Apocalypse Now', 'DVD', 'Pendant la guerre du Vietnam, le capitaine Willard reçoit pour mission de remonter le fleuve Mékong pour éliminer le colonel Kurtz, un officier américain devenu fou qui s''est proclamé dieu d''une tribu locale...', 'Guerre/Drame', 'Français', 'United Artists', '1979-08-15', 1979, 'Francis Ford Coppola', 'Martin Sheen, Marlon Brando, Robert Duvall', 147, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776909-apocalypse-now', '2025-05-16 18:25:53.752', '2025-05-17 05:20:51.789');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b824-9dad-11d1-80b4-00c04fd430dc', 'Raging Bull', 'DVD', 'Portrait de Jake LaMotta, boxeur italo-américain au caractère violent et autodestruteur. Le film retrace sa carrière sportive et sa vie personnelle tumultueuse, marquée par la jalousie et la violence...', 'Biographie/Sport', 'Français', 'United Artists', '1980-11-14', 1980, 'Martin Scorsese', 'Robert De Niro, Cathy Moriarty, Joe Pesci', 129, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776910-raging-bull', '2025-05-16 18:50:04.863', '2025-05-17 06:05:02.890');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b825-9dad-11d1-80b4-00c04fd430dd', 'Schindler''s List', 'DVD', 'Pendant la Seconde Guerre mondiale, Oskar Schindler, industriel allemand membre du parti nazi, va progressivement prendre conscience de l''horreur de l''Holocauste et sauver plus de mille Juifs de la déportation...', 'Drame/Histoire', 'Français', 'Universal Pictures', '1993-12-15', 1993, 'Steven Spielberg', 'Liam Neeson, Ben Kingsley, Ralph Fiennes', 195, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776911-schindlers-list', '2025-05-16 19:15:15.974', '2025-05-17 06:50:13.901');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b826-9dad-11d1-80b4-00c04fd430de', 'One Flew Over the Cuckoo''s Nest', 'DVD', 'Randle McMurphy, petit truand, simule la folie pour échapper à la prison et se retrouve dans un hôpital psychiatrique dirigé d''une main de fer par l''infirmière Ratched. Sa rébellion va bouleverser la vie de l''établissement...', 'Drame', 'Français', 'United Artists', '1975-11-19', 1975, 'Milos Forman', 'Jack Nicholson, Louise Fletcher, Danny DeVito', 133, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776912-cuckoos-nest', '2025-05-16 19:40:26.085', '2025-05-17 07:35:24.012');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b827-9dad-11d1-80b4-00c04fd430df', 'Casablanca', 'DVD', 'Pendant la Seconde Guerre mondiale, à Casablanca, Rick Blaine tient un café fréquenté par des réfugiés. Un jour, son ancien amour Ilsa arrive avec son mari, un résistant recherché par les nazis. Rick va devoir faire un choix déchirant...', 'Romance/Drame', 'Français', 'Warner Bros', '1942-11-26', 1942, 'Michael Curtiz', 'Humphrey Bogart, Ingrid Bergman, Paul Henreid', 102, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776913-casablanca', '2025-05-16 20:05:37.196', '2025-05-17 08:20:35.123');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b828-9dad-11d1-80b4-00c04fd430e0', 'Lawrence of Arabia', 'DVD', 'L''épopée de T.E. Lawrence, officier britannique qui pendant la Première Guerre mondiale aide les Arabes dans leur révolte contre l''Empire ottoman. Un récit grandiose sur la guerre, l''héroïsme et l''identité...', 'Aventure/Biographie', 'Français', 'Columbia Pictures', '1962-12-16', 1962, 'David Lean', 'Peter O''Toole, Alec Guinness, Omar Sharif', 216, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776914-lawrence-arabia', '2025-05-16 20:30:48.307', '2025-05-17 09:05:46.234');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b829-9dad-11d1-80b4-00c04fd430e1', 'Citizen Kane', 'DVD', 'Charles Foster Kane, magnat de la presse, meurt en prononçant le mot "Rosebud". Un journaliste enquête sur la signification de ce dernier mot en retraçant la vie du défunt, révélant l''ascension et la chute d''un homme de pouvoir...', 'Drame', 'Français', 'RKO Pictures', '1941-05-01', 1941, 'Orson Welles', 'Orson Welles, Joseph Cotten, Dorothy Comingore', 119, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776915-citizen-kane', '2025-05-16 20:55:59.418', '2025-05-17 09:50:57.345');
+
+INSERT INTO "Resource"(
+	id, title, type, description, genre, language, publisher, "publishedAt", "publishedYear", director, actors, duration, "coverImageUrl", "createdAt", "updatedAt")
+	VALUES ('6ba7b82a-9dad-11d1-80b4-00c04fd430e2', 'Vertigo', 'DVD', 'Scottie Ferguson, ancien policier souffrant de vertige, est engagé pour surveiller Madeleine, l''épouse d''un ami. Il tombe amoureux d''elle, mais elle semble hantée par le passé. Un thriller psychologique magistral sur l''obsession et l''illusion...', 'Thriller/Romance', 'Français', 'Paramount Pictures', '1958-05-09', 1958, 'Alfred Hitchcock', 'James Stewart, Kim Novak, Barbara Bel Geddes', 128, 'https://zcexuqkzavrsdclondls.supabase.co/storage/v1/object/public/tcl-resource-images/dvd/1747385776916-vertigo', '2025-05-16 21:21:10.529', '2025-05-17 10:36:08.456'); 
