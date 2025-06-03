@@ -8,6 +8,9 @@ import { Prisma, User, UserRole } from '@prisma/client';
 // bcrypt
 import * as bcrypt from 'bcryptjs';
 
+// crypto
+import { randomBytes } from 'crypto';
+
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -91,6 +94,75 @@ export class UsersService {
         lastLogin: new Date(),
       },
     });
+  }
+
+  /**
+   * Génère un token de vérification d'email et l'associe à l'utilisateur
+   * @param userId - ID de l'utilisateur
+   * @returns Le token généré
+   */
+  async generateEmailVerificationToken(userId: string): Promise<string> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // Expire dans 24h
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        emailVerificationToken: token,
+        emailVerificationExpires: expiresAt,
+      },
+    });
+
+    return token;
+  }
+
+  /**
+   * Vérifie un token de vérification d'email et active le compte
+   * @param token - Token de vérification
+   * @returns L'utilisateur vérifié ou null si le token est invalide
+   */
+  async verifyEmailToken(
+    token: string,
+  ): Promise<Omit<User, 'password'> | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isEmailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+      },
+    });
+
+    const { password, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
+  }
+
+  /**
+   * Vérifie si un utilisateur a son email vérifié
+   * @param userId - ID de l'utilisateur
+   * @returns true si l'email est vérifié
+   */
+  async isEmailVerified(userId: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { isEmailVerified: true },
+    });
+
+    return user?.isEmailVerified ?? false;
   }
 
   /**

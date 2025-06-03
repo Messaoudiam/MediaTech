@@ -10,6 +10,8 @@ import {
   UseGuards,
   Logger,
   HttpCode,
+  Query,
+  HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -22,6 +24,7 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 // services
@@ -50,13 +53,14 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Inscription',
-    description: 'Permet de créer un compte utilisateur',
+    description:
+      "Permet de créer un compte utilisateur avec envoi d'email de vérification",
   })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 201,
-    description: 'Inscription réussie',
-    type: AuthResponseDto,
+    description: 'Inscription réussie - Email de vérification envoyé',
+    type: MessageResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -70,48 +74,159 @@ export class AuthController {
   })
   @Public()
   @Post('register')
-  async register(
-    @Body() registerDto: CreateUserDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async register(@Body() registerDto: CreateUserDto) {
     try {
-      const user = await this.authService.register(
+      const result = await this.authService.register(
         registerDto.email,
         registerDto.password,
       );
 
-      const tokens = await this.authService.generateTokens(user);
-
-      // Set cookies
-      this.authService.setAccessTokenCookie(response, tokens.accessToken);
-      this.authService.setRefreshTokenCookie(response, tokens.refreshToken);
+      // S'assurer qu'on retourne seulement les données nécessaires sans références circulaires
+      const safeUserData = {
+        id: result.user?.id || '',
+        email: result.user?.email || '',
+        isEmailVerified: result.user?.isEmailVerified || false,
+      };
 
       return {
-        message: 'Inscription réussie',
-        user: {
-          id: user.id,
-          email: user.email,
-        },
+        message: result.message,
+        user: safeUserData,
       };
     } catch (error) {
       // Gérer les erreurs spécifiques
       if (error.message === 'Cet email est déjà utilisé') {
-        return response.status(HttpStatus.CONFLICT).json({
-          message: error.message,
-        });
+        throw new HttpException(
+          { message: error.message },
+          HttpStatus.CONFLICT,
+        );
       }
 
       // Réponse générique pour les autres erreurs
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        message:
-          error.message || "Une erreur est survenue lors de l'inscription",
-      });
+      throw new HttpException(
+        {
+          message:
+            error.message || "Une erreur est survenue lors de l'inscription",
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @ApiOperation({
+    summary: "Vérification d'email",
+    description: "Vérifie l'adresse email avec le token reçu par email",
+  })
+  @ApiQuery({
+    name: 'token',
+    description: 'Token de vérification reçu par email',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Email vérifié avec succès',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token invalide ou expiré',
+    type: ErrorResponseDto,
+  })
+  @Public()
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    try {
+      if (!token) {
+        throw new HttpException(
+          { message: 'Token de vérification requis' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const result = await this.authService.verifyEmail(token);
+
+      // S'assurer qu'on retourne seulement les données nécessaires sans références circulaires
+      const safeUserData = {
+        id: result.user?.id || '',
+        email: result.user?.email || '',
+        isEmailVerified: result.user?.isEmailVerified || false,
+      };
+
+      return {
+        message: result.message,
+        user: safeUserData,
+      };
+    } catch (error) {
+      throw new HttpException(
+        { message: error.message || 'Token de vérification invalide' },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
+
+  @ApiOperation({
+    summary: "Renvoyer l'email de vérification",
+    description: 'Renvoie un email de vérification pour un compte non vérifié',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+          format: 'email',
+          description: 'Adresse email pour laquelle renvoyer la vérification',
+        },
+      },
+      required: ['email'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Email de vérification renvoyé',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Erreur lors du renvoi',
+    type: ErrorResponseDto,
+  })
+  @Public()
+  @Post('resend-verification')
+  async resendVerification(@Body('email') email: string) {
+    try {
+      if (!email) {
+        throw new HttpException(
+          { message: 'Adresse email requise' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const result = await this.authService.resendVerificationEmail(email);
+
+      return {
+        message: result.message,
+      };
+    } catch (error) {
+      let statusCode = HttpStatus.BAD_REQUEST;
+
+      if (
+        error.message.includes('non trouvé') ||
+        error.message.includes('déjà vérifié')
+      ) {
+        statusCode = HttpStatus.UNAUTHORIZED;
+      }
+
+      throw new HttpException(
+        { message: error.message || "Erreur lors du renvoi de l'email" },
+        statusCode,
+      );
     }
   }
 
   @ApiOperation({
     summary: 'Connexion',
-    description: 'Permet de se connecter avec email et mot de passe',
+    description:
+      'Permet de se connecter avec email et mot de passe (email doit être vérifié)',
   })
   @ApiBody({ type: LoginUserDto })
   @ApiResponse({
@@ -121,7 +236,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Identifiants invalides',
+    description: 'Identifiants invalides ou email non vérifié',
     type: ErrorResponseDto,
   })
   @Public()
@@ -162,6 +277,12 @@ export class AuthController {
 
       // Gérer les différents types d'erreurs
       if (error.message.includes('verrouillé')) {
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: error.message,
+        });
+      }
+
+      if (error.message.includes('vérifiée')) {
         return response.status(HttpStatus.UNAUTHORIZED).json({
           message: error.message,
         });

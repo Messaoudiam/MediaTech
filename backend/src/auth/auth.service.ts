@@ -8,6 +8,7 @@ import { User } from '@prisma/client';
 // services
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../modules/email/email.service';
 
 // bcrypt
 import * as bcrypt from 'bcryptjs';
@@ -20,6 +21,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   private readonly MAX_ATTEMPTS = CONFIG.security.auth.maxAttempts;
@@ -54,6 +56,16 @@ export class AuthService {
         `Utilisateur non trouvé pour l'email: ${normalizedEmail}`,
       );
       throw new UnauthorizedException('Email ou mot de passe incorrect');
+    }
+
+    // Vérifier si l'email est vérifié
+    if (!user.isEmailVerified) {
+      this.logger.warn(
+        `Tentative de connexion avec email non vérifié: ${normalizedEmail}`,
+      );
+      throw new UnauthorizedException(
+        "Votre adresse email n'est pas encore vérifiée. Veuillez vérifier votre boîte mail.",
+      );
     }
 
     // Vérifier si le compte est verrouillé
@@ -158,7 +170,35 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      return newUser;
+      // Générer et envoyer le token de vérification
+      const verificationToken =
+        await this.usersService.generateEmailVerificationToken(newUser.id);
+
+      const emailSent = await this.emailService.sendEmailVerification(
+        normalizedEmail,
+        verificationToken,
+      );
+
+      if (!emailSent) {
+        this.logger.error(
+          `Impossible d'envoyer l'email de vérification à ${normalizedEmail}`,
+        );
+        // Ne pas faire échouer l'inscription, mais logger l'erreur
+      }
+
+      this.logger.log(
+        `Compte créé pour ${normalizedEmail}, email de vérification ${emailSent ? 'envoyé' : 'non envoyé'}`,
+      );
+
+      return {
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          isEmailVerified: newUser.isEmailVerified,
+        },
+        message:
+          'Compte créé avec succès. Veuillez vérifier votre email pour activer votre compte.',
+      };
     } catch (error) {
       this.logger.error(
         `Erreur lors de la création du compte: ${error.message}`,
@@ -166,6 +206,68 @@ export class AuthService {
       );
       throw new UnauthorizedException('Erreur lors de la création du compte');
     }
+  }
+
+  /**
+   * Vérifie le token de vérification d'email
+   * @param token - Token de vérification
+   * @returns L'utilisateur vérifié
+   */
+  async verifyEmail(token: string) {
+    const user = await this.usersService.verifyEmailToken(token);
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Token de vérification invalide ou expiré',
+      );
+    }
+
+    this.logger.log(
+      `Email vérifié avec succès pour l'utilisateur ${user.email}`,
+    );
+
+    return {
+      user,
+      message:
+        'Email vérifié avec succès. Vous pouvez maintenant vous connecter.',
+    };
+  }
+
+  /**
+   * Renvoie un email de vérification
+   * @param email - Email de l'utilisateur
+   */
+  async resendVerificationEmail(email: string) {
+    const normalizedEmail = email.toLowerCase();
+    const user = await this.usersService.findUserByEmail(normalizedEmail);
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur non trouvé');
+    }
+
+    if (user.isEmailVerified) {
+      throw new UnauthorizedException('Email déjà vérifié');
+    }
+
+    const verificationToken =
+      await this.usersService.generateEmailVerificationToken(user.id);
+
+    const emailSent = await this.emailService.sendEmailVerification(
+      normalizedEmail,
+      verificationToken,
+    );
+
+    if (!emailSent) {
+      throw new UnauthorizedException(
+        "Impossible d'envoyer l'email de vérification",
+      );
+    }
+
+    this.logger.log(`Email de vérification renvoyé à ${normalizedEmail}`);
+
+    return {
+      message: 'Email de vérification renvoyé avec succès',
+    };
   }
 
   setAccessTokenCookie(response: Response, token: string) {

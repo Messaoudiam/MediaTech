@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 // components
 import { LoginComponent } from './auth/components/login/login.component';
 import { RegisterComponent } from './auth/components/register/register.component';
+import { VerifyEmailComponent } from './auth/components/verify-email/verify-email.component';
 import { HomeComponent } from './home/home.component';
 import { AdminDashboardComponent } from './admin/admin-dashboard.component';
 import { LandingComponent } from './landing/landing.component';
@@ -26,6 +27,7 @@ import { AuthGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
   { path: 'landing', component: LandingComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'books/all', component: BookListComponent },
   { path: 'books/:id', component: BookDetailComponent },
   { path: 'dvds/:id', component: BookDetailComponent },

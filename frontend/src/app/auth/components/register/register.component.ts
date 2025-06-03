@@ -111,7 +111,6 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-
     if (this.registerForm.valid) {
       this.loading = true;
       this.errorMessage = '';
@@ -158,15 +157,18 @@ export class RegisterComponent {
       // Utiliser directement les valeurs complètes du formulaire
       const registerData = this.registerForm.value;
 
-
       this.authService.register(registerData).subscribe({
         next: (response) => {
           // En cas de succès, on pourrait afficher un message de succès
           this.loading = false;
           this.notificationService.success(
-            'Inscription réussie ! Vous allez être redirigé vers la page de connexion.'
+            'Inscription réussie ! Vérifiez votre email pour activer votre compte.'
           );
-          // La redirection est gérée par le service d'authentification
+
+          // Redirection vers la page de login avec un délai pour que l'utilisateur voit le message
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 500);
         },
         error: (error) => {
           console.error("Erreur lors de l'inscription:", error);
@@ -206,7 +208,6 @@ export class RegisterComponent {
               "Erreur lors de l'inscription. Veuillez réessayer.";
             this.notificationService.error("Erreur lors de l'inscription");
           }
-
         },
       });
     } else {

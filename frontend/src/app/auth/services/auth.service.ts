@@ -257,50 +257,69 @@ export class AuthService implements OnDestroy {
   }
 
   register(userData: RegisterCredentials): Observable<AuthResponse> {
-    // Vérifier si toutes les propriétés requises sont présentes
-    if (!userData.email || !userData.password || !userData.confirmPassword) {
-      return throwError(() => new Error("Données d'inscription incomplètes"));
-    }
-
     if (!this.USE_REAL_API) {
       // Mode démo - simulation d'inscription
+      console.log('Mode démo - Inscription simulée:', userData);
       return of({
-        user: {
-          ...this.mockUser,
-          nom: userData.nom || 'Utilisateur',
-          prenom: userData.prenom || 'Démo',
-          email: userData.email,
-        },
+        user: this.mockUser,
         token: 'fake-jwt-token',
         message: 'Inscription réussie (mode démo)',
       }).pipe(
-        tap((response) => {
-          this.currentUserSubject.next(response.user);
-          this.router.navigate(['/home']);
+        tap(() => {
+          console.log('Inscription réussie (mode démo)');
+          this.currentUserSubject.next(this.mockUser);
         })
       );
-    } else {
-      // Version réelle avec API
-      const url = `${this.API_URL}/auth/register`;
-
-      return this.http
-        .post<AuthResponse>(url, userData, {
-          withCredentials: true, // Important pour les cookies
-        })
-        .pipe(
-          tap((response) => {
-            if (response && response.user) {
-              this.currentUserSubject.next(response.user);
-              // Démarrer le système de refresh automatique
-              this.startAutoRefresh();
-              this.redirectBasedOnRole(response.user);
-            }
-          }),
-          catchError((error) => {
-            return throwError(() => error);
-          })
-        );
     }
+
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/auth/register`, userData, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((response) => {
+          console.log('Inscription réussie:', response);
+          // Note: Ne pas définir l'utilisateur comme connecté après l'inscription
+          // L'utilisateur doit d'abord vérifier son email
+        }),
+        catchError((error) => {
+          console.error("Erreur lors de l'inscription:", error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  /**
+   * Vérifie l'email avec le token reçu
+   * @param token Token de vérification
+   * @returns Observable avec la réponse de vérification
+   */
+  verifyEmail(token: string): Observable<{ message: string; user?: any }> {
+    if (!this.USE_REAL_API) {
+      // Mode démo - simulation de vérification
+      return of({
+        message: 'Email vérifié avec succès (mode démo)',
+        user: this.mockUser,
+      });
+    }
+
+    return this.http
+      .get<{ message: string; user?: any }>(
+        `${this.API_URL}/auth/verify-email`,
+        {
+          params: { token },
+          withCredentials: true,
+        }
+      )
+      .pipe(
+        tap((response) => {
+          console.log('Email vérifié avec succès:', response);
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la vérification:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   logout(): Observable<any> {

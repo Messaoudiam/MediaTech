@@ -18,6 +18,7 @@ import { ContactModule } from './modules/contact/contact.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -25,18 +26,24 @@ import { AppService } from './app.service';
       isGlobal: true,
       validate: (config) => envSchema.parse(config),
     }),
-    ThrottlerModule.forRoot([CONFIG.api.throttle]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: CONFIG.api.throttle.ttl,
+        limit: CONFIG.api.throttle.limit,
+      },
+    ]),
     PrismaModule,
     AuthModule,
     UsersModule,
     SupabaseModule,
     StorageModule,
     ResourcesModule,
-    BorrowingsModule,
     CopiesModule,
+    BorrowingsModule,
+    ReviewsModule,
     HealthModule,
     ContactModule,
-    ReviewsModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

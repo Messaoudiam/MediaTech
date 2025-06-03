@@ -12,7 +12,7 @@ export const envSchema = z
       .string()
       .url()
       .or(z.string())
-      .default('http://localhost:3001'),
+      .default('http://localhost:4200'),
     JWT_SECRET: z.string().min(16, {
       message:
         'La clé JWT doit contenir au moins 16 caractères pour la sécurité',
@@ -21,6 +21,8 @@ export const envSchema = z
     JWT_REFRESH_EXPIRATION: z.string().default('7d'),
     SUPABASE_URL: z.string().url(),
     SUPABASE_KEY: z.string(),
+    RESEND_API_KEY: z.string().min(1, 'La clé API Resend est requise'),
+    RESEND_FROM_EMAIL: z.string().email("L'email expéditeur doit être valide"),
   })
   .transform((config) => ({
     ...config,
