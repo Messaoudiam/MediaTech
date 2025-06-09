@@ -44,6 +44,15 @@ export class RegisterComponent {
   errorMessage = '';
   loading = false;
 
+  // État de validation du mot de passe pour l'affichage visuel
+  passwordValidation = {
+    hasMinLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumeric: false,
+    hasSpecialChar: false,
+  };
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -51,6 +60,24 @@ export class RegisterComponent {
     private notificationService: NotificationService
   ) {
     this.registerForm = this.fb.group({
+      nom: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(100),
+          Validators.pattern(/^[a-zA-ZÀ-ÿ\s'-]+$/),
+        ],
+      ],
+      prenom: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(100),
+          Validators.pattern(/^[a-zA-ZÀ-ÿ\s'-]+$/),
+        ],
+      ],
       email: ['', [Validators.required, Validators.email]],
       password: [
         '',
@@ -61,6 +88,19 @@ export class RegisterComponent {
 
     // Ajouter le validateur de correspondance des mots de passe
     this.registerForm.addValidators(this.checkPasswords);
+
+    // Écouter les changements du mot de passe pour la validation visuelle
+    this.registerForm
+      .get('password')
+      ?.valueChanges.subscribe((password: string) => {
+        this.updatePasswordValidation(password);
+      });
+
+    // Écouter les changements de la confirmation pour re-valider
+    this.registerForm.get('confirmPassword')?.valueChanges.subscribe(() => {
+      // Forcer la re-validation du formulaire
+      this.registerForm.updateValueAndValidity();
+    });
   }
 
   // Validation personnalisée pour le mot de passe
@@ -108,6 +148,77 @@ export class RegisterComponent {
     } else {
       return { notSame: true };
     }
+  }
+
+  // Méthode pour mettre à jour l'état de validation du mot de passe
+  private updatePasswordValidation(password: string): void {
+    if (!password) {
+      this.passwordValidation = {
+        hasMinLength: false,
+        hasUpperCase: false,
+        hasLowerCase: false,
+        hasNumeric: false,
+        hasSpecialChar: false,
+      };
+      return;
+    }
+
+    this.passwordValidation = {
+      hasMinLength: password.length >= 8,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumeric: /[0-9]/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    };
+  }
+
+  // Méthode pour vérifier si toutes les validations du mot de passe sont réussies
+  isPasswordFullyValid(): boolean {
+    return (
+      this.passwordValidation.hasMinLength &&
+      this.passwordValidation.hasUpperCase &&
+      this.passwordValidation.hasLowerCase &&
+      this.passwordValidation.hasNumeric &&
+      this.passwordValidation.hasSpecialChar
+    );
+  }
+
+  // Méthode pour vérifier si le formulaire est entièrement valide
+  isFormCompletelyValid(): boolean {
+    const form = this.registerForm;
+
+    // Vérifier que tous les champs requis sont remplis et valides
+    const nomValid = form.get('nom')?.valid && form.get('nom')?.value?.trim();
+    const prenomValid =
+      form.get('prenom')?.valid && form.get('prenom')?.value?.trim();
+    const emailValid =
+      form.get('email')?.valid && form.get('email')?.value?.trim();
+    const passwordValid =
+      form.get('password')?.valid && this.isPasswordFullyValid();
+    const confirmPasswordValid = form.get('confirmPassword')?.value?.trim();
+    const passwordsMatch = !form.hasError('notSame');
+
+    // Debug temporaire - À supprimer après résolution
+    console.log('Validation debug:', {
+      nomValid,
+      prenomValid,
+      emailValid,
+      passwordValid,
+      confirmPasswordValid: !!confirmPasswordValid,
+      passwordsMatch,
+      formErrors: form.errors,
+      passwordErrors: form.get('password')?.errors,
+      confirmPasswordErrors: form.get('confirmPassword')?.errors,
+    });
+
+    return !!(
+      nomValid &&
+      prenomValid &&
+      emailValid &&
+      passwordValid &&
+      confirmPasswordValid &&
+      passwordsMatch
+    );
   }
 
   onSubmit(): void {
@@ -222,6 +333,20 @@ export class RegisterComponent {
     if (this.registerForm.get(field)?.hasError('required')) {
       return 'Ce champ est requis';
     }
+
+    if (field === 'nom' || field === 'prenom') {
+      const fieldLabel = field === 'nom' ? 'Le nom' : 'Le prénom';
+      if (this.registerForm.get(field)?.hasError('minlength')) {
+        return `${fieldLabel} doit contenir au moins 2 caractères`;
+      }
+      if (this.registerForm.get(field)?.hasError('maxlength')) {
+        return `${fieldLabel} ne peut pas dépasser 50 caractères`;
+      }
+      if (this.registerForm.get(field)?.hasError('pattern')) {
+        return `${fieldLabel} ne peut contenir que des lettres, espaces, apostrophes et traits d'union`;
+      }
+    }
+
     if (
       field === 'email' &&
       this.registerForm.get('email')?.hasError('email')

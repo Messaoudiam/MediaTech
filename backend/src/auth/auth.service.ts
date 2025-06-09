@@ -149,7 +149,12 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async register(email: string, password: string) {
+  async register(
+    email: string,
+    password: string,
+    nom?: string,
+    prenom?: string,
+  ) {
     // Normaliser l'email en minuscules
     const normalizedEmail = email.toLowerCase();
 
@@ -164,10 +169,12 @@ export class AuthService {
       // Hachage du mot de passe avec notre méthode factoriséee
       const hashedPassword = await this.hashPassword(password);
 
-      // Créer l'utilisateur avec email normalisé
+      // Créer l'utilisateur avec email normalisé et informations personnelles
       const newUser = await this.usersService.createUser({
         email: normalizedEmail,
         password: hashedPassword,
+        firstName: prenom || 'Prénom',
+        lastName: nom || 'Nom',
       });
 
       // Générer et envoyer le token de vérification
@@ -194,6 +201,8 @@ export class AuthService {
         user: {
           id: newUser.id,
           email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
           isEmailVerified: newUser.isEmailVerified,
         },
         message:

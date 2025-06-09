@@ -22,6 +22,8 @@ export class UsersService {
       data: {
         email: data.email,
         password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
       },
     });
 

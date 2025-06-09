@@ -1,8 +1,10 @@
 export interface User {
   id?: string;
   email: string;
-  nom?: string;
-  prenom?: string;
+  nom: string;
+  prenom: string;
+  firstName?: string;
+  lastName?: string;
   role?: string;
 }
 
@@ -15,14 +17,12 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   confirmPassword?: string;
-  nom?: string;
-  prenom?: string;
+  nom: string;
+  prenom: string;
 }
 
 export interface AuthResponse {
   user: User;
-  token?: string;
-  access_token?: string;
-  refresh_token?: string;
+  token: string;
   message?: string;
 }

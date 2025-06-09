@@ -79,12 +79,16 @@ export class AuthController {
       const result = await this.authService.register(
         registerDto.email,
         registerDto.password,
+        registerDto.nom,
+        registerDto.prenom,
       );
 
       // S'assurer qu'on retourne seulement les données nécessaires sans références circulaires
       const safeUserData = {
         id: result.user?.id || '',
         email: result.user?.email || '',
+        firstName: result.user?.firstName || '',
+        lastName: result.user?.lastName || '',
         isEmailVerified: result.user?.isEmailVerified || false,
       };
 
@@ -264,8 +268,8 @@ export class AuthController {
         user: {
           id: user.id,
           email: user.email,
-          nom: user.nom,
-          prenom: user.prenom,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
         },
       };
@@ -408,6 +412,8 @@ export class AuthController {
         user: {
           id: user.id,
           email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
         },
       };
@@ -456,7 +462,15 @@ export class AuthController {
         });
       }
 
-      return response.status(HttpStatus.OK).json(user);
+      return response.status(HttpStatus.OK).json({
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        },
+      });
     } catch (error) {
       this.logger.error('Erreur lors de la récupération du profil:', error);
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

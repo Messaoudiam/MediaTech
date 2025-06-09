@@ -14,18 +14,39 @@ export class UserResponseDto {
   email: string;
 
   @ApiProperty({
-    description: "Nom de l'utilisateur",
+    description: "Nom de famille de l'utilisateur",
     example: 'Dupont',
-    required: false,
+    required: true,
   })
-  nom?: string;
+  nom: string;
 
   @ApiProperty({
     description: "Prénom de l'utilisateur",
     example: 'Jean',
+    required: true,
+  })
+  prenom: string;
+
+  @ApiProperty({
+    description: "Nom de famille de l'utilisateur (alias)",
+    example: 'Dupont',
     required: false,
   })
-  prenom?: string;
+  lastName?: string;
+
+  @ApiProperty({
+    description: "Prénom de l'utilisateur (alias)",
+    example: 'Jean',
+    required: false,
+  })
+  firstName?: string;
+
+  @ApiProperty({
+    description: "Rôle de l'utilisateur",
+    example: 'USER',
+    required: false,
+  })
+  role?: string;
 }
 
 export class AuthResponseDto {

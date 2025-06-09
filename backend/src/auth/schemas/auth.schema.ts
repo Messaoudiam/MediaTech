@@ -18,14 +18,24 @@ const emailSchema = z
     'Format email invalide',
   );
 
+// Schéma de base pour les noms (nom et prénom)
+const nameSchema = z
+  .string()
+  .min(2, 'Le nom doit contenir au moins 2 caractères')
+  .max(100, 'Le nom ne peut pas dépasser 100 caractères')
+  .regex(
+    /^[a-zA-ZÀ-ÿ\s'-]+$/,
+    "Le nom ne peut contenir que des lettres, espaces, apostrophes et traits d'union",
+  );
+
 // Schéma pour l'inscription
 export const registerSchema = z
   .object({
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),
-    nom: z.string().optional(),
-    prenom: z.string().optional(),
+    nom: nameSchema,
+    prenom: nameSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Les mots de passe ne correspondent pas',

@@ -70,6 +70,31 @@
       width: 100%;
       padding: 0.75rem;
       font-size: 1rem;
+      transition: all 0.3s ease;
+
+      // Style pour le bouton désactivé
+      &:disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+
+        &:hover {
+          background-color: #e9ecef;
+        }
+      }
+
+      // Style pour le bouton activé
+      &:not(:disabled) {
+        background-color: #3f51b5;
+        color: white;
+
+        &:hover {
+          background-color: #303f9f;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+        }
+      }
     }
   }
 
@@ -88,6 +113,135 @@
       &:hover {
         text-decoration: underline;
       }
+    }
+  }
+
+  // Styles pour la validation visuelle du mot de passe
+  .password-validation,
+  .password-match-validation {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #e9ecef;
+    transition: all 0.3s ease;
+
+    h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .validation-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .validation-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+
+      mat-icon {
+        font-size: 1.2rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        transition: all 0.3s ease;
+        color: #6c757d;
+      }
+
+      span {
+        color: #6c757d;
+        transition: color 0.3s ease;
+      }
+
+      // État valide
+      &.valid {
+        mat-icon {
+          color: #28a745;
+          animation: checkmark 0.3s ease-in-out;
+        }
+
+        span {
+          color: #28a745;
+          font-weight: 500;
+        }
+      }
+
+      // État invalide (mais seulement si le champ a été touché)
+      &.invalid {
+        mat-icon {
+          color: #dc3545;
+        }
+
+        span {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+
+  // Animation pour l'icône de validation
+  @keyframes checkmark {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  // Style spécial quand toutes les validations sont passées
+  .password-validation.all-valid {
+    background-color: #d4edda;
+    border-left-color: #28a745;
+
+    h4 {
+      color: #155724;
+    }
+  }
+
+  // Message d'aide pour le formulaire
+  .form-help-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    color: #856404;
+    font-size: 0.85rem;
+    animation: fadeIn 0.3s ease-in-out;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      color: #856404;
+    }
+  }
+
+  // Animation pour le message d'aide
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
