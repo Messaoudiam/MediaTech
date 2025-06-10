@@ -8,6 +8,12 @@
     "prisma:migrate": "docker-compose exec backend npx prisma migrate deploy",
     "test:ci": "npm run test:backend && npm run test:frontend",
     "test:backend": "cd backend && npm test",
-    "test:frontend": "cd frontend && npm test"
+    "test:frontend": "cd frontend && npm test",
+    "audit:fix": "npm run audit:fix:backend && npm run audit:fix:frontend",
+    "audit:fix:backend": "cd backend && npm audit fix",
+    "audit:fix:frontend": "cd frontend && npm audit fix",
+    "update:deps": "npm run update:deps:backend && npm run update:deps:frontend",
+    "update:deps:backend": "cd backend && npm update",
+    "update:deps:frontend": "cd frontend && npm update"
   }
 }
