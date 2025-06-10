@@ -16,13 +16,14 @@ describe('AuthService', () => {
   const mockUser = {
     id: '1',
     email: 'test@example.com',
+    nom: 'User',
+    prenom: 'Test',
     role: 'user',
   };
 
   const mockLoginResponse = {
     user: mockUser,
-    access_token: 'mock_access_token',
-    refresh_token: 'mock_refresh_token',
+    token: 'mock_access_token',
     message: 'Connexion réussie',
   };
 
@@ -80,7 +81,7 @@ describe('AuthService', () => {
 
       service.login(loginData).subscribe((response) => {
         expect(response.user.email).toBe(loginData.email);
-        expect(response.access_token).toBeDefined();
+        expect(response.token).toBeDefined();
         done();
       });
 
@@ -124,11 +125,13 @@ describe('AuthService', () => {
         email: 'test@example.com',
         password: 'password123',
         confirmPassword: 'password123',
+        nom: 'User',
+        prenom: 'Test',
       };
 
       service.register(registerData).subscribe((response) => {
         expect(response.user.email).toBe(registerData.email);
-        expect(response.access_token).toBeDefined();
+        expect(response.token).toBeDefined();
         done();
       });
 

@@ -75,6 +75,8 @@ describe('BookEditComponent', () => {
     component['authService'].currentUser$ = of({
       id: '1',
       email: 'admin@test.com',
+      nom: 'Admin',
+      prenom: 'Test',
       role: 'ADMIN',
     });
 
