@@ -61,7 +61,14 @@ export class UsersController {
   })
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
+    // Transformer les propriétés françaises en propriétés anglaises pour Prisma
+    const userData = {
+      email: createUserDto.email,
+      password: createUserDto.password,
+      firstName: createUserDto.prenom,
+      lastName: createUserDto.nom,
+    };
+    return this.usersService.createUser(userData);
   }
 
   @ApiOperation({
