@@ -75,50 +75,121 @@ export class BookListComponent implements OnInit {
         Breakpoints.XLarge,
       ])
       .subscribe((result) => {
-        // Colonnes de base pour mobile (xs et small)
-        if (
-          result.matches &&
-          (result.breakpoints[Breakpoints.XSmall] ||
-            result.breakpoints[Breakpoints.Small])
-        ) {
-          this.displayedColumns = [
-            'coverImage',
-            'title',
-            'type',
-            'availableCopies',
-            'actions',
-          ];
-        }
-        // Colonnes pour tablette (medium)
-        else if (result.matches && result.breakpoints[Breakpoints.Medium]) {
-          this.displayedColumns = [
-            'coverImage',
-            'title',
-            'author',
-            'type',
-            'availableCopies',
-            'borrowedCopies',
-            'actions',
-          ];
-        }
-        // Toutes les colonnes pour desktop (large et xl)
-        else {
-          this.displayedColumns = [
-            'coverImage',
-            'title',
-            'author',
-            'publisher',
-            'publishedYear',
-            'genre',
-            'language',
-            'type',
-            'totalCopies',
-            'availableCopies',
-            'borrowedCopies',
-            'actions',
-          ];
-        }
+        this.updateDisplayColumns(result);
       });
+  }
+
+  private updateDisplayColumns(result: any): void {
+    // Colonnes de base pour mobile (xs et small)
+    if (
+      result.matches &&
+      (result.breakpoints[Breakpoints.XSmall] ||
+        result.breakpoints[Breakpoints.Small])
+    ) {
+      this.displayedColumns = [
+        'coverImage',
+        'title',
+        'type',
+        'availableCopies',
+        'actions',
+      ];
+    }
+    // Colonnes pour tablette (medium)
+    else if (result.matches && result.breakpoints[Breakpoints.Medium]) {
+      this.displayedColumns = [
+        'coverImage',
+        'title',
+        ...this.getCreatorColumns(),
+        'type',
+        'availableCopies',
+        'borrowedCopies',
+        'actions',
+      ];
+    }
+    // Toutes les colonnes pour desktop (large et xl)
+    else {
+      this.displayedColumns = [
+        'coverImage',
+        'title',
+        ...this.getCreatorColumns(),
+        'publisher',
+        'publishedYear',
+        'genre',
+        'language',
+        'type',
+        'totalCopies',
+        'availableCopies',
+        'borrowedCopies',
+        'actions',
+      ];
+    }
+  }
+
+  private getCreatorColumns(): string[] {
+    if (!this.selectedType) {
+      return ['author']; // Par défaut, afficher la colonne auteur
+    }
+
+    switch (this.selectedType.toUpperCase()) {
+      case 'DVD':
+        return ['director'];
+      case 'GAME':
+        return ['developer'];
+      case 'BOOK':
+      case 'COMIC':
+      case 'AUDIOBOOK':
+        return ['author'];
+      case 'MAGAZINE':
+        return []; // Les magazines utilisent principalement publisher
+      default:
+        return ['author'];
+    }
+  }
+
+  // Méthodes pour gérer l'affichage conditionnel des colonnes
+  shouldShowAuthorColumn(): boolean {
+    return (
+      !this.selectedType ||
+      ['BOOK', 'COMIC', 'AUDIOBOOK'].includes(this.selectedType.toUpperCase())
+    );
+  }
+
+  shouldShowDirectorColumn(): boolean {
+    return !!(this.selectedType && this.selectedType.toUpperCase() === 'DVD');
+  }
+
+  shouldShowDeveloperColumn(): boolean {
+    return !!(this.selectedType && this.selectedType.toUpperCase() === 'GAME');
+  }
+
+  getAuthorColumnLabel(): string {
+    if (!this.selectedType) return 'Auteur';
+
+    switch (this.selectedType.toUpperCase()) {
+      case 'COMIC':
+        return 'Scénariste/Dessinateur';
+      case 'AUDIOBOOK':
+        return 'Auteur/Narrateur';
+      default:
+        return 'Auteur';
+    }
+  }
+
+  getAuthorValue(book: Resource): string {
+    return book.author || '';
+  }
+
+  getPublisherColumnLabel(): string {
+    if (!this.selectedType) return 'Éditeur';
+
+    switch (this.selectedType.toUpperCase()) {
+      case 'MAGAZINE':
+        return 'Éditeur/Revue';
+      case 'GAME':
+        return 'Éditeur';
+      default:
+        return 'Éditeur';
+    }
   }
 
   loadResources(): void {
@@ -147,6 +218,7 @@ export class BookListComponent implements OnInit {
   }
 
   filterByType(type: string): void {
+    this.selectedType = type;
     if (!type) {
       this.filteredBooks = [...this.books];
     } else {
@@ -154,6 +226,25 @@ export class BookListComponent implements OnInit {
         (book) => book.type.toLowerCase() === type.toLowerCase()
       );
     }
+    // Mettre à jour les colonnes selon le nouveau type sélectionné
+    this.refreshDisplayColumns();
+  }
+
+  private refreshDisplayColumns(): void {
+    // Récupérer l'état actuel du breakpoint observer
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XSmall,
+        Breakpoints.Small,
+        Breakpoints.Medium,
+        Breakpoints.Large,
+        Breakpoints.XLarge,
+      ])
+      .pipe()
+      .subscribe((result) => {
+        this.updateDisplayColumns(result);
+      })
+      .unsubscribe(); // Se désabonner immédiatement car on veut juste une mise à jour
   }
 
   addNewBook(): void {
