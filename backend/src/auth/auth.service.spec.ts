@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
+import { EmailService } from '../modules/email/email.service';
 import * as bcrypt from 'bcryptjs';
 
 jest.mock('bcryptjs');
@@ -13,16 +14,19 @@ describe('AuthService', () => {
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
   let configService: jest.Mocked<ConfigService>;
+  let emailService: jest.Mocked<EmailService>;
 
   const mockUser = {
     id: '1',
     email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
     password: 'hashedPassword',
     role: 'USER' as const,
     isLocked: false,
     failedAttempts: 0,
     lastLogin: null,
-    isEmailVerified: false,
+    isEmailVerified: true,
     emailVerificationToken: null,
     emailVerificationExpires: null,
     activeBorrowingsCount: 0,
@@ -33,6 +37,8 @@ describe('AuthService', () => {
   const mockUserWithoutPassword = {
     id: '1',
     email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
     role: 'USER' as const,
     isLocked: false,
     failedAttempts: 0,
@@ -57,6 +63,7 @@ describe('AuthService', () => {
             resetUserLockout: jest.fn(),
             incrementFailedAttempts: jest.fn(),
             lockUserAccount: jest.fn(),
+            generateEmailVerificationToken: jest.fn(),
           },
         },
         {
@@ -71,6 +78,12 @@ describe('AuthService', () => {
             get: jest.fn(),
           },
         },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmailVerification: jest.fn().mockResolvedValue(true),
+          },
+        },
       ],
     }).compile();
 
@@ -78,6 +91,7 @@ describe('AuthService', () => {
     usersService = module.get(UsersService);
     jwtService = module.get(JwtService);
     configService = module.get(ConfigService);
+    emailService = module.get(EmailService);
 
     // Mock console pour éviter les logs de test
     jest.spyOn(console, 'log').mockImplementation();
@@ -102,6 +116,8 @@ describe('AuthService', () => {
       expect(result).toEqual({
         id: mockUser.id,
         email: mockUser.email,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
         role: mockUser.role,
         isLocked: mockUser.isLocked,
         failedAttempts: mockUser.failedAttempts,
@@ -137,6 +153,18 @@ describe('AuthService', () => {
       );
     });
 
+    it('should throw UnauthorizedException when email is not verified', async () => {
+      const unverifiedUser = {
+        ...mockUser,
+        isEmailVerified: false,
+      };
+      usersService.findUserByEmail.mockResolvedValue(unverifiedUser);
+
+      await expect(
+        service.validateUser('test@example.com', 'password'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
     it('should throw UnauthorizedException when account is locked', async () => {
       const lockedUser = {
         ...mockUser,
@@ -156,16 +184,33 @@ describe('AuthService', () => {
       usersService.findUserByEmail.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
       usersService.createUser.mockResolvedValue(mockUserWithoutPassword);
+      usersService.generateEmailVerificationToken.mockResolvedValue(
+        'mock-token',
+      );
 
       const result = await service.register(
         'newuser@example.com',
         'password123',
+        'User',
+        'Test',
       );
 
-      expect(result).toEqual(mockUserWithoutPassword);
+      expect(result).toEqual({
+        user: {
+          id: mockUserWithoutPassword.id,
+          email: mockUserWithoutPassword.email,
+          firstName: mockUserWithoutPassword.firstName,
+          lastName: mockUserWithoutPassword.lastName,
+          isEmailVerified: mockUserWithoutPassword.isEmailVerified,
+        },
+        message:
+          'Compte créé avec succès. Veuillez vérifier votre email pour activer votre compte.',
+      });
       expect(usersService.createUser).toHaveBeenCalledWith({
         email: 'newuser@example.com',
         password: 'hashedPassword',
+        firstName: 'Test',
+        lastName: 'User',
       });
     });
 
