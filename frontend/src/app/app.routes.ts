@@ -1,25 +1,10 @@
 // angular
 import { Routes } from '@angular/router';
 
-// components
-import { LoginComponent } from './auth/components/login/login.component';
-import { RegisterComponent } from './auth/components/register/register.component';
-import { VerifyEmailComponent } from './auth/components/verify-email/verify-email.component';
+// components - Keep only essential/shared components
 import { HomeComponent } from './home/home.component';
-import { AdminDashboardComponent } from './admin/admin-dashboard.component';
 import { LandingComponent } from './landing/landing.component';
-import { BookDetailComponent } from './books/book-detail/book-detail.component';
-import { SearchComponent } from './books/search/search.component';
-import { BookFormComponent } from './admin/book-form/book-form.component';
-import { ResourceFormComponent } from './admin/resource-form/resource-form.component';
-import { BookListComponent as AdminBookListComponent } from './admin/book-list/book-list.component';
-import { BookEditComponent } from './admin/book-edit/book-edit.component';
-import { BookListComponent } from './books/book-list/book-list.component';
-import { AdminBorrowingsComponent } from './admin/components/borrowing-management/admin-borrowings.component';
-import { ProfileComponent } from './features/profile/profile.component';
-import { FavoritesComponent } from './features/favorites/favorites.component';
 import { ContactComponent } from './pages/contact/contact.component';
-import { ContactTicketsComponent } from './admin/components/contact-tickets/contact-tickets.component';
 
 // guards
 import { AuthGuard } from './core/guards/auth.guard';
@@ -27,27 +12,65 @@ import { AuthGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
   { path: 'landing', component: LandingComponent },
-  { path: 'verify-email', component: VerifyEmailComponent },
-  { path: 'books/all', component: BookListComponent },
-  { path: 'books/:id', component: BookDetailComponent },
-  { path: 'dvds/:id', component: BookDetailComponent },
-  { path: 'games/:id', component: BookDetailComponent },
-  { path: 'magazines/:id', component: BookDetailComponent },
-  { path: 'resources/:id', component: BookDetailComponent },
-  { path: 'search', component: SearchComponent },
   {
     path: 'contact',
     component: ContactComponent,
     title: 'Contact - Médiathèque',
   },
   {
-    path: 'auth',
-    children: [
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
-    ],
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'USER' },
   },
+  // Lazy loaded routes with standalone components (Modern Angular approach)
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.routes').then((r) => r.AUTH_ROUTES),
+  },
+  {
+    path: 'books',
+    loadChildren: () =>
+      import('./books/books.routes').then((r) => r.BOOKS_ROUTES),
+  },
+  {
+    path: 'dvds',
+    loadChildren: () =>
+      import('./books/books.routes').then((r) => r.BOOKS_ROUTES),
+  },
+  {
+    path: 'games',
+    loadChildren: () =>
+      import('./books/books.routes').then((r) => r.BOOKS_ROUTES),
+  },
+  {
+    path: 'magazines',
+    loadChildren: () =>
+      import('./books/books.routes').then((r) => r.BOOKS_ROUTES),
+  },
+  {
+    path: 'resources',
+    loadChildren: () =>
+      import('./books/books.routes').then((r) => r.BOOKS_ROUTES),
+  },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./books/search/search.component').then((c) => c.SearchComponent),
+  },
+  {
+    path: 'admin',
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'ADMIN' },
+    loadChildren: () =>
+      import('./admin/admin.routes').then((r) => r.ADMIN_ROUTES),
+  },
+  {
+    path: 'features',
+    loadChildren: () =>
+      import('./features/features.routes').then((r) => r.FEATURES_ROUTES),
+  },
+  // Direct lazy loading for specific components (backwards compatibility)
   {
     path: 'borrowings',
     canActivate: [AuthGuard],
@@ -59,36 +82,29 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    component: ProfileComponent,
     canActivate: [AuthGuard],
     data: { requiredRole: 'USER' },
+    loadComponent: () =>
+      import('./features/profile/profile.component').then(
+        (c) => c.ProfileComponent
+      ),
   },
   {
     path: 'favorites',
-    component: FavoritesComponent,
     canActivate: [AuthGuard],
     data: { requiredRole: 'USER' },
+    loadComponent: () =>
+      import('./features/favorites/favorites.component').then(
+        (c) => c.FavoritesComponent
+      ),
   },
+  // Specific route for verify-email (standalone component)
   {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    data: { requiredRole: 'USER' },
-  },
-  {
-    path: 'admin',
-    canActivate: [AuthGuard],
-    data: { requiredRole: 'ADMIN' },
-    children: [
-      { path: '', component: AdminDashboardComponent },
-      { path: 'add-book', component: ResourceFormComponent },
-      { path: 'add-resource', component: ResourceFormComponent },
-      { path: 'books', component: AdminBookListComponent },
-      { path: 'edit-book/:id', component: BookEditComponent },
-      { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
-      { path: 'borrowings', component: AdminBorrowingsComponent },
-      { path: 'contact-tickets', component: ContactTicketsComponent },
-    ],
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./auth/components/verify-email/verify-email.component').then(
+        (c) => c.VerifyEmailComponent
+      ),
   },
   { path: '**', redirectTo: '/landing' },
 ];
