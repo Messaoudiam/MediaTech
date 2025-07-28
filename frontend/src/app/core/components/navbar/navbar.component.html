@@ -5,270 +5,279 @@
         src="assets/icons/mediatheque-icon.svg"
         alt="Logo Médiathèque"
         class="navbar-logo"
-      />
-      <span class="logo">MediaTech</span>
-    </a>
-  </div>
-
-  <span class="navbar-spacer"></span>
-
-  <div class="search-container" [class.mobile-search-open]="isSearchOpen">
-    <form (ngSubmit)="searchBooks()">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-icon matPrefix>search</mat-icon>
-        <input
-          matInput
-          type="text"
-          [(ngModel)]="searchQuery"
-          name="searchQuery"
-          placeholder="Rechercher une ressource..."
-          autocomplete="off"
-          [matAutocomplete]="auto"
-          (input)="onSearchInput()"
-          (focus)="onSearchFocus()"
-          #searchInput
         />
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          #autoComplete
-          (optionSelected)="onOptionSelected($event)"
-        >
-          <!-- Indicateur de chargement -->
-          <mat-option *ngIf="isLoading" class="loading-option">
-            <mat-spinner diameter="20"></mat-spinner>
-            <span class="loading-text">Recherche en cours...</span>
-          </mat-option>
+        <span class="logo">MediaTech</span>
+      </a>
+    </div>
 
-          <!-- Titres des sections -->
-          <div
-            *ngIf="
-              !isLoading && searchQuery.length < 2 && searchHistory.length > 0
-            "
-            class="section-title"
-          >
-            Historique de recherche
-          </div>
+    <span class="navbar-spacer"></span>
 
-          <div
-            *ngIf="
-              !isLoading &&
-              searchQuery.length >= 2 &&
-              filteredSuggestions.length > 0
-            "
-            class="section-title"
-          >
-            Résultats de recherche
-          </div>
+    <div class="search-container" [class.mobile-search-open]="isSearchOpen">
+      <form (ngSubmit)="searchBooks()">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="searchQuery"
+            name="searchQuery"
+            placeholder="Rechercher une ressource..."
+            autocomplete="off"
+            [matAutocomplete]="auto"
+            (input)="onSearchInput()"
+            (focus)="onSearchFocus()"
+            #searchInput
+            />
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              #autoComplete
+              (optionSelected)="onOptionSelected($event)"
+              >
+              <!-- Indicateur de chargement -->
+              @if (isLoading) {
+                <mat-option class="loading-option">
+                  <mat-spinner diameter="20"></mat-spinner>
+                  <span class="loading-text">Recherche en cours...</span>
+                </mat-option>
+              }
 
-          <!-- Historique de recherche -->
-          <ng-container *ngIf="!isLoading && searchQuery.length < 2">
-            <mat-option
-              *ngFor="let item of searchHistory"
-              [value]="item.book.title"
-              class="history-option"
-              (click)="navigateToBook(item.book)"
-            >
-              <div class="option-content">
-                <img
-                  *ngIf="item.book.coverImageUrl"
-                  [src]="item.book.coverImageUrl"
-                  class="option-image"
-                  alt="{{ item.book.title }}"
-                  (error)="handleImageError($event)"
-                />
+              <!-- Titres des sections -->
+              @if (
+                !isLoading && searchQuery.length < 2 && searchHistory.length > 0
+                ) {
                 <div
-                  *ngIf="!item.book.coverImageUrl"
-                  class="option-image placeholder-image"
-                >
-                  <mat-icon>book</mat-icon>
-                </div>
-                <div class="option-text">
-                  <span class="option-title truncate">{{
-                    item.book.title
-                  }}</span>
-                  <span class="option-author truncate">{{
-                    item.book.author
-                  }}</span>
-                </div>
-                <div class="delete-button-container">
-                  <button
-                    mat-icon-button
-                    class="history-delete-btn"
-                    (click)="removeFromHistory($event, item.id)"
-                    matTooltip="Supprimer de l'historique"
-                    aria-label="Supprimer de l'historique"
+                  class="section-title"
                   >
-                    <mat-icon>close</mat-icon>
-                  </button>
+                  Historique de recherche
                 </div>
-              </div>
-            </mat-option>
+              }
 
-            <!-- Bouton pour effacer tout l'historique -->
-            <mat-option
-              *ngIf="searchHistory.length > 0"
-              class="clear-history-option"
-              (click)="clearAllHistory($event)"
-            >
-              <div class="clear-all-container">
-                <mat-icon>delete_sweep</mat-icon>
-                <span>Effacer tout l'historique</span>
-              </div>
-            </mat-option>
-          </ng-container>
-
-          <!-- Résultats de la recherche -->
-          <ng-container *ngIf="!isLoading && searchQuery.length >= 2">
-            <mat-option
-              *ngFor="let suggestion of filteredSuggestions"
-              [value]="suggestion.title"
-              (click)="navigateToBook(suggestion)"
-            >
-              <div class="option-content">
-                <img
-                  *ngIf="suggestion.coverImageUrl"
-                  [src]="suggestion.coverImageUrl"
-                  class="option-image"
-                  alt="{{ suggestion.title }}"
-                  (error)="handleImageError($event)"
-                />
+              @if (
+                !isLoading &&
+                searchQuery.length >= 2 &&
+                filteredSuggestions.length > 0
+                ) {
                 <div
-                  *ngIf="!suggestion.coverImageUrl"
-                  class="option-image placeholder-image"
-                >
-                  <mat-icon>{{ getResourceIcon(suggestion.type) }}</mat-icon>
-                </div>
-                <div class="option-text">
-                  <span class="option-title truncate">{{
-                    suggestion.title
-                  }}</span>
-                  <span class="option-author truncate">{{
-                    suggestion.author
-                  }}</span>
-                  <span class="option-type">{{ suggestion.type }}</span>
-                </div>
-                <div class="status-icon-container">
-                  <mat-icon
-                    class="check-icon"
-                    *ngIf="isInHistory(suggestion.id)"
-                    >check</mat-icon
+                  class="section-title"
                   >
+                  Résultats de recherche
                 </div>
-              </div>
-            </mat-option>
+              }
 
-            <!-- Message si aucun résultat -->
-            <mat-option *ngIf="filteredSuggestions.length === 0" disabled>
-              Aucun résultat trouvé
-            </mat-option>
-          </ng-container>
-        </mat-autocomplete>
-        <button
-          mat-icon-button
-          matSuffix
-          (click)="closeSearch()"
-          *ngIf="isSearchOpen"
-          type="button"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-        <button mat-icon-button matSuffix type="submit" aria-label="Rechercher">
-          <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </mat-form-field>
-    </form>
-  </div>
+              <!-- Historique de recherche -->
+              @if (!isLoading && searchQuery.length < 2) {
+                @for (item of searchHistory; track item) {
+                  <mat-option
+                    [value]="item.book.title"
+                    class="history-option"
+                    (click)="navigateToBook(item.book)"
+                    >
+                    <div class="option-content">
+                      @if (item.book.coverImageUrl) {
+                        <img
+                          [src]="item.book.coverImageUrl"
+                          class="option-image"
+                          alt="{{ item.book.title }}"
+                          (error)="handleImageError($event)"
+                          />
+                      }
+                      @if (!item.book.coverImageUrl) {
+                        <div
+                          class="option-image placeholder-image"
+                          >
+                          <mat-icon>book</mat-icon>
+                        </div>
+                      }
+                      <div class="option-text">
+                        <span class="option-title truncate">{{
+                          item.book.title
+                        }}</span>
+                        <span class="option-author truncate">{{
+                          item.book.author
+                        }}</span>
+                      </div>
+                      <div class="delete-button-container">
+                        <button
+                          mat-icon-button
+                          class="history-delete-btn"
+                          (click)="removeFromHistory($event, item.id)"
+                          matTooltip="Supprimer de l'historique"
+                          aria-label="Supprimer de l'historique"
+                          >
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </mat-option>
+                }
+                <!-- Bouton pour effacer tout l'historique -->
+                @if (searchHistory.length > 0) {
+                  <mat-option
+                    class="clear-history-option"
+                    (click)="clearAllHistory($event)"
+                    >
+                    <div class="clear-all-container">
+                      <mat-icon>delete_sweep</mat-icon>
+                      <span>Effacer tout l'historique</span>
+                    </div>
+                  </mat-option>
+                }
+              }
 
-  <div class="mobile-actions">
-    <button mat-icon-button class="mobile-search-button" (click)="openSearch()">
-      <mat-icon>search</mat-icon>
-    </button>
+              <!-- Résultats de la recherche -->
+              @if (!isLoading && searchQuery.length >= 2) {
+                @for (suggestion of filteredSuggestions; track suggestion) {
+                  <mat-option
+                    [value]="suggestion.title"
+                    (click)="navigateToBook(suggestion)"
+                    >
+                    <div class="option-content">
+                      @if (suggestion.coverImageUrl) {
+                        <img
+                          [src]="suggestion.coverImageUrl"
+                          class="option-image"
+                          alt="{{ suggestion.title }}"
+                          (error)="handleImageError($event)"
+                          />
+                      }
+                      @if (!suggestion.coverImageUrl) {
+                        <div
+                          class="option-image placeholder-image"
+                          >
+                          <mat-icon>{{ getResourceIcon(suggestion.type) }}</mat-icon>
+                        </div>
+                      }
+                      <div class="option-text">
+                        <span class="option-title truncate">{{
+                          suggestion.title
+                        }}</span>
+                        <span class="option-author truncate">{{
+                          suggestion.author
+                        }}</span>
+                        <span class="option-type">{{ suggestion.type }}</span>
+                      </div>
+                      <div class="status-icon-container">
+                        @if (isInHistory(suggestion.id)) {
+                          <mat-icon
+                            class="check-icon"
+                            >check</mat-icon
+                            >
+                          }
+                        </div>
+                      </div>
+                    </mat-option>
+                  }
+                  <!-- Message si aucun résultat -->
+                  @if (filteredSuggestions.length === 0) {
+                    <mat-option disabled>
+                      Aucun résultat trouvé
+                    </mat-option>
+                  }
+                }
+              </mat-autocomplete>
+              @if (isSearchOpen) {
+                <button
+                  mat-icon-button
+                  matSuffix
+                  (click)="closeSearch()"
+                  type="button"
+                  >
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+              <button mat-icon-button matSuffix type="submit" aria-label="Rechercher">
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </mat-form-field>
+          </form>
+        </div>
 
-    <button
-      mat-icon-button
-      class="mobile-menu-button"
-      (click)="toggleMobileMenu()"
-    >
-      <mat-icon>menu</mat-icon>
-    </button>
-  </div>
+        <div class="mobile-actions">
+          <button mat-icon-button class="mobile-search-button" (click)="openSearch()">
+            <mat-icon>search</mat-icon>
+          </button>
 
-  <div class="navbar-links" [class.menu-open]="isMobileMenuOpen">
-    <ng-container *ngIf="!isLoggedIn; else loggedInTemplate">
-      <button mat-button (click)="navigateToLogin()" class="nav-button">
-        <mat-icon>login</mat-icon>
-        <span>Connexion</span>
-      </button>
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="navigateToRegister()"
-        class="nav-button"
-      >
-        <mat-icon>person_add</mat-icon>
-        <span>Inscription</span>
-      </button>
-    </ng-container>
+          <button
+            mat-icon-button
+            class="mobile-menu-button"
+            (click)="toggleMobileMenu()"
+            >
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
 
-    <ng-template #loggedInTemplate>
-      <button mat-button [routerLink]="['/home']" class="nav-button">
-        <mat-icon>dashboard</mat-icon>
-        <span>Tableau de bord</span>
-      </button>
-      <button mat-button [matMenuTriggerFor]="userMenu" class="nav-button">
-        <mat-icon>account_circle</mat-icon>
-        <span>Mon compte</span>
-      </button>
+        <div class="navbar-links" [class.menu-open]="isMobileMenuOpen">
+          @if (!isLoggedIn) {
+            <button mat-button (click)="navigateToLogin()" class="nav-button">
+              <mat-icon>login</mat-icon>
+              <span>Connexion</span>
+            </button>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="navigateToRegister()"
+              class="nav-button"
+              >
+              <mat-icon>person_add</mat-icon>
+              <span>Inscription</span>
+            </button>
+          } @else {
+            <button mat-button [routerLink]="['/home']" class="nav-button">
+              <mat-icon>dashboard</mat-icon>
+              <span>Tableau de bord</span>
+            </button>
+            <button mat-button [matMenuTriggerFor]="userMenu" class="nav-button">
+              <mat-icon>account_circle</mat-icon>
+              <span>Mon compte</span>
+            </button>
+            <!-- Menu utilisateur standard -->
+            <mat-menu #userMenu="matMenu">
+              @if (!isAdmin) {
+                <button mat-menu-item [routerLink]="['/profile']">
+                  <mat-icon>person</mat-icon>
+                  Profil
+                </button>
+                <button mat-menu-item [routerLink]="['/favorites']">
+                  <mat-icon>favorite</mat-icon>
+                  Favoris
+                </button>
+                <button mat-menu-item [routerLink]="['/borrowings']">
+                  <mat-icon>menu_book</mat-icon>
+                  Mes emprunts
+                </button>
+                <button mat-menu-item (click)="logout()">
+                  <mat-icon>logout</mat-icon>
+                  Déconnexion
+                </button>
+              } @else {
+                <button mat-menu-item [routerLink]="['/admin/books']">
+                  <mat-icon>inventory</mat-icon>
+                  Gérer la bibliothèque
+                </button>
+                <button mat-menu-item [routerLink]="['/admin/add-book']">
+                  <mat-icon>add_circle</mat-icon>
+                  Ajouter une ressource
+                </button>
+                <button mat-menu-item [routerLink]="['/admin/borrowings']">
+                  <mat-icon>history</mat-icon>
+                  Gérer les emprunts
+                </button>
+                <button mat-menu-item (click)="openAssignBorrowingDialog()">
+                  <mat-icon>add_task</mat-icon>
+                  Attribuer un emprunt
+                </button>
+                <button mat-menu-item [routerLink]="['/admin/contact-tickets']">
+                  <mat-icon>support_agent</mat-icon>
+                  Tickets de contact
+                </button>
+                <button mat-menu-item (click)="logout()">
+                  <mat-icon>logout</mat-icon>
+                  Déconnexion
+                </button>
+              }
+              <!-- Menu administrateur -->
+            </mat-menu>
+          }
 
-      <!-- Menu utilisateur standard -->
-      <mat-menu #userMenu="matMenu">
-        <ng-container *ngIf="!isAdmin; else adminMenu">
-          <button mat-menu-item [routerLink]="['/profile']">
-            <mat-icon>person</mat-icon>
-            Profil
-          </button>
-          <button mat-menu-item [routerLink]="['/favorites']">
-            <mat-icon>favorite</mat-icon>
-            Favoris
-          </button>
-          <button mat-menu-item [routerLink]="['/borrowings']">
-            <mat-icon>menu_book</mat-icon>
-            Mes emprunts
-          </button>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            Déconnexion
-          </button>
-        </ng-container>
-
-        <!-- Menu administrateur -->
-        <ng-template #adminMenu>
-          <button mat-menu-item [routerLink]="['/admin/books']">
-            <mat-icon>inventory</mat-icon>
-            Gérer la bibliothèque
-          </button>
-          <button mat-menu-item [routerLink]="['/admin/add-book']">
-            <mat-icon>add_circle</mat-icon>
-            Ajouter une ressource
-          </button>
-          <button mat-menu-item [routerLink]="['/admin/borrowings']">
-            <mat-icon>history</mat-icon>
-            Gérer les emprunts
-          </button>
-          <button mat-menu-item (click)="openAssignBorrowingDialog()">
-            <mat-icon>add_task</mat-icon>
-            Attribuer un emprunt
-          </button>
-          <button mat-menu-item [routerLink]="['/admin/contact-tickets']">
-            <mat-icon>support_agent</mat-icon>
-            Tickets de contact
-          </button>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            Déconnexion
-          </button>
-        </ng-template>
-      </mat-menu>
-    </ng-template>
-  </div>
-</mat-toolbar>
+        </div>
+      </mat-toolbar>

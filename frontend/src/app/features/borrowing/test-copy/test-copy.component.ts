@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClient } from '@angular/common/http';
@@ -12,11 +12,10 @@ import { of } from 'rxjs';
   selector: 'app-test-copy',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   template: `
     <mat-card>
       <mat-card-header>
@@ -26,32 +25,39 @@ import { of } from 'rxjs';
         <button mat-raised-button color="primary" (click)="fetchCopies()">
           Récupérer tous les exemplaires
         </button>
-
-        <div
-          *ngIf="loading"
-          style="display: flex; justify-content: center; margin: 20px 0;"
-        >
-          <mat-spinner diameter="40"></mat-spinner>
-        </div>
-
-        <div *ngIf="copies && copies.length">
-          <h3>Exemplaires disponibles ({{ copies.length }})</h3>
-          <ul>
-            <li *ngFor="let copy of copies">
-              ID: {{ copy.id }} <br />
-              ResourceID: {{ copy.resourceId }} <br />
-              Disponible: {{ copy.available ? 'Oui' : 'Non' }} <br />
-              État: {{ copy.condition || 'Non spécifié' }}
-            </li>
-          </ul>
-        </div>
-
-        <div *ngIf="error" style="color: red; margin: 15px 0;">
-          {{ error }}
-        </div>
+    
+        @if (loading) {
+          <div
+            style="display: flex; justify-content: center; margin: 20px 0;"
+            >
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        }
+    
+        @if (copies && copies.length) {
+          <div>
+            <h3>Exemplaires disponibles ({{ copies.length }})</h3>
+            <ul>
+              @for (copy of copies; track copy) {
+                <li>
+                  ID: {{ copy.id }} <br />
+                  ResourceID: {{ copy.resourceId }} <br />
+                  Disponible: {{ copy.available ? 'Oui' : 'Non' }} <br />
+                  État: {{ copy.condition || 'Non spécifié' }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+    
+        @if (error) {
+          <div style="color: red; margin: 15px 0;">
+            {{ error }}
+          </div>
+        }
       </mat-card-content>
     </mat-card>
-  `,
+    `,
   styles: [
     `
       mat-card {

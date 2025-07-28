@@ -23,7 +23,7 @@ import { CopyService } from '../../../core/services/copy.service';
 import { BorrowingService } from '../../../core/services/borrowing.service';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, tap, map } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
+
 import { environment } from '../../../../environments/environment';
 
 interface User {
@@ -54,7 +54,6 @@ interface Copy {
   styleUrls: ['./assign-borrowing-dialog.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -62,8 +61,8 @@ interface Copy {
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   providers: [provideNativeDateAdapter()],
 })
 export class AssignBorrowingDialogComponent implements OnInit {

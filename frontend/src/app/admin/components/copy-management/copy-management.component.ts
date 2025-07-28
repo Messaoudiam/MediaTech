@@ -55,115 +55,117 @@ interface Copy {
         <mat-card-header>
           <mat-card-title
             >Ajouter des exemplaires aux ressources</mat-card-title
-          >
-          <mat-card-subtitle
-            >Créez de nouveaux exemplaires pour les livres
-            disponibles</mat-card-subtitle
-          >
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="form-section">
-            <h3>Nouveau exemplaire</h3>
-
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Ressource</mat-label>
-                <mat-select [(ngModel)]="selectedResourceId">
-                  <mat-option
-                    *ngFor="let resource of resources"
-                    [value]="resource.id"
-                  >
-                    {{ resource.title }} ({{
-                      resource.author || 'Auteur inconnu'
-                    }})
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>État</mat-label>
-                <mat-select [(ngModel)]="newCopy.condition">
-                  <mat-option value="Neuf">Neuf</mat-option>
-                  <mat-option value="Bon état">Bon état</mat-option>
-                  <mat-option value="État moyen">État moyen</mat-option>
-                  <mat-option value="Usé">Usé</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div class="form-actions">
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="addCopy()"
-                [disabled]="!selectedResourceId || loading"
+            >
+            <mat-card-subtitle
+              >Créez de nouveaux exemplaires pour les livres
+              disponibles</mat-card-subtitle
               >
-                <mat-icon>add</mat-icon>
-                Ajouter l'exemplaire
-              </button>
-            </div>
-          </div>
-
-          <div *ngIf="loading" class="loading-container">
-            <mat-spinner diameter="40"></mat-spinner>
-          </div>
-
-          <div class="copies-list" *ngIf="!loading && copies.length > 0">
-            <h3>Exemplaires existants</h3>
-
-            <table mat-table [dataSource]="copies" class="copies-table">
-              <ng-container matColumnDef="resource">
-                <th mat-header-cell *matHeaderCellDef>Ressource</th>
-                <td mat-cell *matCellDef="let copy">
-                  {{ copy.resource?.title || 'N/A' }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="condition">
-                <th mat-header-cell *matHeaderCellDef>État</th>
-                <td mat-cell *matCellDef="let copy">{{ copy.condition }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="available">
-                <th mat-header-cell *matHeaderCellDef>Disponibilité</th>
-                <td mat-cell *matCellDef="let copy">
-                  <span
-                    [ngClass]="copy.available ? 'available' : 'unavailable'"
-                  >
-                    {{ copy.available ? 'Disponible' : 'Emprunté' }}
-                  </span>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let copy">
+            </mat-card-header>
+    
+            <mat-card-content>
+              <div class="form-section">
+                <h3>Nouveau exemplaire</h3>
+    
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Ressource</mat-label>
+                    <mat-select [(ngModel)]="selectedResourceId">
+                      @for (resource of resources; track resource) {
+                        <mat-option
+                          [value]="resource.id"
+                          >
+                          {{ resource.title }} ({{
+                          resource.author || 'Auteur inconnu'
+                          }})
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+    
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>État</mat-label>
+                    <mat-select [(ngModel)]="newCopy.condition">
+                      <mat-option value="Neuf">Neuf</mat-option>
+                      <mat-option value="Bon état">Bon état</mat-option>
+                      <mat-option value="État moyen">État moyen</mat-option>
+                      <mat-option value="Usé">Usé</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+    
+                <div class="form-actions">
                   <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteCopy(copy.id)"
-                    [disabled]="!copy.available"
-                  >
-                    <mat-icon>delete</mat-icon>
+                    mat-raised-button
+                    color="primary"
+                    (click)="addCopy()"
+                    [disabled]="!selectedResourceId || loading"
+                    >
+                    <mat-icon>add</mat-icon>
+                    Ajouter l'exemplaire
                   </button>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-            </table>
-          </div>
-
-          <div *ngIf="!loading && copies.length === 0" class="no-copies">
-            <p>Aucun exemplaire trouvé.</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
+                </div>
+              </div>
+    
+              @if (loading) {
+                <div class="loading-container">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+              }
+    
+              @if (!loading && copies.length > 0) {
+                <div class="copies-list">
+                  <h3>Exemplaires existants</h3>
+                  <table mat-table [dataSource]="copies" class="copies-table">
+                    <ng-container matColumnDef="resource">
+                      <th mat-header-cell *matHeaderCellDef>Ressource</th>
+                      <td mat-cell *matCellDef="let copy">
+                        {{ copy.resource?.title || 'N/A' }}
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="condition">
+                      <th mat-header-cell *matHeaderCellDef>État</th>
+                      <td mat-cell *matCellDef="let copy">{{ copy.condition }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="available">
+                      <th mat-header-cell *matHeaderCellDef>Disponibilité</th>
+                      <td mat-cell *matCellDef="let copy">
+                        <span
+                          [ngClass]="copy.available ? 'available' : 'unavailable'"
+                          >
+                          {{ copy.available ? 'Disponible' : 'Emprunté' }}
+                        </span>
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>Actions</th>
+                      <td mat-cell *matCellDef="let copy">
+                        <button
+                          mat-icon-button
+                          color="warn"
+                          (click)="deleteCopy(copy.id)"
+                          [disabled]="!copy.available"
+                          >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                  </table>
+                </div>
+              }
+    
+              @if (!loading && copies.length === 0) {
+                <div class="no-copies">
+                  <p>Aucun exemplaire trouvé.</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+    `,
   styles: [
     `
       .copy-management-container {

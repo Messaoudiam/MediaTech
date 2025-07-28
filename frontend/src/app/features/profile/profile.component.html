@@ -1,87 +1,89 @@
 <div class="profile-container">
-  <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Chargement de votre profil...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement de votre profil...</p>
+    </div>
+  }
 
-  <div *ngIf="!loading && user" class="profile-content">
-    <h1 class="profile-title">Mon Profil</h1>
-
-    <mat-card class="profile-card">
-      <mat-card-header>
-        <div mat-card-avatar class="profile-avatar">
-          <mat-icon>person</mat-icon>
-        </div>
-        <mat-card-title
-          >{{ user.prenom || "" }}
-          {{ user.nom || "Utilisateur" }}</mat-card-title
-        >
-        <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div class="profile-info">
-          <div class="info-section">
-            <h3>Informations personnelles</h3>
-            <div class="info-item">
-              <mat-icon>badge</mat-icon>
-              <span>ID: {{ user.id }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>email</mat-icon>
-              <span>Email: {{ user.email }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>person</mat-icon>
-              <span>Nom: {{ user.nom || "Non renseigné" }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>person_outline</mat-icon>
-              <span>Prénom: {{ user.prenom || "Non renseigné" }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>security</mat-icon>
-              <span>Rôle: {{ user.role || "utilisateur" }}</span>
-            </div>
+  @if (!loading && user) {
+    <div class="profile-content">
+      <h1 class="profile-title">Mon Profil</h1>
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <div mat-card-avatar class="profile-avatar">
+            <mat-icon>person</mat-icon>
           </div>
-
-          <mat-divider></mat-divider>
-
-          <div class="info-section">
-            <h3>Accès rapides</h3>
-            <div class="action-buttons">
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="navigateToBorrowings()"
-              >
-                <mat-icon>menu_book</mat-icon>
-                Mes emprunts
-              </button>
-              <button
-                mat-raised-button
-                color="accent"
-                (click)="navigateToFavorites()"
-              >
-                <mat-icon>favorite</mat-icon>
-                Mes favoris
-              </button>
+          <mat-card-title
+            >{{ user.prenom || "" }}
+            {{ user.nom || "Utilisateur" }}</mat-card-title
+            >
+            <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="profile-info">
+              <div class="info-section">
+                <h3>Informations personnelles</h3>
+                <div class="info-item">
+                  <mat-icon>badge</mat-icon>
+                  <span>ID: {{ user.id }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>email</mat-icon>
+                  <span>Email: {{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>person</mat-icon>
+                  <span>Nom: {{ user.nom || "Non renseigné" }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>person_outline</mat-icon>
+                  <span>Prénom: {{ user.prenom || "Non renseigné" }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>security</mat-icon>
+                  <span>Rôle: {{ user.role || "utilisateur" }}</span>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-section">
+                <h3>Accès rapides</h3>
+                <div class="action-buttons">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="navigateToBorrowings()"
+                    >
+                    <mat-icon>menu_book</mat-icon>
+                    Mes emprunts
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="accent"
+                    (click)="navigateToFavorites()"
+                    >
+                    <mat-icon>favorite</mat-icon>
+                    Mes favoris
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
 
-  <div *ngIf="!loading && !user" class="error-container">
-    <mat-card class="error-card">
-      <mat-card-header>
-        <mat-icon color="warn">error</mat-icon>
-        <mat-card-title>Erreur de chargement</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Impossible de charger votre profil. Veuillez vous reconnecter.</p>
-      </mat-card-content>
-    </mat-card>
+    @if (!loading && !user) {
+      <div class="error-container">
+        <mat-card class="error-card">
+          <mat-card-header>
+            <mat-icon color="warn">error</mat-icon>
+            <mat-card-title>Erreur de chargement</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Impossible de charger votre profil. Veuillez vous reconnecter.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
   </div>
-</div>

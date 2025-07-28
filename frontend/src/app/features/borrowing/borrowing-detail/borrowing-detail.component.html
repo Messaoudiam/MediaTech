@@ -8,89 +8,96 @@
 
   <h1 class="page-title">Détail de l'emprunt</h1>
 
-  <div class="loading-container" *ngIf="loading">
-    <mat-spinner [diameter]="40"></mat-spinner>
-    <p>Chargement de l'emprunt...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner [diameter]="40"></mat-spinner>
+      <p>Chargement de l'emprunt...</p>
+    </div>
+  }
 
-  <div class="error-container" *ngIf="error && !loading">
-    <mat-icon class="error-icon">error</mat-icon>
-    <h2>Emprunt non trouvé</h2>
-    <p>L'emprunt que vous recherchez n'existe pas ou a été supprimé.</p>
-  </div>
+  @if (error && !loading) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error</mat-icon>
+      <h2>Emprunt non trouvé</h2>
+      <p>L'emprunt que vous recherchez n'existe pas ou a été supprimé.</p>
+    </div>
+  }
 
-  <mat-card class="borrowing-card" *ngIf="borrowing && !loading">
-    <mat-card-content>
-      <div class="borrowing-header">
-        <div class="resource-image">
-          <img
+  @if (borrowing && !loading) {
+    <mat-card class="borrowing-card">
+      <mat-card-content>
+        <div class="borrowing-header">
+          <div class="resource-image">
+            <img
             [src]="
               borrowing.copy?.resource?.coverImageUrl ||
               'assets/images/default-cover.png'
             "
-            [alt]="borrowing.copy?.resource?.title"
-            class="cover-image"
-          />
-        </div>
-        <div class="resource-info">
-          <h2 class="resource-title">{{ borrowing.copy?.resource?.title }}</h2>
-          <p class="resource-author" *ngIf="borrowing.copy?.resource?.author">
-            par {{ borrowing.copy?.resource?.author }}
-          </p>
-          <div class="status-chip" [class]="getStatusClass(borrowing.status)">
-            {{ getStatusText(borrowing.status) }}
+              [alt]="borrowing.copy?.resource?.title"
+              class="cover-image"
+              />
+            </div>
+            <div class="resource-info">
+              <h2 class="resource-title">{{ borrowing.copy?.resource?.title }}</h2>
+              @if (borrowing.copy?.resource?.author) {
+                <p class="resource-author">
+                  par {{ borrowing.copy?.resource?.author }}
+                </p>
+              }
+              <div class="status-chip" [class]="getStatusClass(borrowing.status)">
+                {{ getStatusText(borrowing.status) }}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <mat-divider></mat-divider>
-
-      <div class="borrowing-details">
-        <div class="detail-item">
-          <mat-icon>event</mat-icon>
-          <div class="detail-content">
-            <span class="detail-label">Date d'emprunt</span>
-            <span class="detail-value">{{
-              borrowing.borrowedAt | date : "longDate" : "" : "fr"
-            }}</span>
+          <mat-divider></mat-divider>
+          <div class="borrowing-details">
+            <div class="detail-item">
+              <mat-icon>event</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Date d'emprunt</span>
+                <span class="detail-value">{{
+                  borrowing.borrowedAt | date : "longDate" : "" : "fr"
+                }}</span>
+              </div>
+            </div>
+            <div class="detail-item" [class.overdue]="formatDueDate().isOverdue">
+              <mat-icon>event_available</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Date de retour prévue</span>
+                <span class="detail-value">{{ formatDueDate().text }}</span>
+                @if (borrowing.status === BorrowingStatus.ACTIVE) {
+                  <span
+                    class="days-remaining"
+                    >
+                    ({{ getDaysRemaining() }} jour@if (getDaysRemaining() !== 1) {
+                    <span
+                      >s</span
+                      >
+                    })
+                  </span>
+                }
+              </div>
+            </div>
+            @if (borrowing.returnedAt) {
+              <div class="detail-item">
+                <mat-icon>check_circle</mat-icon>
+                <div class="detail-content">
+                  <span class="detail-label">Date de retour effective</span>
+                  <span class="detail-value">{{
+                    borrowing.returnedAt | date : "longDate" : "" : "fr"
+                  }}</span>
+                </div>
+              </div>
+            }
+            <div class="detail-item">
+              <mat-icon>collections_bookmark</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Exemplaire</span>
+                <span class="detail-value">{{ borrowing.copyId }}</span>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div class="detail-item" [class.overdue]="formatDueDate().isOverdue">
-          <mat-icon>event_available</mat-icon>
-          <div class="detail-content">
-            <span class="detail-label">Date de retour prévue</span>
-            <span class="detail-value">{{ formatDueDate().text }}</span>
-            <span
-              *ngIf="borrowing.status === BorrowingStatus.ACTIVE"
-              class="days-remaining"
-            >
-              ({{ getDaysRemaining() }} jour<span
-                *ngIf="getDaysRemaining() !== 1"
-                >s</span
-              >)
-            </span>
-          </div>
-        </div>
-
-        <div class="detail-item" *ngIf="borrowing.returnedAt">
-          <mat-icon>check_circle</mat-icon>
-          <div class="detail-content">
-            <span class="detail-label">Date de retour effective</span>
-            <span class="detail-value">{{
-              borrowing.returnedAt | date : "longDate" : "" : "fr"
-            }}</span>
-          </div>
-        </div>
-
-        <div class="detail-item">
-          <mat-icon>collections_bookmark</mat-icon>
-          <div class="detail-content">
-            <span class="detail-label">Exemplaire</span>
-            <span class="detail-value">{{ borrowing.copyId }}</span>
-          </div>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>

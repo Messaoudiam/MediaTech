@@ -1,165 +1,196 @@
 <div class="reviews-container">
   <h3 class="section-title">Avis sur "{{ resourceTitle }}"</h3>
 
-  <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="30"></mat-spinner>
-    <span>Chargement des avis...</span>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="30"></mat-spinner>
+      <span>Chargement des avis...</span>
+    </div>
+  }
 
   <!-- Formulaire pour ajouter/éditer un avis -->
-  <div
-    *ngIf="isAuthenticated && (!userReview || editMode)"
-    class="review-form-container"
-  >
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{
-          userReview ? "Modifier votre avis" : "Ajouter votre avis"
-        }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Votre commentaire</mat-label>
-            <textarea
-              matInput
-              formControlName="content"
-              rows="4"
-              placeholder="Partagez votre opinion..."
-            ></textarea>
-            <mat-error *ngIf="reviewForm.get('content')?.hasError('required')">
-              Un commentaire est requis
-            </mat-error>
-            <mat-error *ngIf="reviewForm.get('content')?.hasError('minlength')">
-              Le commentaire doit contenir au moins 3 caractères
-            </mat-error>
-            <mat-error *ngIf="reviewForm.get('content')?.hasError('maxlength')">
-              Le commentaire ne peut pas dépasser 1000 caractères
-            </mat-error>
-          </mat-form-field>
-
-          <div class="rating-field">
-            <label>Note (optionnelle) :</label>
-            <div class="star-rating">
-              <button
-                type="button"
-                mat-icon-button
-                *ngFor="let star of [1, 2, 3, 4, 5]"
-                (click)="reviewForm.get('rating')?.setValue(star)"
-              >
-                <mat-icon>{{
-                  reviewForm.get("rating")?.value >= star
-                    ? "star"
-                    : "star_border"
-                }}</mat-icon>
-              </button>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button
-              *ngIf="editMode"
-              type="button"
-              mat-button
-              color="warn"
-              (click)="toggleEditMode()"
-              [disabled]="submitting"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              mat-raised-button
-              color="primary"
-              [disabled]="reviewForm.invalid || submitting"
-            >
-              <mat-spinner *ngIf="submitting" diameter="20"></mat-spinner>
-              <span *ngIf="!submitting">{{
-                userReview ? "Mettre à jour" : "Publier"
-              }}</span>
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Affichage de l'avis de l'utilisateur -->
-  <div *ngIf="isAuthenticated && userReview && !editMode" class="user-review">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Votre avis</mat-card-title>
-        <div class="review-actions">
-          <button mat-icon-button color="primary" (click)="toggleEditMode()">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteReview()">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="review-rating" *ngIf="userReview.rating">
-          <mat-icon
-            class="star-icon"
-            *ngFor="let star of getStarArray(userReview.rating)"
-            >star</mat-icon
-          >
-          <mat-icon
-            class="star-icon-empty"
-            *ngFor="let star of getEmptyStarArray(userReview.rating)"
-            >star_border</mat-icon
-          >
-        </div>
-        <p class="review-content">{{ userReview.content }}</p>
-        <p class="review-date">
-          Publié le {{ userReview.createdAt | date : "dd/MM/yyyy" }}
-        </p>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Message pour inciter à se connecter -->
-  <div *ngIf="!isAuthenticated" class="login-prompt">
-    <p>
-      <a [routerLink]="['/auth/login']">Connectez-vous</a> pour laisser un avis
-      sur cette ressource.
-    </p>
-  </div>
-
-  <!-- Liste des avis des autres utilisateurs -->
-  <div class="other-reviews">
-    <h4 *ngIf="reviews.length > 0">Tous les avis ({{ reviews.length }})</h4>
-    <p *ngIf="reviews.length === 0 && !loading" class="no-reviews">
-      Aucun avis pour le moment. Soyez le premier à partager votre opinion !
-    </p>
-
-    <div *ngFor="let review of reviews" class="review-item">
+  @if (isAuthenticated && (!userReview || editMode)) {
+    <div
+      class="review-form-container"
+      >
       <mat-card>
         <mat-card-header>
           <mat-card-title>{{
-            review.user?.email || "Utilisateur"
+            userReview ? "Modifier votre avis" : "Ajouter votre avis"
           }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div class="review-rating" *ngIf="review.rating">
-            <mat-icon
-              class="star-icon"
-              *ngFor="let star of getStarArray(review.rating)"
-              >star</mat-icon
-            >
-            <mat-icon
-              class="star-icon-empty"
-              *ngFor="let star of getEmptyStarArray(review.rating)"
-              >star_border</mat-icon
-            >
-          </div>
-          <p class="review-content">{{ review.content }}</p>
-          <p class="review-date">
-            Publié le {{ review.createdAt | date : "dd/MM/yyyy" }}
-          </p>
+          <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Votre commentaire</mat-label>
+              <textarea
+                matInput
+                formControlName="content"
+                rows="4"
+                placeholder="Partagez votre opinion..."
+              ></textarea>
+              @if (reviewForm.get('content')?.hasError('required')) {
+                <mat-error>
+                  Un commentaire est requis
+                </mat-error>
+              }
+              @if (reviewForm.get('content')?.hasError('minlength')) {
+                <mat-error>
+                  Le commentaire doit contenir au moins 3 caractères
+                </mat-error>
+              }
+              @if (reviewForm.get('content')?.hasError('maxlength')) {
+                <mat-error>
+                  Le commentaire ne peut pas dépasser 1000 caractères
+                </mat-error>
+              }
+            </mat-form-field>
+            <div class="rating-field">
+              <label>Note (optionnelle) :</label>
+              <div class="star-rating">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <button
+                    type="button"
+                    mat-icon-button
+                    (click)="reviewForm.get('rating')?.setValue(star)"
+                    >
+                    <mat-icon>{{
+                      reviewForm.get("rating")?.value >= star
+                      ? "star"
+                      : "star_border"
+                    }}</mat-icon>
+                  </button>
+                }
+              </div>
+            </div>
+            <div class="form-actions">
+              @if (editMode) {
+                <button
+                  type="button"
+                  mat-button
+                  color="warn"
+                  (click)="toggleEditMode()"
+                  [disabled]="submitting"
+                  >
+                  Annuler
+                </button>
+              }
+              <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="reviewForm.invalid || submitting"
+                >
+                @if (submitting) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                }
+                @if (!submitting) {
+                  <span>{{
+                    userReview ? "Mettre à jour" : "Publier"
+                  }}</span>
+                }
+              </button>
+            </div>
+          </form>
         </mat-card-content>
       </mat-card>
     </div>
-  </div>
-</div>
+  }
+
+  <!-- Affichage de l'avis de l'utilisateur -->
+  @if (isAuthenticated && userReview && !editMode) {
+    <div class="user-review">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Votre avis</mat-card-title>
+          <div class="review-actions">
+            <button mat-icon-button color="primary" (click)="toggleEditMode()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteReview()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (userReview.rating) {
+            <div class="review-rating">
+              @for (star of getStarArray(userReview.rating); track star) {
+                <mat-icon
+                  class="star-icon"
+                  >star</mat-icon
+                  >
+                }
+                @for (star of getEmptyStarArray(userReview.rating); track star) {
+                  <mat-icon
+                    class="star-icon-empty"
+                    >star_border</mat-icon
+                    >
+                  }
+                </div>
+              }
+              <p class="review-content">{{ userReview.content }}</p>
+              <p class="review-date">
+                Publié le {{ userReview.createdAt | date : "dd/MM/yyyy" }}
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      }
+
+      <!-- Message pour inciter à se connecter -->
+      @if (!isAuthenticated) {
+        <div class="login-prompt">
+          <p>
+            <a [routerLink]="['/auth/login']">Connectez-vous</a> pour laisser un avis
+            sur cette ressource.
+          </p>
+        </div>
+      }
+
+      <!-- Liste des avis des autres utilisateurs -->
+      <div class="other-reviews">
+        @if (reviews.length > 0) {
+          <h4>Tous les avis ({{ reviews.length }})</h4>
+        }
+        @if (reviews.length === 0 && !loading) {
+          <p class="no-reviews">
+            Aucun avis pour le moment. Soyez le premier à partager votre opinion !
+          </p>
+        }
+
+        @for (review of reviews; track review) {
+          <div class="review-item">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>{{
+                  review.user?.email || "Utilisateur"
+                }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @if (review.rating) {
+                  <div class="review-rating">
+                    @for (star of getStarArray(review.rating); track star) {
+                      <mat-icon
+                        class="star-icon"
+                        >star</mat-icon
+                        >
+                      }
+                      @for (star of getEmptyStarArray(review.rating); track star) {
+                        <mat-icon
+                          class="star-icon-empty"
+                          >star_border</mat-icon
+                          >
+                        }
+                      </div>
+                    }
+                    <p class="review-content">{{ review.content }}</p>
+                    <p class="review-date">
+                      Publié le {{ review.createdAt | date : "dd/MM/yyyy" }}
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            }
+          </div>
+        </div>

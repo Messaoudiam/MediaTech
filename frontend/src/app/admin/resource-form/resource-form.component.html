@@ -18,441 +18,442 @@
                 [placeholder]="
                   getFieldPlaceholder('title', resourceForm.get('type')?.value)
                 "
-              />
-              <mat-error
-                *ngIf="resourceForm.get('title')?.hasError('required')"
-              >
-                Le titre est requis
-              </mat-error>
-              <mat-error
-                *ngIf="resourceForm.get('title')?.hasError('minlength')"
-              >
-                Le titre doit contenir au moins 3 caractères
-              </mat-error>
-            </mat-form-field>
+                />
+                @if (resourceForm.get('title')?.hasError('required')) {
+                  <mat-error
+                    >
+                    Le titre est requis
+                  </mat-error>
+                }
+                @if (resourceForm.get('title')?.hasError('minlength')) {
+                  <mat-error
+                    >
+                    Le titre doit contenir au moins 3 caractères
+                  </mat-error>
+                }
+              </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Type de ressource</mat-label>
-              <mat-select formControlName="type">
-                <mat-option *ngFor="let type of resourceTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <!-- Champs communs aux BOOK, COMIC, AUDIOBOOK -->
-            <ng-container
-              *ngIf="shouldShowField('author', resourceForm.get('type')?.value)"
-            >
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{
-                  getFieldLabel("author", resourceForm.get("type")?.value)
-                }}</mat-label>
-                <input
-                  matInput
-                  formControlName="author"
+                <mat-label>Type de ressource</mat-label>
+                <mat-select formControlName="type">
+                  @for (type of resourceTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Champs communs aux BOOK, COMIC, AUDIOBOOK -->
+              @if (shouldShowField('author', resourceForm.get('type')?.value)) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{
+                    getFieldLabel("author", resourceForm.get("type")?.value)
+                  }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="author"
                   [placeholder]="
                     getFieldPlaceholder(
                       'author',
                       resourceForm.get('type')?.value
                     )
                   "
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('author')?.hasError('required')"
-                >
-                  {{
-                    getFieldLabel("author", resourceForm.get("type")?.value)
-                  }}
-                  est requis
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                    />
+                    @if (resourceForm.get('author')?.hasError('required')) {
+                      <mat-error
+                        >
+                        {{
+                        getFieldLabel("author", resourceForm.get("type")?.value)
+                        }}
+                        est requis
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                }
 
-            <!-- Champs ISBN pour livres, BD et livres audio -->
-            <ng-container
-              *ngIf="shouldShowField('isbn', resourceForm.get('type')?.value)"
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>ISBN</mat-label>
-                <input
-                  matInput
-                  formControlName="isbn"
-                  placeholder="ISBN (optionnel)"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('isbn')?.hasError('pattern')"
-                >
-                  Format ISBN invalide
-                </mat-error>
-                <mat-error
-                  *ngIf="resourceForm.get('isbn')?.hasError('duplicateIsbn')"
-                >
-                  Cet ISBN existe déjà dans la bibliothèque
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                <!-- Champs ISBN pour livres, BD et livres audio -->
+                @if (shouldShowField('isbn', resourceForm.get('type')?.value)) {
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>ISBN</mat-label>
+                    <input
+                      matInput
+                      formControlName="isbn"
+                      placeholder="ISBN (optionnel)"
+                      />
+                      @if (resourceForm.get('isbn')?.hasError('pattern')) {
+                        <mat-error
+                          >
+                          Format ISBN invalide
+                        </mat-error>
+                      }
+                      @if (resourceForm.get('isbn')?.hasError('duplicateIsbn')) {
+                        <mat-error
+                          >
+                          Cet ISBN existe déjà dans la bibliothèque
+                        </mat-error>
+                      }
+                    </mat-form-field>
+                  }
 
-            <!-- Champs pour DVD -->
-            <ng-container
-              *ngIf="
-                shouldShowField('director', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Réalisateur</mat-label>
-                <input
-                  matInput
-                  formControlName="director"
-                  placeholder="Ex: Christopher Nolan"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('director')?.hasError('required')"
-                >
-                  Le réalisateur est requis
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                  <!-- Champs pour DVD -->
+                  @if (
+                    shouldShowField('director', resourceForm.get('type')?.value)
+                    ) {
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Réalisateur</mat-label>
+                      <input
+                        matInput
+                        formControlName="director"
+                        placeholder="Ex: Christopher Nolan"
+                        />
+                        @if (resourceForm.get('director')?.hasError('required')) {
+                          <mat-error
+                            >
+                            Le réalisateur est requis
+                          </mat-error>
+                        }
+                      </mat-form-field>
+                    }
 
-            <ng-container
-              *ngIf="shouldShowField('actors', resourceForm.get('type')?.value)"
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Acteurs principaux</mat-label>
-                <input
-                  matInput
-                  formControlName="actors"
-                  placeholder="Ex: Leonardo DiCaprio, Tom Hardy"
-                />
-              </mat-form-field>
-            </ng-container>
+                    @if (shouldShowField('actors', resourceForm.get('type')?.value)) {
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Acteurs principaux</mat-label>
+                        <input
+                          matInput
+                          formControlName="actors"
+                          placeholder="Ex: Leonardo DiCaprio, Tom Hardy"
+                          />
+                        </mat-form-field>
+                      }
 
-            <ng-container
-              *ngIf="
-                shouldShowField('duration', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Durée (minutes)</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="duration"
-                  placeholder="Ex: 120"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('duration')?.hasError('min')"
-                >
-                  La durée doit être supérieure à 0
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                      @if (
+                        shouldShowField('duration', resourceForm.get('type')?.value)
+                        ) {
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label>Durée (minutes)</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            formControlName="duration"
+                            placeholder="Ex: 120"
+                            />
+                            @if (resourceForm.get('duration')?.hasError('min')) {
+                              <mat-error
+                                >
+                                La durée doit être supérieure à 0
+                              </mat-error>
+                            }
+                          </mat-form-field>
+                        }
 
-            <!-- Champs pour jeux vidéo -->
-            <ng-container
-              *ngIf="
-                shouldShowField('developer', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Développeur</mat-label>
-                <input
-                  matInput
-                  formControlName="developer"
-                  placeholder="Ex: Nintendo, Ubisoft"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('developer')?.hasError('required')"
-                >
-                  Le développeur est requis
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                        <!-- Champs pour jeux vidéo -->
+                        @if (
+                          shouldShowField('developer', resourceForm.get('type')?.value)
+                          ) {
+                          <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Développeur</mat-label>
+                            <input
+                              matInput
+                              formControlName="developer"
+                              placeholder="Ex: Nintendo, Ubisoft"
+                              />
+                              @if (resourceForm.get('developer')?.hasError('required')) {
+                                <mat-error
+                                  >
+                                  Le développeur est requis
+                                </mat-error>
+                              }
+                            </mat-form-field>
+                          }
 
-            <ng-container
-              *ngIf="
-                shouldShowField('platform', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Plateforme</mat-label>
-                <input
-                  matInput
-                  formControlName="platform"
-                  placeholder="Ex: PS5, Switch, PC"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('platform')?.hasError('required')"
-                >
-                  La plateforme est requise
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                          @if (
+                            shouldShowField('platform', resourceForm.get('type')?.value)
+                            ) {
+                            <mat-form-field appearance="outline" class="full-width">
+                              <mat-label>Plateforme</mat-label>
+                              <input
+                                matInput
+                                formControlName="platform"
+                                placeholder="Ex: PS5, Switch, PC"
+                                />
+                                @if (resourceForm.get('platform')?.hasError('required')) {
+                                  <mat-error
+                                    >
+                                    La plateforme est requise
+                                  </mat-error>
+                                }
+                              </mat-form-field>
+                            }
 
-            <ng-container
-              *ngIf="
-                shouldShowField('pegiRating', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Classification PEGI</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="pegiRating"
-                  placeholder="Ex: 3, 7, 12, 16, 18"
-                />
-                <mat-error
-                  *ngIf="
-                    resourceForm.get('pegiRating')?.hasError('min') ||
-                    resourceForm.get('pegiRating')?.hasError('max')
-                  "
-                >
-                  Classification PEGI invalide (3, 7, 12, 16 ou 18)
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                            @if (
+                              shouldShowField('pegiRating', resourceForm.get('type')?.value)
+                              ) {
+                              <mat-form-field appearance="outline" class="full-width">
+                                <mat-label>Classification PEGI</mat-label>
+                                <input
+                                  matInput
+                                  type="number"
+                                  formControlName="pegiRating"
+                                  placeholder="Ex: 3, 7, 12, 16, 18"
+                                  />
+                                  @if (
+                                    resourceForm.get('pegiRating')?.hasError('min') ||
+                                    resourceForm.get('pegiRating')?.hasError('max')
+                                    ) {
+                                    <mat-error
+                                      >
+                                      Classification PEGI invalide (3, 7, 12, 16 ou 18)
+                                    </mat-error>
+                                  }
+                                </mat-form-field>
+                              }
 
-            <!-- Champs pour magazines -->
-            <ng-container
-              *ngIf="
-                shouldShowField('issueNumber', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Numéro</mat-label>
-                <input
-                  matInput
-                  formControlName="issueNumber"
-                  placeholder="Ex: N°42, Janvier 2023"
-                />
-              </mat-form-field>
-            </ng-container>
+                              <!-- Champs pour magazines -->
+                              @if (
+                                shouldShowField('issueNumber', resourceForm.get('type')?.value)
+                                ) {
+                                <mat-form-field appearance="outline" class="full-width">
+                                  <mat-label>Numéro</mat-label>
+                                  <input
+                                    matInput
+                                    formControlName="issueNumber"
+                                    placeholder="Ex: N°42, Janvier 2023"
+                                    />
+                                  </mat-form-field>
+                                }
 
-            <ng-container
-              *ngIf="
-                shouldShowField('frequency', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Périodicité</mat-label>
-                <input
-                  matInput
-                  formControlName="frequency"
-                  placeholder="Ex: Mensuel, Hebdomadaire"
-                />
-              </mat-form-field>
-            </ng-container>
+                                @if (
+                                  shouldShowField('frequency', resourceForm.get('type')?.value)
+                                  ) {
+                                  <mat-form-field appearance="outline" class="full-width">
+                                    <mat-label>Périodicité</mat-label>
+                                    <input
+                                      matInput
+                                      formControlName="frequency"
+                                      placeholder="Ex: Mensuel, Hebdomadaire"
+                                      />
+                                    </mat-form-field>
+                                  }
 
-            <!-- Champs communs pour plusieurs types -->
-            <ng-container
-              *ngIf="
-                shouldShowField('publisher', resourceForm.get('type')?.value)
-              "
-            >
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{
-                  getFieldLabel("publisher", resourceForm.get("type")?.value)
-                }}</mat-label>
-                <input
-                  matInput
-                  formControlName="publisher"
-                  placeholder="Ex: Gallimard"
-                />
-                <mat-error
-                  *ngIf="resourceForm.get('publisher')?.hasError('required')"
-                >
-                  {{
-                    getFieldLabel("publisher", resourceForm.get("type")?.value)
-                  }}
-                  est requis
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
+                                  <!-- Champs communs pour plusieurs types -->
+                                  @if (
+                                    shouldShowField('publisher', resourceForm.get('type')?.value)
+                                    ) {
+                                    <mat-form-field appearance="outline" class="full-width">
+                                      <mat-label>{{
+                                        getFieldLabel("publisher", resourceForm.get("type")?.value)
+                                      }}</mat-label>
+                                      <input
+                                        matInput
+                                        formControlName="publisher"
+                                        placeholder="Ex: Gallimard"
+                                        />
+                                        @if (resourceForm.get('publisher')?.hasError('required')) {
+                                          <mat-error
+                                            >
+                                            {{
+                                            getFieldLabel("publisher", resourceForm.get("type")?.value)
+                                            }}
+                                            est requis
+                                          </mat-error>
+                                        }
+                                      </mat-form-field>
+                                    }
 
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>{{
-                  getFieldLabel(
-                    "publishedYear",
-                    resourceForm.get("type")?.value
-                  )
-                }}</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="publishedYear"
-                  placeholder="Année"
-                />
-                <mat-error
-                  *ngIf="
-                    resourceForm.get('publishedYear')?.hasError('min') ||
-                    resourceForm.get('publishedYear')?.hasError('max')
-                  "
-                >
-                  Année invalide
-                </mat-error>
-              </mat-form-field>
+                                    <div class="form-row">
+                                      <mat-form-field appearance="outline" class="half-width">
+                                        <mat-label>{{
+                                          getFieldLabel(
+                                          "publishedYear",
+                                          resourceForm.get("type")?.value
+                                          )
+                                        }}</mat-label>
+                                        <input
+                                          matInput
+                                          type="number"
+                                          formControlName="publishedYear"
+                                          placeholder="Année"
+                                          />
+                                          @if (
+                                            resourceForm.get('publishedYear')?.hasError('min') ||
+                                            resourceForm.get('publishedYear')?.hasError('max')
+                                            ) {
+                                            <mat-error
+                                              >
+                                              Année invalide
+                                            </mat-error>
+                                          }
+                                        </mat-form-field>
 
-              <ng-container
-                *ngIf="
-                  shouldShowField('pageCount', resourceForm.get('type')?.value)
-                "
-              >
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Nombre de pages</mat-label>
-                  <input
-                    matInput
-                    type="number"
-                    formControlName="pageCount"
-                    placeholder="Pages"
-                  />
-                  <mat-error
-                    *ngIf="resourceForm.get('pageCount')?.hasError('min')"
-                  >
-                    Valeur invalide
-                  </mat-error>
-                </mat-form-field>
-              </ng-container>
-            </div>
+                                        @if (
+                                          shouldShowField('pageCount', resourceForm.get('type')?.value)
+                                          ) {
+                                          <mat-form-field appearance="outline" class="half-width">
+                                            <mat-label>Nombre de pages</mat-label>
+                                            <input
+                                              matInput
+                                              type="number"
+                                              formControlName="pageCount"
+                                              placeholder="Pages"
+                                              />
+                                              @if (resourceForm.get('pageCount')?.hasError('min')) {
+                                                <mat-error
+                                                  >
+                                                  Valeur invalide
+                                                </mat-error>
+                                              }
+                                            </mat-form-field>
+                                          }
+                                        </div>
 
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>{{
-                  getFieldLabel("genre", resourceForm.get("type")?.value)
-                }}</mat-label>
-                <input
-                  matInput
-                  formControlName="genre"
+                                        <div class="form-row">
+                                          <mat-form-field appearance="outline" class="half-width">
+                                            <mat-label>{{
+                                              getFieldLabel("genre", resourceForm.get("type")?.value)
+                                            }}</mat-label>
+                                            <input
+                                              matInput
+                                              formControlName="genre"
                   [placeholder]="
                     getFieldPlaceholder(
                       'genre',
                       resourceForm.get('type')?.value
                     )
                   "
-                />
-              </mat-form-field>
+                                              />
+                                            </mat-form-field>
 
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Langue</mat-label>
-                <input
-                  matInput
-                  formControlName="language"
-                  placeholder="Ex: Français"
-                />
-              </mat-form-field>
-            </div>
-          </div>
+                                            <mat-form-field appearance="outline" class="half-width">
+                                              <mat-label>Langue</mat-label>
+                                              <input
+                                                matInput
+                                                formControlName="language"
+                                                placeholder="Ex: Français"
+                                                />
+                                              </mat-form-field>
+                                            </div>
+                                          </div>
 
-          <mat-divider [vertical]="true"></mat-divider>
+                                          <mat-divider [vertical]="true"></mat-divider>
 
-          <div class="form-column">
-            <h3>Description et Image</h3>
+                                          <div class="form-column">
+                                            <h3>Description et Image</h3>
 
-            <mat-form-field
-              appearance="outline"
-              class="full-width textarea-field"
-            >
-              <mat-label>Description</mat-label>
-              <textarea
-                matInput
-                formControlName="description"
-                placeholder="Description de la ressource"
-                rows="5"
-              ></textarea>
-              <mat-error
-                *ngIf="resourceForm.get('description')?.hasError('required')"
-              >
-                La description est requise
-              </mat-error>
-              <mat-error
-                *ngIf="resourceForm.get('description')?.hasError('minlength')"
-              >
-                La description doit contenir au moins 10 caractères
-              </mat-error>
-            </mat-form-field>
+                                            <mat-form-field
+                                              appearance="outline"
+                                              class="full-width textarea-field"
+                                              >
+                                              <mat-label>Description</mat-label>
+                                              <textarea
+                                                matInput
+                                                formControlName="description"
+                                                placeholder="Description de la ressource"
+                                                rows="5"
+                                              ></textarea>
+                                              @if (resourceForm.get('description')?.hasError('required')) {
+                                                <mat-error
+                                                  >
+                                                  La description est requise
+                                                </mat-error>
+                                              }
+                                              @if (resourceForm.get('description')?.hasError('minlength')) {
+                                                <mat-error
+                                                  >
+                                                  La description doit contenir au moins 10 caractères
+                                                </mat-error>
+                                              }
+                                            </mat-form-field>
 
-            <div class="cover-image-section">
-              <label for="cover-image" class="cover-image-label"
-                >Image de couverture</label
-              >
-              <div class="cover-upload-container">
-                <div
-                  class="cover-preview"
-                  [ngClass]="{ 'has-image': imagePreview }"
+                                            <div class="cover-image-section">
+                                              <label for="cover-image" class="cover-image-label"
+                                                >Image de couverture</label
+                                                >
+                                                <div class="cover-upload-container">
+                                                  <div
+                                                    class="cover-preview"
+                                                    [ngClass]="{ 'has-image': imagePreview }"
                   [style.backgroundImage]="
                     imagePreview ? 'url(' + imagePreview + ')' : 'none'
                   "
-                >
-                  <mat-icon *ngIf="!imagePreview">image</mat-icon>
-                </div>
+                                                    >
+                                                    @if (!imagePreview) {
+                                                      <mat-icon>image</mat-icon>
+                                                    }
+                                                  </div>
 
-                <div class="upload-controls">
-                  <button
-                    type="button"
-                    mat-raised-button
-                    color="primary"
-                    (click)="coverImageInput.click()"
-                  >
-                    <mat-icon>file_upload</mat-icon>
-                    {{ imagePreview ? "Changer l'image" : "Choisir une image" }}
-                  </button>
-                  <button
-                    *ngIf="imagePreview"
-                    type="button"
-                    mat-raised-button
-                    color="warn"
-                    (click)="removeImage()"
-                  >
-                    <mat-icon>delete</mat-icon>
-                    Supprimer l'image
-                  </button>
-                  <input
-                    #coverImageInput
-                    type="file"
-                    id="cover-image"
-                    accept="image/*"
-                    style="display: none"
-                    (change)="onFileSelected($event)"
-                  />
-                  <p class="upload-hint">Format JPG, PNG ou WebP. Max 5MB</p>
-                  <div *ngIf="imagePreview" class="image-confirmation">
-                    <mat-icon color="primary">check_circle</mat-icon>
-                    <span>{{
-                      selectedCoverImage?.name || "Image sélectionnée"
-                    }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                                                  <div class="upload-controls">
+                                                    <button
+                                                      type="button"
+                                                      mat-raised-button
+                                                      color="primary"
+                                                      (click)="coverImageInput.click()"
+                                                      >
+                                                      <mat-icon>file_upload</mat-icon>
+                                                      {{ imagePreview ? "Changer l'image" : "Choisir une image" }}
+                                                    </button>
+                                                    @if (imagePreview) {
+                                                      <button
+                                                        type="button"
+                                                        mat-raised-button
+                                                        color="warn"
+                                                        (click)="removeImage()"
+                                                        >
+                                                        <mat-icon>delete</mat-icon>
+                                                        Supprimer l'image
+                                                      </button>
+                                                    }
+                                                    <input
+                                                      #coverImageInput
+                                                      type="file"
+                                                      id="cover-image"
+                                                      accept="image/*"
+                                                      style="display: none"
+                                                      (change)="onFileSelected($event)"
+                                                      />
+                                                      <p class="upload-hint">Format JPG, PNG ou WebP. Max 5MB</p>
+                                                      @if (imagePreview) {
+                                                        <div class="image-confirmation">
+                                                          <mat-icon color="primary">check_circle</mat-icon>
+                                                          <span>{{
+                                                            selectedCoverImage?.name || "Image sélectionnée"
+                                                          }}</span>
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
 
-        <div class="form-actions">
-          <button
-            type="button"
-            mat-button
-            (click)="resetForm()"
-            [disabled]="loading"
-          >
-            Réinitialiser
-          </button>
+                                            <div class="form-actions">
+                                              <button
+                                                type="button"
+                                                mat-button
+                                                (click)="resetForm()"
+                                                [disabled]="loading"
+                                                >
+                                                Réinitialiser
+                                              </button>
 
-          <button
-            type="submit"
-            mat-raised-button
-            color="primary"
-            [disabled]="loading"
-          >
-            <mat-spinner
-              *ngIf="loading"
-              diameter="20"
-              class="spinner-button"
-            ></mat-spinner>
-            <span *ngIf="!loading">Ajouter la ressource</span>
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+                                              <button
+                                                type="submit"
+                                                mat-raised-button
+                                                color="primary"
+                                                [disabled]="loading"
+                                                >
+                                                @if (loading) {
+                                                  <mat-spinner
+                                                    diameter="20"
+                                                    class="spinner-button"
+                                                  ></mat-spinner>
+                                                }
+                                                @if (!loading) {
+                                                  <span>Ajouter la ressource</span>
+                                                }
+                                              </button>
+                                            </div>
+                                          </form>
+                                        </mat-card-content>
+                                      </mat-card>
+                                    </div>

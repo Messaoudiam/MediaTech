@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,7 +30,6 @@ import { Location } from '@angular/common';
   styleUrls: ['./book-detail.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
@@ -40,8 +39,8 @@ import { Location } from '@angular/common';
     MatDialogModule,
     NavbarComponent,
     BookCopiesComponent,
-    BookReviewsComponent,
-  ],
+    BookReviewsComponent
+],
 })
 export class BookDetailComponent implements OnInit, OnDestroy {
   resource: Resource | null = null;

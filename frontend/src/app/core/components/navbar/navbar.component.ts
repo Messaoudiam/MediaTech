@@ -7,7 +7,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,7 +54,6 @@ interface SearchHistoryItem {
   styleUrls: ['./navbar.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     FormsModule,
     MatToolbarModule,
@@ -66,8 +65,8 @@ interface SearchHistoryItem {
     MatFormFieldModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,
-    MatDialogModule,
-  ],
+    MatDialogModule
+],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;

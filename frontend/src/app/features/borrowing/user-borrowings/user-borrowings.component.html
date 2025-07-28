@@ -6,7 +6,7 @@
       <mat-tab-group
         (selectedTabChange)="onTabChange($event)"
         animationDuration="0ms"
-      >
+        >
         <mat-tab label="Tous">
           <ng-container *ngTemplateOutlet="borrowingsList"></ng-container>
         </mat-tab>
@@ -25,70 +25,81 @@
 </div>
 
 <ng-template #borrowingsList>
-  <div class="loading-container" *ngIf="loading">
-    <mat-spinner [diameter]="40"></mat-spinner>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner [diameter]="40"></mat-spinner>
+    </div>
+  }
 
-  <div class="no-results" *ngIf="!loading && borrowings.length === 0">
-    <p>Aucun emprunt trouvé.</p>
-  </div>
+  @if (!loading && borrowings.length === 0) {
+    <div class="no-results">
+      <p>Aucun emprunt trouvé.</p>
+    </div>
+  }
 
-  <div class="borrowings-list" *ngIf="!loading && borrowings.length > 0">
-    <div
-      class="borrowing-item"
-      *ngFor="let borrowing of borrowings"
-      [routerLink]="['/borrowings', borrowing.id]"
-    >
-      <div class="borrowing-image">
-        <img
+  @if (!loading && borrowings.length > 0) {
+    <div class="borrowings-list">
+      @for (borrowing of borrowings; track borrowing) {
+        <div
+          class="borrowing-item"
+          [routerLink]="['/borrowings', borrowing.id]"
+          >
+          <div class="borrowing-image">
+            <img
           [src]="
             borrowing.copy?.resource?.coverImageUrl ||
             'assets/images/default-cover.png'
           "
-          [alt]="borrowing.copy?.resource?.title"
-          class="cover-image"
-        />
-      </div>
-      <div class="borrowing-details">
-        <h3 class="borrowing-title">{{ borrowing.copy?.resource?.title }}</h3>
-        <p class="borrowing-author" *ngIf="borrowing.copy?.resource?.author">
-          par {{ borrowing.copy?.resource?.author }}
-        </p>
-        <div class="borrowing-info">
-          <div class="borrowing-date">
-            <span
-              ><mat-icon>event</mat-icon> Emprunté le:
-              {{ borrowing.borrowedAt | date : "dd/MM/yyyy" }}</span
-            >
+              [alt]="borrowing.copy?.resource?.title"
+              class="cover-image"
+              />
+            </div>
+            <div class="borrowing-details">
+              <h3 class="borrowing-title">{{ borrowing.copy?.resource?.title }}</h3>
+              @if (borrowing.copy?.resource?.author) {
+                <p class="borrowing-author">
+                  par {{ borrowing.copy?.resource?.author }}
+                </p>
+              }
+              <div class="borrowing-info">
+                <div class="borrowing-date">
+                  <span
+                    ><mat-icon>event</mat-icon> Emprunté le:
+                    {{ borrowing.borrowedAt | date : "dd/MM/yyyy" }}</span
+                    >
+                  </div>
+                  <div
+                    class="borrowing-due-date"
+                    [ngClass]="{ overdue: formatDueDate(borrowing.dueDate).isOverdue }"
+                    >
+                    <span
+                      ><mat-icon>event_available</mat-icon> À retourner le:
+                      {{ formatDueDate(borrowing.dueDate).text }}</span
+                      >
+                      @if (borrowing.status === BorrowingStatus.ACTIVE) {
+                        <span
+                          class="days-remaining"
+                          >
+                          ({{ getDaysRemaining(borrowing.dueDate) }} jour@if (getDaysRemaining(borrowing.dueDate) !== 1) {
+                          <span
+                            >s</span
+                            >
+                          })
+                        </span>
+                      }
+                    </div>
+                    <div class="borrowing-status">
+                      <span
+                        class="status-chip"
+                        [ngClass]="getStatusClass(borrowing.status)"
+                        >
+                        {{ getStatusText(borrowing.status) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
-          <div
-            class="borrowing-due-date"
-            [ngClass]="{ overdue: formatDueDate(borrowing.dueDate).isOverdue }"
-          >
-            <span
-              ><mat-icon>event_available</mat-icon> À retourner le:
-              {{ formatDueDate(borrowing.dueDate).text }}</span
-            >
-            <span
-              *ngIf="borrowing.status === BorrowingStatus.ACTIVE"
-              class="days-remaining"
-            >
-              ({{ getDaysRemaining(borrowing.dueDate) }} jour<span
-                *ngIf="getDaysRemaining(borrowing.dueDate) !== 1"
-                >s</span
-              >)
-            </span>
-          </div>
-          <div class="borrowing-status">
-            <span
-              class="status-chip"
-              [ngClass]="getStatusClass(borrowing.status)"
-            >
-              {{ getStatusText(borrowing.status) }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</ng-template>
+        }
+      </ng-template>

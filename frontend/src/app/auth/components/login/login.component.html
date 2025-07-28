@@ -7,18 +7,22 @@
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         <!-- Message d'erreur -->
-        <div *ngIf="errorMessage" class="error-message">
-          <mat-icon>error</mat-icon>
-          <span>{{ errorMessage }}</span>
-        </div>
+        @if (errorMessage) {
+          <div class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
 
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" required />
           <mat-icon matPrefix>email</mat-icon>
-          <mat-error *ngIf="loginForm.get('email')?.invalid">{{
-            getErrorMessage("email")
-          }}</mat-error>
+          @if (loginForm.get('email')?.invalid) {
+            <mat-error>{{
+              getErrorMessage("email")
+            }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
@@ -28,59 +32,67 @@
             [type]="hidePassword ? 'password' : 'text'"
             formControlName="password"
             required
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button
-            type="button"
-            mat-icon-button
-            matSuffix
-            (click)="hidePassword = !hidePassword"
-          >
-            <mat-icon>{{
-              hidePassword ? "visibility_off" : "visibility"
-            }}</mat-icon>
-          </button>
-          <mat-error *ngIf="loginForm.get('password')?.invalid">{{
-            getErrorMessage("password")
-          }}</mat-error>
-        </mat-form-field>
+            />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button
+              type="button"
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              >
+              <mat-icon>{{
+                hidePassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (loginForm.get('password')?.invalid) {
+              <mat-error>{{
+                getErrorMessage("password")
+              }}</mat-error>
+            }
+          </mat-form-field>
 
-        <!-- Bouton de réinitialisation du verrouillage du compte -->
-        <div *ngIf="accountLocked" class="account-locked-actions">
-          <button
-            mat-stroked-button
-            color="warn"
-            type="button"
-            (click)="resetAccountLock()"
-            [disabled]="loading"
-          >
-            <mat-icon>lock_open</mat-icon>
-            Réinitialiser mon compte
-          </button>
-        </div>
+          <!-- Bouton de réinitialisation du verrouillage du compte -->
+          @if (accountLocked) {
+            <div class="account-locked-actions">
+              <button
+                mat-stroked-button
+                color="warn"
+                type="button"
+                (click)="resetAccountLock()"
+                [disabled]="loading"
+                >
+                <mat-icon>lock_open</mat-icon>
+                Réinitialiser mon compte
+              </button>
+            </div>
+          }
 
-        <div class="form-actions">
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="loading"
-            class="submit-button"
-          >
-            <span *ngIf="!loading">Se connecter</span>
-            <mat-spinner *ngIf="loading" diameter="24"></mat-spinner>
-          </button>
-        </div>
+          <div class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="loading"
+              class="submit-button"
+              >
+              @if (!loading) {
+                <span>Se connecter</span>
+              }
+              @if (loading) {
+                <mat-spinner diameter="24"></mat-spinner>
+              }
+            </button>
+          </div>
 
-        <div class="form-links">
-          <a routerLink="/auth/register" class="register-link"
-            >Créer un compte</a
-          >
-          <a routerLink="/auth/forgot-password" class="forgot-password-link"
-            >Mot de passe oublié ?</a
-          >
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+          <div class="form-links">
+            <a routerLink="/auth/register" class="register-link"
+              >Créer un compte</a
+              >
+              <a routerLink="/auth/forgot-password" class="forgot-password-link"
+                >Mot de passe oublié ?</a
+                >
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>

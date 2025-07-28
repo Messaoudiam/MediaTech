@@ -1,6 +1,6 @@
 // angular
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,6 @@ import { User } from '../../../auth/models/auth.model';
   selector: 'app-user-management',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -28,8 +27,8 @@ import { User } from '../../../auth/models/auth.model';
     MatFormFieldModule,
     FormsModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
 })

@@ -4,228 +4,230 @@
       <div class="header-title">
         <mat-card-title
           >Gestion des ressources de la bibliothèque</mat-card-title
-        >
-      </div>
-      <div class="header-actions">
-        <div class="filter-section">
-          <mat-form-field appearance="outline" class="type-filter">
-            <mat-label>Filtrer par type</mat-label>
-            <mat-select
-              [(ngModel)]="selectedType"
-              (selectionChange)="filterByType(selectedType)"
-            >
-              <mat-option [value]="">Tous les types</mat-option>
-              <mat-option *ngFor="let type of resourceTypes" [value]="type">{{
-                type
-              }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          >
         </div>
-        <button mat-raised-button color="primary" (click)="addNewBook()">
-          <mat-icon>add</mat-icon>
-          <span class="button-text">Ajouter une ressource</span>
-        </button>
-      </div>
-    </mat-card-header>
+        <div class="header-actions">
+          <div class="filter-section">
+            <mat-form-field appearance="outline" class="type-filter">
+              <mat-label>Filtrer par type</mat-label>
+              <mat-select
+                [(ngModel)]="selectedType"
+                (selectionChange)="filterByType(selectedType)"
+                >
+                <mat-option [value]="">Tous les types</mat-option>
+                @for (type of resourceTypes; track type) {
+                  <mat-option [value]="type">{{
+                    type
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <button mat-raised-button color="primary" (click)="addNewBook()">
+            <mat-icon>add</mat-icon>
+            <span class="button-text">Ajouter une ressource</span>
+          </button>
+        </div>
+      </mat-card-header>
 
-    <mat-card-content>
-      <div class="loading-container" *ngIf="loading">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Chargement des ressources...</p>
-      </div>
+      <mat-card-content>
+        @if (loading) {
+          <div class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Chargement des ressources...</p>
+          </div>
+        }
 
-      <div class="empty-state" *ngIf="!loading && filteredBooks.length === 0">
-        <mat-icon>menu_book</mat-icon>
-        <p>Aucune ressource n'a été ajoutée à la bibliothèque</p>
-        <button mat-stroked-button color="primary" (click)="addNewBook()">
-          Ajouter votre première ressource
-        </button>
-      </div>
+        @if (!loading && filteredBooks.length === 0) {
+          <div class="empty-state">
+            <mat-icon>menu_book</mat-icon>
+            <p>Aucune ressource n'a été ajoutée à la bibliothèque</p>
+            <button mat-stroked-button color="primary" (click)="addNewBook()">
+              Ajouter votre première ressource
+            </button>
+          </div>
+        }
 
-      <div class="table-container" *ngIf="!loading && filteredBooks.length > 0">
-        <table mat-table [dataSource]="filteredBooks" class="book-table">
-          <!-- Image Column -->
-          <ng-container matColumnDef="coverImage">
-            <th mat-header-cell *matHeaderCellDef>Couverture</th>
-            <td mat-cell *matCellDef="let book">
-              <div class="cover-image">
-                <img
-                  *ngIf="book.coverImageUrl"
-                  [src]="book.coverImageUrl"
-                  [alt]="book.title"
-                />
-                <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
-                  <mat-icon>menu_book</mat-icon>
-                </div>
-              </div>
-            </td>
-          </ng-container>
-
-          <!-- Title Column -->
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef>Titre</th>
-            <td mat-cell *matCellDef="let book" class="title-cell">
-              <div class="title-container">
-                <div class="book-title">{{ book.title }}</div>
-                <div class="book-isbn" *ngIf="book.isbn">
-                  ISBN: {{ book.isbn }}
-                </div>
-              </div>
-            </td>
-          </ng-container>
-
-          <!-- Author Column (conditionnel selon le type) -->
-          <ng-container matColumnDef="author" *ngIf="shouldShowAuthorColumn()">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ getAuthorColumnLabel() }}
-            </th>
-            <td mat-cell *matCellDef="let book">
-              {{ getAuthorValue(book) || "-" }}
-            </td>
-          </ng-container>
-
-          <!-- Type Column -->
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
-            <td mat-cell *matCellDef="let book">
-              <span
-                class="resource-type-badge"
-                [ngClass]="'type-' + book.type.toLowerCase()"
-              >
-                {{ book.type }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Available Copies Column -->
-          <ng-container matColumnDef="availableCopies">
-            <th mat-header-cell *matHeaderCellDef>Disponibles</th>
-            <td mat-cell *matCellDef="let book">
-              <span
-                class="copies-count"
+        @if (!loading && filteredBooks.length > 0) {
+          <div class="table-container">
+            <table mat-table [dataSource]="filteredBooks" class="book-table">
+              <!-- Image Column -->
+              <ng-container matColumnDef="coverImage">
+                <th mat-header-cell *matHeaderCellDef>Couverture</th>
+                <td mat-cell *matCellDef="let book">
+                  <div class="cover-image">
+                    @if (book.coverImageUrl) {
+                      <img
+                        [src]="book.coverImageUrl"
+                        [alt]="book.title"
+                        />
+                    }
+                    @if (!book.coverImageUrl) {
+                      <div class="placeholder-cover">
+                        <mat-icon>menu_book</mat-icon>
+                      </div>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+              <!-- Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Titre</th>
+                <td mat-cell *matCellDef="let book" class="title-cell">
+                  <div class="title-container">
+                    <div class="book-title">{{ book.title }}</div>
+                    @if (book.isbn) {
+                      <div class="book-isbn">
+                        ISBN: {{ book.isbn }}
+                      </div>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+              <!-- Author Column (conditionnel selon le type) -->
+              @if (shouldShowAuthorColumn()) {
+                <ng-container matColumnDef="author">
+                  <th mat-header-cell *matHeaderCellDef>
+                    {{ getAuthorColumnLabel() }}
+                  </th>
+                  <td mat-cell *matCellDef="let book">
+                    {{ getAuthorValue(book) || "-" }}
+                  </td>
+                </ng-container>
+              }
+              <!-- Type Column -->
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let book">
+                  <span
+                    class="resource-type-badge"
+                    [ngClass]="'type-' + book.type.toLowerCase()"
+                    >
+                    {{ book.type }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Available Copies Column -->
+              <ng-container matColumnDef="availableCopies">
+                <th mat-header-cell *matHeaderCellDef>Disponibles</th>
+                <td mat-cell *matCellDef="let book">
+                  <span
+                    class="copies-count"
                 [ngClass]="{
                   available: getAvailableCopies(book) > 0,
                   unavailable: getAvailableCopies(book) === 0,
                   'zero-value': getAvailableCopies(book) === 0
                 }"
-              >
-                {{ getAvailableCopies(book) }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let book" class="actions-cell">
-              <div class="action-buttons">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="editBook(book.id); $event.stopPropagation()"
-                  title="Modifier"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteBook(book); $event.stopPropagation()"
-                  title="Supprimer"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </td>
-          </ng-container>
-
-          <!-- Pour les écrans plus larges: colonnes supplémentaires -->
-
-          <!-- Publisher Column (générique mais avec label adapté) -->
-          <ng-container matColumnDef="publisher">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ getPublisherColumnLabel() }}
-            </th>
-            <td mat-cell *matCellDef="let book">{{ book.publisher || "-" }}</td>
-          </ng-container>
-
-          <!-- Published Year Column -->
-          <ng-container matColumnDef="publishedYear">
-            <th mat-header-cell *matHeaderCellDef>Année</th>
-            <td mat-cell *matCellDef="let book">
-              {{ book.publishedYear || "-" }}
-            </td>
-          </ng-container>
-
-          <!-- Genre Column -->
-          <ng-container matColumnDef="genre">
-            <th mat-header-cell *matHeaderCellDef>Genre</th>
-            <td mat-cell *matCellDef="let book">{{ book.genre || "-" }}</td>
-          </ng-container>
-
-          <!-- Language Column -->
-          <ng-container matColumnDef="language">
-            <th mat-header-cell *matHeaderCellDef>Langue</th>
-            <td mat-cell *matCellDef="let book">{{ book.language || "-" }}</td>
-          </ng-container>
-
-          <!-- Total Copies Column -->
-          <ng-container matColumnDef="totalCopies">
-            <th mat-header-cell *matHeaderCellDef>Exemplaires</th>
-            <td mat-cell *matCellDef="let book">
-              <span
-                class="copies-count"
-                [ngClass]="{ 'zero-value': getTotalCopies(book) === 0 }"
-              >
-                {{ getTotalCopies(book) }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Borrowed Copies Column -->
-          <ng-container matColumnDef="borrowedCopies">
-            <th mat-header-cell *matHeaderCellDef>Empruntés</th>
-            <td mat-cell *matCellDef="let book">
-              <span
-                class="copies-count"
+                    >
+                    {{ getAvailableCopies(book) }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let book" class="actions-cell">
+                  <div class="action-buttons">
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      (click)="editBook(book.id); $event.stopPropagation()"
+                      title="Modifier"
+                      >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="deleteBook(book); $event.stopPropagation()"
+                      title="Supprimer"
+                      >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+              <!-- Pour les écrans plus larges: colonnes supplémentaires -->
+              <!-- Publisher Column (générique mais avec label adapté) -->
+              <ng-container matColumnDef="publisher">
+                <th mat-header-cell *matHeaderCellDef>
+                  {{ getPublisherColumnLabel() }}
+                </th>
+                <td mat-cell *matCellDef="let book">{{ book.publisher || "-" }}</td>
+              </ng-container>
+              <!-- Published Year Column -->
+              <ng-container matColumnDef="publishedYear">
+                <th mat-header-cell *matHeaderCellDef>Année</th>
+                <td mat-cell *matCellDef="let book">
+                  {{ book.publishedYear || "-" }}
+                </td>
+              </ng-container>
+              <!-- Genre Column -->
+              <ng-container matColumnDef="genre">
+                <th mat-header-cell *matHeaderCellDef>Genre</th>
+                <td mat-cell *matCellDef="let book">{{ book.genre || "-" }}</td>
+              </ng-container>
+              <!-- Language Column -->
+              <ng-container matColumnDef="language">
+                <th mat-header-cell *matHeaderCellDef>Langue</th>
+                <td mat-cell *matCellDef="let book">{{ book.language || "-" }}</td>
+              </ng-container>
+              <!-- Total Copies Column -->
+              <ng-container matColumnDef="totalCopies">
+                <th mat-header-cell *matHeaderCellDef>Exemplaires</th>
+                <td mat-cell *matCellDef="let book">
+                  <span
+                    class="copies-count"
+                    [ngClass]="{ 'zero-value': getTotalCopies(book) === 0 }"
+                    >
+                    {{ getTotalCopies(book) }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Borrowed Copies Column -->
+              <ng-container matColumnDef="borrowedCopies">
+                <th mat-header-cell *matHeaderCellDef>Empruntés</th>
+                <td mat-cell *matCellDef="let book">
+                  <span
+                    class="copies-count"
                 [ngClass]="{
                   borrowed: getBorrowedCopies(book) > 0,
                   'zero-value': getBorrowedCopies(book) === 0
                 }"
-              >
-                {{ getBorrowedCopies(book) }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Director Column (pour les DVDs) -->
-          <ng-container
-            matColumnDef="director"
-            *ngIf="shouldShowDirectorColumn()"
-          >
-            <th mat-header-cell *matHeaderCellDef>Réalisateur</th>
-            <td mat-cell *matCellDef="let book">{{ book.director || "-" }}</td>
-          </ng-container>
-
-          <!-- Developer Column (pour les jeux) -->
-          <ng-container
-            matColumnDef="developer"
-            *ngIf="shouldShowDeveloperColumn()"
-          >
-            <th mat-header-cell *matHeaderCellDef>Développeur</th>
-            <td mat-cell *matCellDef="let book">{{ book.developer || "-" }}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr
-            mat-row
-            *matRowDef="let book; columns: displayedColumns"
-            (click)="viewBookDetails(book.id)"
-            class="book-row"
-            [ngClass]="'type-' + book.type.toLowerCase()"
-          ></tr>
-        </table>
-      </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+                    >
+                    {{ getBorrowedCopies(book) }}
+                  </span>
+                </td>
+              </ng-container>
+              <!-- Director Column (pour les DVDs) -->
+              @if (shouldShowDirectorColumn()) {
+                <ng-container
+                  matColumnDef="director"
+                  >
+                  <th mat-header-cell *matHeaderCellDef>Réalisateur</th>
+                  <td mat-cell *matCellDef="let book">{{ book.director || "-" }}</td>
+                </ng-container>
+              }
+              <!-- Developer Column (pour les jeux) -->
+              @if (shouldShowDeveloperColumn()) {
+                <ng-container
+                  matColumnDef="developer"
+                  >
+                  <th mat-header-cell *matHeaderCellDef>Développeur</th>
+                  <td mat-cell *matCellDef="let book">{{ book.developer || "-" }}</td>
+                </ng-container>
+              }
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let book; columns: displayedColumns"
+                (click)="viewBookDetails(book.id)"
+                class="book-row"
+                [ngClass]="'type-' + book.type.toLowerCase()"
+              ></tr>
+            </table>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>

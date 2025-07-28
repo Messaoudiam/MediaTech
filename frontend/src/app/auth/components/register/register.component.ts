@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
@@ -23,7 +23,6 @@ import { NotificationService } from '../../../core/services/notification.service
   selector: 'app-register',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatInputModule,
@@ -32,8 +31,8 @@ import { NotificationService } from '../../../core/services/notification.service
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    RouterLink,
-  ],
+    RouterLink
+],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })

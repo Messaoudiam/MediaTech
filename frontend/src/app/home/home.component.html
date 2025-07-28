@@ -1,95 +1,98 @@
 <div class="dashboard-container">
-  <div *ngIf="loading" class="loading-container">
-    <mat-icon class="loading-icon">hourglass_empty</mat-icon>
-    <p>Chargement de votre profil...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+      <p>Chargement de votre profil...</p>
+    </div>
+  }
 
-  <div *ngIf="!loading && user">
-    <div class="header">
-      <h1>Tableau de bord</h1>
-      <div class="header-actions">
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="navigateToBorrowings()"
-          class="borrowings-button"
-        >
-          <mat-icon>menu_book</mat-icon>
-          Mes emprunts
-        </button>
-        <button mat-raised-button color="warn" (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          Déconnexion
+  @if (!loading && user) {
+    <div>
+      <div class="header">
+        <h1>Tableau de bord</h1>
+        <div class="header-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="navigateToBorrowings()"
+            class="borrowings-button"
+            >
+            <mat-icon>menu_book</mat-icon>
+            Mes emprunts
+          </button>
+          <button mat-raised-button color="warn" (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Déconnexion
+          </button>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <mat-card class="profile-card">
+          <mat-card-header>
+            <div mat-card-avatar class="profile-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <mat-card-title
+              >{{ user.nom || "Utilisateur" }}
+              {{ user.prenom || "" }}</mat-card-title
+              >
+              <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="profile-info">
+                <div class="info-item">
+                  <mat-icon>badge</mat-icon>
+                  <span>ID: {{ user.id }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>security</mat-icon>
+                  <span>Rôle: {{ user.role || "utilisateur" }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <mat-card-title>Statistiques</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <mat-icon>event</mat-icon>
+                  <span class="stat-value">0</span>
+                  <span class="stat-label">Événements</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>task</mat-icon>
+                  <span class="stat-value">0</span>
+                  <span class="stat-label">Tâches</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>notifications</mat-icon>
+                  <span class="stat-value">0</span>
+                  <span class="stat-label">Notifications</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <!-- Section des favoris -->
+        <mat-card class="favorites-section">
+          <mat-card-content>
+            <app-favorites-list></app-favorites-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+
+    @if (!loading && !user) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h2>Accès non autorisé</h2>
+        <p>Vous devez être connecté pour accéder à cette page.</p>
+        <button mat-raised-button color="primary" (click)="navigateToLogin()">
+          Se connecter
         </button>
       </div>
-    </div>
-
-    <div class="dashboard-grid">
-      <mat-card class="profile-card">
-        <mat-card-header>
-          <div mat-card-avatar class="profile-avatar">
-            <mat-icon>person</mat-icon>
-          </div>
-          <mat-card-title
-            >{{ user.nom || "Utilisateur" }}
-            {{ user.prenom || "" }}</mat-card-title
-          >
-          <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="profile-info">
-            <div class="info-item">
-              <mat-icon>badge</mat-icon>
-              <span>ID: {{ user.id }}</span>
-            </div>
-            <div class="info-item">
-              <mat-icon>security</mat-icon>
-              <span>Rôle: {{ user.role || "utilisateur" }}</span>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stats-card">
-        <mat-card-header>
-          <mat-card-title>Statistiques</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <mat-icon>event</mat-icon>
-              <span class="stat-value">0</span>
-              <span class="stat-label">Événements</span>
-            </div>
-            <div class="stat-item">
-              <mat-icon>task</mat-icon>
-              <span class="stat-value">0</span>
-              <span class="stat-label">Tâches</span>
-            </div>
-            <div class="stat-item">
-              <mat-icon>notifications</mat-icon>
-              <span class="stat-value">0</span>
-              <span class="stat-label">Notifications</span>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <!-- Section des favoris -->
-    <mat-card class="favorites-section">
-      <mat-card-content>
-        <app-favorites-list></app-favorites-list>
-      </mat-card-content>
-    </mat-card>
+    }
   </div>
-
-  <div *ngIf="!loading && !user" class="error-container">
-    <mat-icon class="error-icon">error</mat-icon>
-    <h2>Accès non autorisé</h2>
-    <p>Vous devez être connecté pour accéder à cette page.</p>
-    <button mat-raised-button color="primary" (click)="navigateToLogin()">
-      Se connecter
-    </button>
-  </div>
-</div>

@@ -28,34 +28,28 @@ import { AuthService } from '../../services/auth.service';
         </mat-card-header>
 
         <mat-card-content>
-          <div *ngIf="isLoading" class="loading-container">
+          @if (isLoading) {
+          <div class="loading-container">
             <mat-spinner diameter="40"></mat-spinner>
             <p>Vérification de votre email en cours...</p>
           </div>
-
-          <div *ngIf="!isLoading" class="result-container">
+          } @else {
+          <div class="result-container">
             <p [ngClass]="getMessageClass()">{{ message }}</p>
 
-            <div class="actions" *ngIf="!isLoading">
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="goToLogin()"
-                *ngIf="isSuccess"
-              >
+            <div class="actions">
+              @if (isSuccess) {
+              <button mat-raised-button color="primary" (click)="goToLogin()">
                 Se connecter
               </button>
-
-              <button
-                mat-raised-button
-                color="accent"
-                (click)="goToRegister()"
-                *ngIf="!isSuccess"
-              >
+              } @else {
+              <button mat-raised-button color="accent" (click)="goToRegister()">
                 Retour à l'inscription
               </button>
+              }
             </div>
           </div>
+          }
         </mat-card-content>
       </mat-card>
     </div>

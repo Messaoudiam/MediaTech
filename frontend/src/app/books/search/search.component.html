@@ -11,64 +11,75 @@
           name="searchQuery"
           placeholder="Rechercher une ressource..."
           (keyup.enter)="searchBooks()"
-        />
+          />
         <button
           mat-icon-button
           matSuffix
           type="button"
           (click)="searchBooks()"
           aria-label="Rechercher"
-        >
+          >
           <mat-icon>arrow_forward</mat-icon>
         </button>
       </mat-form-field>
     </div>
   </div>
 
-  <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Recherche en cours...</p>
-  </div>
-
-  <div *ngIf="!loading && noResults" class="no-results">
-    <mat-icon>sentiment_dissatisfied</mat-icon>
-    <p>Aucun résultat trouvé pour "{{ searchQuery }}"</p>
-  </div>
-
-  <div *ngIf="!loading && books.length > 0" class="results-container">
-    <p class="results-count">
-      {{ books.length }} résultat(s) trouvé(s) pour "{{ searchQuery }}"
-    </p>
-
-    <div class="book-grid">
-      <mat-card
-        *ngFor="let book of books"
-        class="book-card"
-        (click)="viewResourceDetails(book)"
-      >
-        <img
-          *ngIf="book.coverImageUrl"
-          mat-card-image
-          [src]="book.coverImageUrl"
-          [alt]="book.title"
-        />
-        <div *ngIf="!book.coverImageUrl" class="placeholder-cover">
-          <mat-icon>{{ getResourceIcon(book.type) }}</mat-icon>
-        </div>
-
-        <mat-card-content>
-          <h2 class="book-title">{{ book.title }}</h2>
-          <p class="book-author">{{ book.author }}</p>
-
-          <div class="book-details">
-            <span class="book-type">{{ book.type }}</span>
-            <span *ngIf="book.publishedYear" class="book-year">{{
-              book.publishedYear
-            }}</span>
-            <span *ngIf="book.genre" class="book-genre">{{ book.genre }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Recherche en cours...</p>
     </div>
-  </div>
+  }
+
+  @if (!loading && noResults) {
+    <div class="no-results">
+      <mat-icon>sentiment_dissatisfied</mat-icon>
+      <p>Aucun résultat trouvé pour "{{ searchQuery }}"</p>
+    </div>
+  }
+
+  @if (!loading && books.length > 0) {
+    <div class="results-container">
+      <p class="results-count">
+        {{ books.length }} résultat(s) trouvé(s) pour "{{ searchQuery }}"
+      </p>
+      <div class="book-grid">
+        @for (book of books; track book) {
+          <mat-card
+            class="book-card"
+            (click)="viewResourceDetails(book)"
+            >
+            @if (book.coverImageUrl) {
+              <img
+                mat-card-image
+                [src]="book.coverImageUrl"
+                [alt]="book.title"
+                />
+            }
+            @if (!book.coverImageUrl) {
+              <div class="placeholder-cover">
+                <mat-icon>{{ getResourceIcon(book.type) }}</mat-icon>
+              </div>
+            }
+            <mat-card-content>
+              <h2 class="book-title">{{ book.title }}</h2>
+              <p class="book-author">{{ book.author }}</p>
+              <div class="book-details">
+                <span class="book-type">{{ book.type }}</span>
+                @if (book.publishedYear) {
+                  <span class="book-year">{{
+                    book.publishedYear
+                  }}</span>
+                }
+                @if (book.genre) {
+                  <span class="book-genre">{{ book.genre }}</span>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
+  }
 </div>

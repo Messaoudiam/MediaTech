@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { CommonModule } from '@angular/common';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
@@ -22,7 +22,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatInputModule,
@@ -31,8 +30,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    RouterLink,
-  ],
+    RouterLink
+],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

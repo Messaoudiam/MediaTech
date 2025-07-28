@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,14 +19,13 @@ import { ImageService } from '../../core/services/image.service';
   styleUrls: ['./book-list.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatPaginatorModule,
-  ],
+    MatPaginatorModule
+],
 })
 export class BookListComponent implements OnInit {
   books: Resource[] = [];

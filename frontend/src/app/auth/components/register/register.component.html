@@ -9,12 +9,14 @@
         [formGroup]="registerForm"
         (ngSubmit)="onSubmit()"
         class="register-form"
-      >
+        >
         <!-- Message d'erreur -->
-        <div *ngIf="errorMessage" class="error-message">
-          <mat-icon>error</mat-icon>
-          <span>{{ errorMessage }}</span>
-        </div>
+        @if (errorMessage) {
+          <div class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
 
         <!-- Nom et Prénom -->
         <div class="name-row">
@@ -22,18 +24,22 @@
             <mat-label>Nom</mat-label>
             <input matInput type="text" formControlName="nom" required />
             <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="registerForm.get('nom')?.invalid">{{
-              getErrorMessage("nom")
-            }}</mat-error>
+            @if (registerForm.get('nom')?.invalid) {
+              <mat-error>{{
+                getErrorMessage("nom")
+              }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Prénom</mat-label>
             <input matInput type="text" formControlName="prenom" required />
             <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="registerForm.get('prenom')?.invalid">{{
-              getErrorMessage("prenom")
-            }}</mat-error>
+            @if (registerForm.get('prenom')?.invalid) {
+              <mat-error>{{
+                getErrorMessage("prenom")
+              }}</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -41,9 +47,11 @@
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" required />
           <mat-icon matPrefix>email</mat-icon>
-          <mat-error *ngIf="registerForm.get('email')?.invalid">{{
-            getErrorMessage("email")
-          }}</mat-error>
+          @if (registerForm.get('email')?.invalid) {
+            <mat-error>{{
+              getErrorMessage("email")
+            }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
@@ -53,150 +61,154 @@
             [type]="hidePassword ? 'password' : 'text'"
             formControlName="password"
             required
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button
-            type="button"
-            mat-icon-button
-            matSuffix
-            (click)="hidePassword = !hidePassword"
-          >
-            <mat-icon>{{
-              hidePassword ? "visibility_off" : "visibility"
-            }}</mat-icon>
-          </button>
-          <mat-error *ngIf="registerForm.get('password')?.invalid">{{
-            getErrorMessage("password")
-          }}</mat-error>
-        </mat-form-field>
+            />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button
+              type="button"
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              >
+              <mat-icon>{{
+                hidePassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (registerForm.get('password')?.invalid) {
+              <mat-error>{{
+                getErrorMessage("password")
+              }}</mat-error>
+            }
+          </mat-form-field>
 
-        <!-- Validation visuelle du mot de passe -->
-        <div
-          class="password-validation"
-          [class.all-valid]="isPasswordFullyValid()"
-          *ngIf="registerForm.get('password')?.value"
-        >
-          <h4>Critères du mot de passe :</h4>
-          <div class="validation-items">
+          <!-- Validation visuelle du mot de passe -->
+          @if (registerForm.get('password')?.value) {
             <div
-              class="validation-item"
-              [class.valid]="passwordValidation.hasMinLength"
+              class="password-validation"
+              [class.all-valid]="isPasswordFullyValid()"
+              >
+              <h4>Critères du mot de passe :</h4>
+              <div class="validation-items">
+                <div
+                  class="validation-item"
+                  [class.valid]="passwordValidation.hasMinLength"
               [class.invalid]="
                 !passwordValidation.hasMinLength &&
                 registerForm.get('password')?.touched
               "
-            >
-              <mat-icon>{{
-                passwordValidation.hasMinLength ? "check_circle" : "cancel"
-              }}</mat-icon>
-              <span>Au moins 8 caractères</span>
-            </div>
-
-            <div
-              class="validation-item"
-              [class.valid]="passwordValidation.hasUpperCase"
+                  >
+                  <mat-icon>{{
+                    passwordValidation.hasMinLength ? "check_circle" : "cancel"
+                  }}</mat-icon>
+                  <span>Au moins 8 caractères</span>
+                </div>
+                <div
+                  class="validation-item"
+                  [class.valid]="passwordValidation.hasUpperCase"
               [class.invalid]="
                 !passwordValidation.hasUpperCase &&
                 registerForm.get('password')?.touched
               "
-            >
-              <mat-icon>{{
-                passwordValidation.hasUpperCase ? "check_circle" : "cancel"
-              }}</mat-icon>
-              <span>Une majuscule (A-Z)</span>
-            </div>
-
-            <div
-              class="validation-item"
-              [class.valid]="passwordValidation.hasLowerCase"
+                  >
+                  <mat-icon>{{
+                    passwordValidation.hasUpperCase ? "check_circle" : "cancel"
+                  }}</mat-icon>
+                  <span>Une majuscule (A-Z)</span>
+                </div>
+                <div
+                  class="validation-item"
+                  [class.valid]="passwordValidation.hasLowerCase"
               [class.invalid]="
                 !passwordValidation.hasLowerCase &&
                 registerForm.get('password')?.touched
               "
-            >
-              <mat-icon>{{
-                passwordValidation.hasLowerCase ? "check_circle" : "cancel"
-              }}</mat-icon>
-              <span>Une minuscule (a-z)</span>
-            </div>
-
-            <div
-              class="validation-item"
-              [class.valid]="passwordValidation.hasNumeric"
+                  >
+                  <mat-icon>{{
+                    passwordValidation.hasLowerCase ? "check_circle" : "cancel"
+                  }}</mat-icon>
+                  <span>Une minuscule (a-z)</span>
+                </div>
+                <div
+                  class="validation-item"
+                  [class.valid]="passwordValidation.hasNumeric"
               [class.invalid]="
                 !passwordValidation.hasNumeric &&
                 registerForm.get('password')?.touched
               "
-            >
-              <mat-icon>{{
-                passwordValidation.hasNumeric ? "check_circle" : "cancel"
-              }}</mat-icon>
-              <span>Un chiffre (0-9)</span>
-            </div>
-
-            <div
-              class="validation-item"
-              [class.valid]="passwordValidation.hasSpecialChar"
+                  >
+                  <mat-icon>{{
+                    passwordValidation.hasNumeric ? "check_circle" : "cancel"
+                  }}</mat-icon>
+                  <span>Un chiffre (0-9)</span>
+                </div>
+                <div
+                  class="validation-item"
+                  [class.valid]="passwordValidation.hasSpecialChar"
               [class.invalid]="
                 !passwordValidation.hasSpecialChar &&
                 registerForm.get('password')?.touched
               "
-            >
-              <mat-icon>{{
-                passwordValidation.hasSpecialChar ? "check_circle" : "cancel"
-              }}</mat-icon>
-              <span>Un caractère spécial (!#$%^&amp;*...)</span>
+                  >
+                  <mat-icon>{{
+                    passwordValidation.hasSpecialChar ? "check_circle" : "cancel"
+                  }}</mat-icon>
+                  <span>Un caractère spécial (!#$%^&amp;*...)</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          }
 
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Confirmer le mot de passe</mat-label>
-          <input
-            matInput
-            [type]="hideConfirmPassword ? 'password' : 'text'"
-            formControlName="confirmPassword"
-            required
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button
-            type="button"
-            mat-icon-button
-            matSuffix
-            (click)="hideConfirmPassword = !hideConfirmPassword"
-          >
-            <mat-icon>{{
-              hideConfirmPassword ? "visibility_off" : "visibility"
-            }}</mat-icon>
-          </button>
-          <mat-error
-            *ngIf="
-              registerForm.get('confirmPassword')?.invalid ||
-              registerForm.hasError('notSame')
-            "
-          >
-            {{ getErrorMessage("confirmPassword") }}
-          </mat-error>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Confirmer le mot de passe</mat-label>
+            <input
+              matInput
+              [type]="hideConfirmPassword ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              required
+              />
+              <mat-icon matPrefix>lock</mat-icon>
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+                >
+                <mat-icon>{{
+                  hideConfirmPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              @if (
+                registerForm.get('confirmPassword')?.invalid ||
+                registerForm.hasError('notSame')
+                ) {
+                <mat-error
+                  >
+                  {{ getErrorMessage("confirmPassword") }}
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <div class="form-actions">
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="loading || !isFormCompletelyValid()"
-            class="submit-button"
-          >
-            <span *ngIf="!loading">S'inscrire</span>
-            <mat-spinner *ngIf="loading" diameter="24"></mat-spinner>
-          </button>
-        </div>
+            <div class="form-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="loading || !isFormCompletelyValid()"
+                class="submit-button"
+                >
+                @if (!loading) {
+                  <span>S'inscrire</span>
+                }
+                @if (loading) {
+                  <mat-spinner diameter="24"></mat-spinner>
+                }
+              </button>
+            </div>
 
-        <div class="form-links">
-          <span>Vous avez déjà un compte ?</span>
-          <a routerLink="/auth/login" class="login-link">Se connecter</a>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+            <div class="form-links">
+              <span>Vous avez déjà un compte ?</span>
+              <a routerLink="/auth/login" class="login-link">Se connecter</a>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>

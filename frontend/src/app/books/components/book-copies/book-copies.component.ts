@@ -39,83 +39,88 @@ import { AuthService } from '../../../auth/services/auth.service';
         <mat-card-title>Exemplaires de "{{ bookTitle }}"</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="add-copy-form" *ngIf="isAdmin">
-          <mat-form-field appearance="outline">
-            <mat-label>État de l'exemplaire</mat-label>
-            <mat-select [(ngModel)]="newCopyCondition">
-              <mat-option value="Neuf">Neuf</mat-option>
-              <mat-option value="Bon état">Bon état</mat-option>
-              <mat-option value="État moyen">État moyen</mat-option>
-              <mat-option value="Usé">Usé</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="addCopy()"
-            [disabled]="loading"
-          >
-            <mat-icon>add</mat-icon>
-            Ajouter un exemplaire
-          </button>
-        </div>
-
-        <div *ngIf="loading" class="loading-container">
-          <mat-spinner diameter="40"></mat-spinner>
-        </div>
-
-        <table
-          mat-table
-          [dataSource]="copies"
-          class="copies-table"
-          *ngIf="!loading && copies.length > 0"
-        >
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td mat-cell *matCellDef="let copy">
-              {{ copy.id.substring(0, 8) }}...
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="condition">
-            <th mat-header-cell *matHeaderCellDef>État</th>
-            <td mat-cell *matCellDef="let copy">{{ copy.condition }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Statut</th>
-            <td mat-cell *matCellDef="let copy">
-              <span [ngClass]="copy.available ? 'available' : 'unavailable'">
-                {{ copy.available ? 'Disponible' : 'Emprunté' }}
-              </span>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions" *ngIf="isAdmin">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let copy">
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteCopy(copy.id)"
-                [disabled]="!copy.available"
-                title="Supprimer"
+        @if (isAdmin) {
+          <div class="add-copy-form">
+            <mat-form-field appearance="outline">
+              <mat-label>État de l'exemplaire</mat-label>
+              <mat-select [(ngModel)]="newCopyCondition">
+                <mat-option value="Neuf">Neuf</mat-option>
+                <mat-option value="Bon état">Bon état</mat-option>
+                <mat-option value="État moyen">État moyen</mat-option>
+                <mat-option value="Usé">Usé</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="addCopy()"
+              [disabled]="loading"
               >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-
-        <div *ngIf="!loading && copies.length === 0" class="no-copies">
-          <p>Aucun exemplaire disponible pour ce livre.</p>
-        </div>
+              <mat-icon>add</mat-icon>
+              Ajouter un exemplaire
+            </button>
+          </div>
+        }
+    
+        @if (loading) {
+          <div class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        }
+    
+        @if (!loading && copies.length > 0) {
+          <table
+            mat-table
+            [dataSource]="copies"
+            class="copies-table"
+            >
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let copy">
+                {{ copy.id.substring(0, 8) }}...
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="condition">
+              <th mat-header-cell *matHeaderCellDef>État</th>
+              <td mat-cell *matCellDef="let copy">{{ copy.condition }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let copy">
+                <span [ngClass]="copy.available ? 'available' : 'unavailable'">
+                  {{ copy.available ? 'Disponible' : 'Emprunté' }}
+                </span>
+              </td>
+            </ng-container>
+            @if (isAdmin) {
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let copy">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteCopy(copy.id)"
+                    [disabled]="!copy.available"
+                    title="Supprimer"
+                    >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+            }
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        }
+    
+        @if (!loading && copies.length === 0) {
+          <div class="no-copies">
+            <p>Aucun exemplaire disponible pour ce livre.</p>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
-  `,
+    `,
   styles: [
     `
       .add-copy-form {

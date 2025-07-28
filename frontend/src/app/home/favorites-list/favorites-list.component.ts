@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,59 +14,66 @@ import { ImageService } from '../../core/services/image.service';
   selector: 'app-favorites-list',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule
+],
   template: `
     <div class="favorites-container">
       <h2 class="section-title">Mes Livres Favoris</h2>
-
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Chargement de vos favoris...</p>
+    
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Chargement de vos favoris...</p>
+        </div>
+      }
+    
+      @if (!loading && favoriteBooks.length === 0) {
+        <div class="empty-state">
+          <mat-icon>favorite_border</mat-icon>
+          <p>Vous n'avez pas encore de livres favoris</p>
+          <a mat-raised-button color="primary" routerLink="/books/all">
+            Découvrir des livres
+          </a>
+        </div>
+      }
+    
+      @if (!loading && favoriteBooks.length > 0) {
+        <div class="favorites-grid">
+          @for (book of favoriteBooks; track book) {
+            <mat-card class="book-card">
+              <img
+                mat-card-image
+                [src]="imageService.getSafeImageUrl(book.coverImageUrl || '')"
+                [alt]="book.title"
+                class="book-cover"
+                />
+                <mat-card-content>
+                  <h3 class="book-title">{{ book.title }}</h3>
+                  <p class="book-author">{{ book.author }}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                  <a mat-button color="primary" [routerLink]="['/books', book.id]">
+                    <mat-icon>visibility</mat-icon>
+                    Voir détails
+                  </a>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="removeFavorite(book.id)"
+                    >
+                    <mat-icon>favorite</mat-icon>
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        }
       </div>
-
-      <div *ngIf="!loading && favoriteBooks.length === 0" class="empty-state">
-        <mat-icon>favorite_border</mat-icon>
-        <p>Vous n'avez pas encore de livres favoris</p>
-        <a mat-raised-button color="primary" routerLink="/books/all">
-          Découvrir des livres
-        </a>
-      </div>
-
-      <div *ngIf="!loading && favoriteBooks.length > 0" class="favorites-grid">
-        <mat-card *ngFor="let book of favoriteBooks" class="book-card">
-          <img
-            mat-card-image
-            [src]="imageService.getSafeImageUrl(book.coverImageUrl || '')"
-            [alt]="book.title"
-            class="book-cover"
-          />
-          <mat-card-content>
-            <h3 class="book-title">{{ book.title }}</h3>
-            <p class="book-author">{{ book.author }}</p>
-          </mat-card-content>
-          <mat-card-actions>
-            <a mat-button color="primary" [routerLink]="['/books', book.id]">
-              <mat-icon>visibility</mat-icon>
-              Voir détails
-            </a>
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="removeFavorite(book.id)"
-            >
-              <mat-icon>favorite</mat-icon>
-            </button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
-    </div>
-  `,
+    `,
   styles: [
     `
       .favorites-container {
