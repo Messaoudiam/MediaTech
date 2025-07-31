@@ -108,7 +108,7 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: ['http://localhost:4200'], // Frontend Angular
+    origin: ['http://localhost:4200', 'https://my-library.cloud'], // Frontend Angular
     credentials: true, // Important pour les cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
