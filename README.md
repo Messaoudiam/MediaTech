@@ -217,7 +217,7 @@ Ce projet est sous licence [MIT](./LICENSE).
 **Messaoud Iam**
 
 - 📧 Email: [codingmessaoud@gmail.com](mailto:codingmessaoud@gmail.com)
-- 💼 LinkedIn: [Votre LinkedIn](https://linkedin.com/in/votre-profil)
+- 💼 LinkedIn: [Votre LinkedIn](https://www.linkedin.com/in/messaoud-zouggab/)
 - 🐙 GitHub: [@Messaoudiam](https://github.com/Messaoudiam)
 
 ---
