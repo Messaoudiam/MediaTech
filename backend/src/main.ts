@@ -33,76 +33,88 @@ async function bootstrap() {
   logger.log('Configuration du préfixe global /api');
   app.setGlobalPrefix('api');
 
-  // Configuration de Swagger
-  logger.log('Configuration de Swagger pour la documentation API');
-  const config = new DocumentBuilder()
-    .setTitle('API Fullstack')
-    .setDescription(
-      `
-    ## Documentation de l'API pour le projet fullstack
-    
-    Cette API fournit un système complet d'authentification et de gestion utilisateurs.
-    
-    ### Fonctionnalités principales
-    - Inscription et connexion d'utilisateurs
-    - Gestion de profil
-    - Authentification via JWT (Bearer token + cookies)
-    
-    ### Authentification
-    Les endpoints protégés nécessitent un Bearer token qui doit être fourni dans l'en-tête Authorization.
-    Certains endpoints utilisent aussi des cookies pour la persistance de session.
-    `,
-    )
-    .setVersion('1.0')
-    .setContact('Administrateur', 'https://votre-site.com', 'admin@example.com')
-    .setLicense('License', 'https://opensource.org/licenses/MIT')
-    .addServer('http://localhost:3000', 'Serveur de développement')
-    .addServer('https://api.production.com', 'Serveur de production')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Entrez votre JWT token',
-      },
-      'access-token',
-    )
-    .addCookieAuth(
-      'refresh_token',
-      {
-        type: 'apiKey',
-        in: 'cookie',
-        name: 'refreshToken',
-      },
-      'refresh-token',
-    )
-    .addTag(
-      'Authentification',
-      "Endpoints pour l'authentification et la gestion de session",
-    )
-    .addTag('Utilisateurs', 'Endpoints pour la gestion des utilisateurs')
-    .build();
+  // Récupération de la configuration du serveur
+  const port = configService.get('PORT') || 3000;
+  const host = configService.get('HOST') || '0.0.0.0';
 
-  const document = SwaggerModule.createDocument(app, config, {
-    deepScanRoutes: true,
-    extraModels: [],
-  });
+  // Configuration de Swagger (uniquement en développement)
+  if (configService.get('NODE_ENV') !== 'production') {
+    logger.log('Configuration de Swagger pour la documentation API');
+    const config = new DocumentBuilder()
+      .setTitle('API Fullstack')
+      .setDescription(
+        `
+      ## Documentation de l'API pour le projet fullstack
+      
+      Cette API fournit un système complet d'authentification et de gestion utilisateurs.
+      
+      ### Fonctionnalités principales
+      - Inscription et connexion d'utilisateurs
+      - Gestion de profil
+      - Authentification via JWT (Bearer token + cookies)
+      
+      ### Authentification
+      Les endpoints protégés nécessitent un Bearer token qui doit être fourni dans l'en-tête Authorization.
+      Certains endpoints utilisent aussi des cookies pour la persistance de session.
+      `,
+      )
+      .setVersion('1.0')
+      .setContact('Administrateur', 'https://votre-site.com', 'admin@example.com')
+      .setLicense('License', 'https://opensource.org/licenses/MIT')
+      .addServer('http://localhost:3000', 'Serveur de développement')
+      .addServer('https://api.production.com', 'Serveur de production')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Entrez votre JWT token',
+        },
+        'access-token',
+      )
+      .addCookieAuth(
+        'refresh_token',
+        {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'refreshToken',
+        },
+        'refresh-token',
+      )
+      .addTag(
+        'Authentification',
+        "Endpoints pour l'authentification et la gestion de session",
+      )
+      .addTag('Utilisateurs', 'Endpoints pour la gestion des utilisateurs')
+      .build();
 
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      docExpansion: 'none',
-      filter: true,
-      showExtensions: true,
-      showCommonExtensions: true,
-      syntaxHighlight: {
-        activate: true,
-        theme: 'monokai',
+    const document = SwaggerModule.createDocument(app, config, {
+      deepScanRoutes: true,
+      extraModels: [],
+    });
+
+    SwaggerModule.setup('api/docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        docExpansion: 'none',
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        syntaxHighlight: {
+          activate: true,
+          theme: 'monokai',
+        },
       },
-    },
-    customCssUrl:
-      'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-material.css',
-  });
+      customCssUrl:
+        'https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-material.css',
+    });
+
+    logger.log(
+      `Documentation API disponible sur http://localhost:${port}/api/docs`,
+    );
+  } else {
+    logger.log('Swagger désactivé en production pour des raisons de sécurité');
+  }
 
   logger.log('Configuration de CORS pour autoriser les cookies...');
 
@@ -119,16 +131,11 @@ async function bootstrap() {
   logger.log('Configuration des pipes de validation');
   app.useGlobalPipes(new ValidationPipe(CONFIG.validation));
 
-  // Démarrage du serveur sur localhost (IPv4) explicitement
-  const port = configService.get('PORT') || 3000;
-
-  logger.log('Démarrage du serveur sur localhost...');
-  await app.listen(port, 'localhost');
+  // Démarrage du serveur sur toutes les interfaces (0.0.0.0) pour Docker
+  logger.log(`Démarrage du serveur sur ${host}:${port}...`);
+  await app.listen(port, host);
 
   logger.log(`Application démarrée sur http://localhost:${port}`);
-  logger.log(
-    `Documentation API disponible sur http://localhost:${port}/api/docs`,
-  );
 }
 
 // Démarrage de l'application

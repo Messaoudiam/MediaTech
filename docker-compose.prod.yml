@@ -3,6 +3,7 @@ version: "3.8"
 services:
   nginx:
     image: nginx:alpine
+    container_name: mediatech-nginx-prod
     ports:
       - "80:80"
       - "443:443"
@@ -10,61 +11,53 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro
+      - nginx_cache:/var/cache/nginx
     depends_on:
       backend:
         condition: service_healthy
       frontend:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 512M
           cpus: "0.5"
         reservations:
-          memory: 128M
+          memory: 256M
           cpus: "0.25"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost/health",
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    security_opt:
+      - no-new-privileges:true
 
   backend:
-    image: codingmessaoud/backend:latest
+    image: ${DOCKER_REGISTRY:-codingmessaoud}/backend:${IMAGE_TAG:-latest}
+    container_name: mediatech-backend-prod
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOST=0.0.0.0
-      - FRONTEND_URL=https://my-library.cloud
-      - API_URL=https://my-library.cloud/api
+      - FRONTEND_URL=${FRONTEND_URL:-https://my-library.cloud}
+      - API_URL=${API_URL:-https://my-library.cloud/api}
       - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/myapp
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ACCESS_EXPIRATION=1h
-      - JWT_REFRESH_EXPIRATION=7d
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - FROM_EMAIL=${FROM_EMAIL}
-      - CORS_ORIGIN=https://my-library.cloud,https://www.my-library.cloud
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://my-library.cloud,https://www.my-library.cloud}
       - BCRYPT_ROUNDS=12
       - RATE_LIMIT_TTL=60
       - RATE_LIMIT_LIMIT=100
-      - SESSION_SECRET=${SESSION_SECRET}
       - MAX_FILE_SIZE=10485760
-      - UPLOAD_DEST=./uploads
       - LOG_LEVEL=warn
+    secrets:
+      - jwt_secret
+      - supabase_key
+      - resend_api_key
+      - session_secret
     depends_on:
       db:
         condition: service_healthy
@@ -79,16 +72,13 @@ services:
         reservations:
           memory: 512M
           cpus: "0.5"
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/health",
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -99,16 +89,23 @@ services:
     tmpfs:
       - /tmp
       - /var/tmp
-      - /app/uploads
     volumes:
-      - uploads:/app/uploads
+      - uploads:/usr/src/app/uploads
+      - logs:/usr/src/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
-    image: codingmessaoud/frontend:latest
+    image: ${DOCKER_REGISTRY:-codingmessaoud}/frontend:${IMAGE_TAG:-latest}
+    container_name: mediatech-frontend-prod
     environment:
-      - API_URL=https://my-library.cloud/api
+      - API_URL=${API_URL:-https://my-library.cloud/api}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network
@@ -120,6 +117,12 @@ services:
         reservations:
           memory: 128M
           cpus: "0.25"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     security_opt:
       - no-new-privileges:true
     read_only: true
@@ -127,27 +130,35 @@ services:
       - /tmp
       - /var/tmp
       - /var/cache/nginx
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:15-alpine
+    container_name: mediatech-db-prod
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=myapp
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    secrets:
+      - db_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backups:/backups:ro
+      - postgres_backups:/backups
+      - ./scripts/postgres-tune.conf:/etc/postgresql/postgresql.conf:ro
     restart: unless-stopped
     networks:
       - app-network
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: "1.0"
+          memory: 2G
+          cpus: "1.5"
         reservations:
-          memory: 512M
+          memory: 1G
           cpus: "0.5"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d myapp"]
@@ -159,25 +170,111 @@ services:
       - no-new-privileges:true
     command: >
       postgres
+      -c config_file=/etc/postgresql/postgresql.conf
       -c shared_preload_libraries=pg_stat_statements
       -c pg_stat_statements.track=all
-      -c max_connections=100
-      -c shared_buffers=256MB
-      -c effective_cache_size=1GB
-      -c maintenance_work_mem=64MB
+      -c max_connections=200
+      -c shared_buffers=512MB
+      -c effective_cache_size=1.5GB
+      -c maintenance_work_mem=128MB
       -c checkpoint_completion_target=0.9
-      -c wal_buffers=16MB
+      -c wal_buffers=32MB
       -c default_statistics_target=100
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
-      -c work_mem=4MB
-      -c min_wal_size=1GB
-      -c max_wal_size=4GB
+      -c work_mem=8MB
+      -c min_wal_size=2GB
+      -c max_wal_size=8GB
+      -c log_statement=none
+      -c log_duration=off
+      -c log_lock_waits=on
+      -c log_checkpoints=on
+      -c log_connections=on
+      -c log_disconnections=on
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # Backup service
+  backup:
+    image: prodrigestivill/postgres-backup-local
+    container_name: mediatech-backup-prod
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=myapp
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - BACKUP_SUFFIX=.sql
+      - TZ=Europe/Paris
+    secrets:
+      - db_password
+    volumes:
+      - postgres_backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+    profiles:
+      - backup
+
+  # Monitoring
+  watchtower:
+    image: containrrr/watchtower
+    container_name: mediatech-watchtower-prod
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+secrets:
+  jwt_secret:
+    external: true
+  supabase_key:
+    external: true
+  resend_api_key:
+    external: true
+  session_secret:
+    external: true
+  db_password:
+    external: true
 
 volumes:
   postgres_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/data/postgres
+  postgres_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/backups
   uploads:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/data/uploads
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/logs
+  nginx_cache:
     driver: local
 
 networks:

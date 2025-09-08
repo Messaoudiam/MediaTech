@@ -1,44 +1,64 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+# Install security updates and build dependencies
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /usr/src/app
 
+# Copy package files for better layer caching
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Installer toutes les dépendances, y compris celles de développement
-RUN npm ci
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci --frozen-lockfile
 
+# Copy source code
 COPY . .
 
-RUN npm run build
+# Generate Prisma client and build the application
+RUN npm run prisma:generate && \
+    npm run build
+
+# Create production dependencies
+RUN npm ci --only=production --frozen-lockfile && \
+    cp -R node_modules production_node_modules
 
 # Production stage
-FROM node:20-alpine
+FROM node:20-alpine AS production
+
+# Install security updates and runtime dependencies
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /usr/src/app
 
-# Définir les arguments pour Supabase et Resend
-ARG SUPABASE_URL
-ARG SUPABASE_KEY
-ARG RESEND_API_KEY
-ARG FROM_EMAIL
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nestjs -u 1001 -G nodejs
 
-# Définir les variables d'environnement pour Supabase et Resend
-ENV SUPABASE_URL=$SUPABASE_URL
-ENV SUPABASE_KEY=$SUPABASE_KEY
-ENV RESEND_API_KEY=$RESEND_API_KEY
-ENV FROM_EMAIL=$FROM_EMAIL
+# Copy built application and production dependencies
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/production_node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/prisma ./prisma
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/package*.json ./
 
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/prisma ./prisma
+# Create directories with proper permissions
+RUN mkdir -p uploads logs && \
+    chown -R nestjs:nodejs uploads logs
 
-# Installer explicitement les dépendances qui posent problème
-RUN npm install --production=false @nestjs/swagger cookie-parser passport-local @supabase/supabase-js resend
+# Switch to non-root user
+USER nestjs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 EXPOSE 3000
 
-# Utiliser le chemin complet vers main.js
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/src/main.js"]

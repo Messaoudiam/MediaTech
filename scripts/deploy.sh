@@ -1,11 +1,18 @@
 #!/bin/bash
+# MediaTech Production Deployment Script
+# Usage: ./scripts/deploy.sh [environment] [action]
+# Example: ./scripts/deploy.sh production deploy
 
-# Script de déploiement avancé pour my-library.cloud
-# Usage: ./deploy.sh [--force] [--no-backup] [--zero-downtime] [--dry-run]
+set -euo pipefail
 
-set -euo pipefail  # Strict error handling
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+ENV="${1:-production}"
+ACTION="${2:-deploy}"
+IMAGE_TAG="${3:-$(date +%Y%m%d-%H%M%S)}"
 
-echo "🚀 Début du déploiement de my-library.cloud..."
+echo "🚀 MediaTech Deployment Script"
 
 # Couleurs pour les messages
 RED='\033[0;31m'

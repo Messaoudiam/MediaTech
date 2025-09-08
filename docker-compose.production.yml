@@ -1,0 +1,267 @@
+version: "3.8"
+
+services:
+  backend:
+    image: ${DOCKER_REGISTRY:-codingmessaoud}/backend:${IMAGE_TAG:-latest}
+    container_name: mediatech-backend-prod
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - API_URL=https://my-library.cloud/api
+      - FRONTEND_URL=https://my-library.cloud
+      - CORS_ORIGIN=https://my-library.cloud,https://www.my-library.cloud
+      # Database
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/mediatech_prod
+      # Security
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=1h
+      - JWT_REFRESH_EXPIRATION=7d
+      - SESSION_SECRET=${SESSION_SECRET}
+      - BCRYPT_ROUNDS=12
+      # Rate limiting
+      - RATE_LIMIT_TTL=60
+      - RATE_LIMIT_LIMIT=100
+      # File uploads
+      - MAX_FILE_SIZE=10485760
+      - UPLOAD_DEST=/usr/src/app/uploads
+      # External services
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=noreply@my-library.cloud
+      # Logging
+      - LOG_LEVEL=warn
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+      - monitoring  # Connect to existing monitoring network
+    volumes:
+      - mediatech_uploads:/usr/src/app/uploads
+      - mediatech_logs:/usr/src/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 512M
+          cpus: "0.5"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=3000"
+      - "prometheus.io/path=/metrics"
+
+  frontend:
+    image: ${DOCKER_REGISTRY:-codingmessaoud}/frontend:${IMAGE_TAG:-latest}
+    container_name: mediatech-frontend-prod
+    environment:
+      - API_URL=https://my-library.cloud/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    image: postgres:15-alpine
+    container_name: mediatech-db-prod
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=mediatech_prod
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    volumes:
+      - mediatech_postgres_data:/var/lib/postgresql/data
+      - mediatech_postgres_backups:/backups
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mediatech_prod"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.5"
+        reservations:
+          memory: 1G
+          cpus: "0.5"
+    security_opt:
+      - no-new-privileges:true
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=512MB
+      -c effective_cache_size=1.5GB
+      -c maintenance_work_mem=128MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=32MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=8MB
+      -c min_wal_size=2GB
+      -c max_wal_size=8GB
+      -c log_statement=none
+      -c log_duration=off
+      -c log_lock_waits=on
+      -c log_checkpoints=on
+      -c log_connections=on
+      -c log_disconnections=on
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # Database backup service
+  backup:
+    image: prodrigestivill/postgres-backup-local
+    container_name: mediatech-backup-prod
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=mediatech_prod
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - BACKUP_SUFFIX=.sql
+      - TZ=Europe/Paris
+    volumes:
+      - mediatech_postgres_backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+    profiles:
+      - backup
+
+  # Optional: Redis for session storage and caching
+  redis:
+    image: redis:7-alpine
+    container_name: mediatech-redis-prod
+    restart: unless-stopped
+    networks:
+      - app-network
+    volumes:
+      - mediatech_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    security_opt:
+      - no-new-privileges:true
+    profiles:
+      - cache
+
+  # Prometheus metrics exporter for PostgreSQL
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: mediatech-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://postgres:${DB_PASSWORD}@db:5432/mediatech_prod?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9187"
+    profiles:
+      - monitoring
+
+volumes:
+  mediatech_postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/data/postgres
+  mediatech_postgres_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/backups
+  mediatech_uploads:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/data/uploads
+  mediatech_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/mediatech/logs
+  mediatech_redis_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  monitoring:
+    external: true  # Use existing monitoring network
